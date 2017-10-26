@@ -1,0 +1,79 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="//igv.org/web/img/favicon.ico">
+
+    <title>IGV </title>
+
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"/>
+
+    <!-- IGV CSS -->
+    <link rel="stylesheet" href="css/igv.css">
+
+    <!-- IGV JS-->
+    <script src="js/igv.js"></script>
+
+</head>
+
+
+<body>
+<h2>IGV.js for fusions
+    <h2>
+
+        <div id="igvDiv"/>
+
+        <script type="text/javascript">
+
+            document.addEventListener("DOMContentLoaded", function () {
+
+                var div = document.getElementById("igvDiv"),
+
+                        options = {
+                            showKaryo: false,
+                            showNavigation: true,
+                            fastaURL: "finspector.fa",
+                            cytobandURL: "cytoBand.txt",
+                            tracks: [
+                                {
+                                    type: "sequence",
+                                    order: 1
+                                },
+
+                                {
+                                    label: "ref_annot",
+                                    url: "finspector.bed",
+                                    displayMode: "SQUISHED",
+                                    indexed: false,
+                                    order: 10
+
+                                },
+
+                                {
+                                    url: "finspector.star.sortedByCoord.out.bam",
+                                    label: "SupportingReadsBam",
+                                    height: 100,
+                                    indexed: false,
+                                    visibilityWindow: 2000000,
+                                    order: 60
+                                }
+
+                            ]
+                        };
+
+                igv.createBrowser(div, options);
+
+
+            });
+
+        </script>
+
+
+</body>
+
+</html>
+
