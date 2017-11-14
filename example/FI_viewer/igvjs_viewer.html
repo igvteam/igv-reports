@@ -22,14 +22,14 @@
 
 
 <body>
-<h2>IGV.js for fusions
-    <h2>
+    <h2>IGV.js for fusions</h2>
 
-        <div id="igvDiv"/>
+    <div id="igvDiv"></div>
 
         <script type="text/javascript">
 
             document.addEventListener("DOMContentLoaded", function () {
+                <!-- start igv report here -->
 
                 var div = document.getElementById("igvDiv"),
 
@@ -49,25 +49,24 @@
                                     url: "finspector.bed",
                                     displayMode: "SQUISHED",
                                     indexed: false,
-                                    order: 10
+                                    order: 10,
+                                    type: "annotation",
+                                    format: "bed"
 
                                 },
-
                                 {
                                     url: "finspector.star.sortedByCoord.out.bam",
                                     label: "SupportingReadsBam",
                                     height: 100,
                                     indexed: false,
                                     visibilityWindow: 2000000,
-                                    order: 60
+                                    order: 60,
+                                    type: "alignment"
                                 }
-
                             ]
                         };
 
                 igv.createBrowser(div, options);
-
-
             });
 
         </script>
