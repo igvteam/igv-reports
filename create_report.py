@@ -1,7 +1,7 @@
 import os
 import sys
-from gzip import compress
-from base64 import b64encode
+
+from report import data_uri
 
 QUOTES = {"'", '"'}
 SCRIPT_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -13,9 +13,8 @@ def create_report(url):
         url = os.path.join(SCRIPT_PATH, url)
     basedir = os.path.dirname(url)
     data_uris = {}
-    data = get_data(url, as_array=True)
-    report_start = -1
-    space = ''
+    with open(url, "r") as f:
+        data = f.readlines()
 
     for i, line in enumerate(data):
         j = line.find('<!-- start igv report here -->')
@@ -23,6 +22,9 @@ def create_report(url):
             space = ' ' * j
             report_start = i + 1
             break
+    else:
+        print("file must contain the line \"<!-- start igv report here -->\"")
+        return
 
     report_data = data[report_start:]
 
@@ -40,32 +42,13 @@ def create_report(url):
 
             filename = line[start:i]
             report_data[line_index] = line[:start - 1] + 'data["' + filename + '"]' + line[i+1:]
+            data_uris[filename] = data_uri.file_to_data_uri(os.path.join(basedir, filename))
 
-            file_data = get_data(os.path.join(basedir, filename), binary=True)
-
-            if not filename.lower().endswith('bam'):  # bam files are already compressed
-                file_data = compress(file_data)
-            enc_str = b64encode(file_data)
-            data_uris[filename] = 'data:application/gzip;base64,' + str(enc_str)[2:-1]
-
-    new_html_data = data[:report_start] + data_list(data_uris, space) + report_data
+    new_html_data = data[:report_start] + data_uri.create_data_var(data_uris, space) + report_data
 
     output_name = os.path.join(basedir, url[:-5] + '_report' + url[-5:])
     with open(output_name, 'w') as f:
         f.writelines(new_html_data)
-
-
-def get_data(url, binary=False, as_array=False):
-    mode = 'rb' if binary else 'r'
-    with open(url, mode) as f:
-        return f.readlines() if as_array else f.read()
-
-
-def data_list(data_uris, space=''):
-    data = []
-    for i, (key, value) in enumerate(data_uris.items()):
-        data.append('{}"{}": "{}"{}\n'.format(space + ' ' * 4, key, value, ',' if i < len(data_uris) - 1 else ''))
-    return [space + "var data = {\n"] + data + [space+"};\n"]
 
 
 if __name__ == "__main__":

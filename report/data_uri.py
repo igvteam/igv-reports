@@ -1,0 +1,50 @@
+import sys
+from base64 import b64encode
+from gzip import compress
+
+from report import bam, tabix
+
+
+def file_to_data_uri(filename, filetype=None, genomic_range=None):
+    if not filetype:
+        filetype = infer_filetype(filename)
+    else:
+        filetype = filetype.lower()
+
+    data = get_data(filename, filetype, genomic_range)
+    if filetype != "bam" and filetype != "tbi":
+        data = compress(data)
+    enc_str = b64encode(data)
+    data_uri = "data:application/gzip;base64," + str(enc_str)[2:-1]
+    return data_uri
+
+    # with open(OUTPUT_FILENAME, "w") as out:
+    #     out.write(data_uri)
+
+
+def get_data(filename, filetype, genomic_range):
+    if filetype == "bam":
+        return bam.get_bam_data(filename, genomic_range)
+    if filetype == "tbi":
+        return tabix.get_data(filename, genomic_range)
+
+    try:
+        with open(filename, "rb") as f:
+            return f.read()
+    except FileNotFoundError as e:
+        print(e, file=sys.stderr)
+
+
+def infer_filetype(filename):
+    filename = filename.lower()
+    if filename.endswith("bam"):
+        return "bam"
+    elif filename.endswith(".gz.tbi"):
+        return "tbi"
+
+
+def create_data_var(data_uris, space=''):
+    data = []
+    for i, (key, value) in enumerate(data_uris.items()):
+        data.append('{}"{}": "{}"{}\n'.format(space + ' ' * 4, key, value, ',' if i < len(data_uris) - 1 else ''))
+    return [space + "var data = {\n"] + data + [space+"};\n"]
