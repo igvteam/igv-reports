@@ -5,7 +5,7 @@ from report import data_uri
 
 TEMPLATE_URL = "example/FI_viewer/template.html"
 SCRIPT_PATH = os.path.abspath(os.path.dirname(__file__))
-OUTPUT_FILENAME = "report.html"
+OUTPUT_FILENAME = "example/FI_viewer/report.html"
 
 
 def generate_report(fasta_url, filenames, genomic_region=None):
@@ -22,8 +22,8 @@ def generate_report(fasta_url, filenames, genomic_region=None):
         return
 
     filenames = filenames.split(',')
-    filenames.insert(0, fasta_url)
     data_uris = {}
+    data_uris[fasta_url] = data_uri.file_to_data_uri(fasta_url, genomic_region)
     for filename in filenames:
         data_uris[filename] = data_uri.file_to_data_uri(filename, genomic_region)
 
@@ -46,12 +46,13 @@ def generate_report(fasta_url, filenames, genomic_region=None):
 
 def create_config_data(filenames, space, fasta_url):
     inner_space = space + " " * 4
-    config_data = ["{}fastaURL: data[\"{}\"],\n".format(inner_space,fasta_url)]
+    config_data = []
+    config_data.append("{}fastaURL: data[\"{}\"],\n".format(inner_space,fasta_url))
     config_data.append(inner_space + "tracks: [\n")
     for i, name in enumerate(filenames):
         config_data.append(inner_space + " " * 4 + "{\n")
         config_data.append(inner_space + " " * 8 + "url: data[\"" + name + "\"]\n")
-        config_data.append("%s}%s\n" % (inner_space + " " * 4, ",\n" if i != len(filenames)-1 else ''))
+        config_data.append("%s}%s\n" % (inner_space + " " * 4, "," if i != len(filenames)-1 else ''))
     config_data.append(inner_space + "]\n")
     return config_data
 

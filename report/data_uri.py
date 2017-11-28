@@ -18,9 +18,6 @@ def file_to_data_uri(filename, filetype=None, genomic_range=None):
     data_uri = "data:application/gzip;base64," + str(enc_str)[2:-1]
     return data_uri
 
-    # with open(OUTPUT_FILENAME, "w") as out:
-    #     out.write(data_uri)
-
 
 def get_data(filename, filetype, genomic_range):
     if filetype == "bam":
@@ -37,10 +34,12 @@ def get_data(filename, filetype, genomic_range):
 
 def infer_filetype(filename):
     filename = filename.lower()
-    if filename.endswith("bam"):
+    if filename.endswith(".bam"):
         return "bam"
     elif filename.endswith(".gz.tbi"):
         return "tbi"
+    elif filename.endswith(".fa"):
+        return "fa"
 
 
 def create_data_var(data_uris, space=''):

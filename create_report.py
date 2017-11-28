@@ -8,7 +8,6 @@ SCRIPT_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
 def create_report(url):
-
     if not url.startswith('/'):
         url = os.path.join(SCRIPT_PATH, url)
     basedir = os.path.dirname(url)
@@ -52,4 +51,7 @@ def create_report(url):
 
 
 if __name__ == "__main__":
-    create_report(*sys.argv[1:])
+    if len(sys.argv) == 2:
+        create_report(sys.argv[1])
+    else:
+        print("Usage: python create_report.py [filename]")
