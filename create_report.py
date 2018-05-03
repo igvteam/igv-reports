@@ -1,6 +1,5 @@
 from __future__ import print_function
 import os
-import sys
 
 from report import data_uri
 
@@ -52,7 +51,10 @@ def create_report(url):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
-        create_report(sys.argv[1])
-    else:
-        print("Usage: python create_report.py [filename]")
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("filename", help="the html file to be converted")
+    args = parser.parse_args()
+
+    create_report(args.filename)
