@@ -23,7 +23,7 @@ def generate_report(fasta_url, filenames, genomic_region=None):
 
     filenames = filenames.split(',')
     data_uris = {}
-    data_uris[fasta_url] = data_uri.file_to_data_uri(fasta_url, genomic_region)
+    data_uris[fasta_url] = data_uri.file_to_data_uri(fasta_url)
     for filename in filenames:
         data_uris[filename] = data_uri.file_to_data_uri(filename, genomic_region)
 
@@ -58,7 +58,17 @@ def create_config_data(filenames, space, fasta_url):
 
 
 if __name__ == "__main__":
-    generate_report(*sys.argv[1:])
+    import argparse
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("fasta_url", help="fasta file for igv")
+    parser.add_argument("filenames", help="comma-delimited list of files to be shown")
+    parser.add_argument("-r", "--range" , help="genomic range to be converted - only applicable for bam or tbi files")
+
+    args = parser.parse_args()
+
+    generate_report(args.fasta_url, args.filenames, genomic_region=args.range)
 
 
 
