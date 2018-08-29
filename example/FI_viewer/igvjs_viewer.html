@@ -55,7 +55,7 @@
          <div role="tabpanel" id="tabBrowser" class="tab-pane fade in active" data-toggle="tab">
         <!-- Start data table -->
           <div class="table-responsive">
-            <table id="fusionTable" class="table table-striped table-bordered table-hover active" cell spacing="0" width="100%"></table>
+            <table id="fusionTable" class="table table-striped table-bordered table-hover active" style="cursor:pointer" cell spacing="0" width="100%"></table>
           </div>
         <!-- End data table -->
       </div>
@@ -158,10 +158,14 @@
                          				    type: "bed"
                          			     });
                               }
-                   fusionInspectorState.cache[ "curBrowser" ] = igv.createBrowser(divBrowser, options);
-                   console.log("cached curBroswer");
-                   console.log(fusionInspectorState.cache[ "curBrowser" ]);
-                   fusionInspectorState.browserMade = true;
+                    igv.createBrowser(divBrowser, options)
+                          .then(function (browser) {
+                          fusionInspectorState.cache[ "curBrowser" ] = browser;
+                          console.log("cached curBroswer");
+                          console.log(fusionInspectorState.cache[ "curBrowser" ]);
+                          fusionInspectorState.browserMade = true;
+                    });
+
                }
                function loadIGVBrowser( curFusion, curJunctionReads, curSpanningReads, curLeftPos, curRightPos )
                {
@@ -190,6 +194,8 @@
                    //var padLength = ( numBreakRight - numBreakLeft ) / 2
                    //fusionInspectorState.cache.curBrowser.search( fusionChr + ":" + Math.max( 0, numBreakLeft - padLength ) + "-" + ( numBreakRight + padLength ) );
                    var location = fusionChr
+                   console.log("searching on location")
+                   console.log(location);
                    $('.nav-tabs a[href="#igvBrowser"]').tab('show');
                    setTimeout(function(){
                        fusionInspectorState.cache.curBrowser.search( location );
