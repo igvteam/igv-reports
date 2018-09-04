@@ -29,7 +29,7 @@ def create_report(url):
 
     for line_index, line in enumerate(report_data):
         i = line.lower().find('url:')
-
+        json_line = line.lower().find('getjson(')
         if i >= 0:
             i += 4
             while line[i] not in QUOTES and i < len(line):
@@ -38,10 +38,23 @@ def create_report(url):
             start = i
             while line[i] not in QUOTES and i < len(line):
                 i += 1
-
             filename = line[start:i]
             report_data[line_index] = line[:start - 1] + 'data["' + filename + '"]' + line[i+1:]
             data_uris[filename] = data_uri.file_to_data_uri(os.path.join(basedir, filename))
+
+        if json_line >= 0:
+            i += 6
+            while line[i] not in QUOTES and i < len(line):
+                i += 1
+            i += 1
+            start = i
+            while line[i] not in QUOTES and i < len(line):
+                i += 1
+            filename = line[start:i]
+            json_uri=data_uri.file_to_data_uri(os.path.join(basedir, filename))
+            report_data[line_index] = line[:start - 1] + '"'+json_uri+'"'+line[i+1:]
+            #data_uris[filename] = data_uri.file_to_data_uri(os.path.join(basedir, filename))
+            #print(data_uri.file_to_data_uri(os.path.join(basedir, filename)))
 
     new_html_data = data[:report_start] + data_uri.create_data_var(data_uris, space) + report_data
 
