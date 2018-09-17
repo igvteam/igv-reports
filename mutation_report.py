@@ -67,7 +67,6 @@ if __name__ == "__main__":
     parser.add_argument("--pan_region", type=int ,help="number of bases to extarct around each mutation")
     parser.add_argument("--html_template", help="the html file to be converted")
     parser.add_argument("--fasta_file", help="Genome fasta file")
-    parser.add_argument("--prefix", help="Output prefix")
     args = parser.parse_args()
 
     with open("example/MI_viewer/mutation_inspector.json","r") as json_data:
@@ -81,6 +80,6 @@ if __name__ == "__main__":
             genomic_region=mut["CHROM"]+":"+str(start)+"-"+str(end)
             bam_slice=bam.make_region_bam("example/MI_viewer/recalibrated.bam",genomic_region)
             bed_slice=tabix.get_data("example/MI_viewer/refGene.sort.bed.gz",genomic_region)
-            fasta_slice=fasta.extract_fasta_seq(args.fasta_file,genomic_region,args.prefix)
+            fasta_slice=fasta.extract_fasta_seq(args.fasta_file,genomic_region)
             sample_name=data["SAMPLE"]
             create_report(args.html_template,bam_slice,bed_slice,fasta_slice,genomic_region,sample_name)
