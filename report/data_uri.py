@@ -2,7 +2,7 @@ import sys
 from base64 import b64encode
 from gzip import compress
 
-from report import bam, tabix, json
+from report import bam, tabix, json, fasta
 
 
 def file_to_data_uri(filename, filetype=None, genomic_range=None):
@@ -12,7 +12,7 @@ def file_to_data_uri(filename, filetype=None, genomic_range=None):
         filetype = filetype.lower()
 
     data = get_data(filename, filetype, genomic_range)
-    if filetype != "bam" and filetype != "tbi" and filetype != "gz" and filetype != "json":
+    if filetype != "bam" and filetype != "tbi" and filetype != "gz" and filetype != "json" and filetype != "bed" and filetype != "fa":
         data = compress(data)
     enc_str = b64encode(data)
     data_uri = "data:application/gzip;base64," + str(enc_str)[2:-1]
@@ -26,6 +26,10 @@ def get_data(filename, filetype, genomic_range):
         return tabix.get_data(filename, genomic_range)
     if filetype == "json":
         return json.get_data(filename)
+    if filetype == "bed":
+        return tabix.get_data(filename, genomic_range)
+    if filetype == "fa":
+        return fasta.get_data(filename, genomic_range)
 
     try:
         with open(filename, "rb") as f:
@@ -46,6 +50,8 @@ def infer_filetype(filename):
         return "gz"
     elif filename.endswith(".json"):
         return "json"
+    elif filename.endswith(".bed"):
+        return "bed"
 
 def create_data_var(data_uris, space=''):
     data = []
