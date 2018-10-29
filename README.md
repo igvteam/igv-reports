@@ -1,5 +1,6 @@
 # igv.js-reports
-Python application to generate self-contained igv.js pages that can be opened with in a browser with "file" protocol.
+Python application to generate dataURIs from genomice data files and self-contained igv.js pages that can
+ be opened within a browser with "file" protocol.
 
 ## Installation
 First install all requirements.
@@ -22,8 +23,9 @@ python create_report.py example/FI_viewer/igvjs_viewer.html
 ```
 After, running the script, see example/FI_viewer/igvjs_viewer_report.html for the result.
 
-### Getting a Data Uri
-If you just want to get a data URI that can be read by igv.js in place of a url, use the get_datauri.py script
+#### Converting a genomic data file to an igv.js Data URI
+
+If you just want to get a data URI that can be read by igv.js in place of a url to a data file, use the get_datauri.py script
 ```sh
 python get_datauri.py [filename]
 ```
