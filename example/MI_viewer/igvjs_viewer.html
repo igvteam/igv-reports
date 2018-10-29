@@ -1,0 +1,86 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="shortcut icon" href="https://igv.org/web/img/favicon.ico">
+
+  <title>IGV </title>
+
+  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css"/>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <!-- Font Awesome CSS -->
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.8/css/dataTables.bootstrap.min.css">
+
+
+  <!-- IGV JS-->
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.8/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.8/js/dataTables.bootstrap.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+  <script type="text/javascript" src="https://igv.org/web/test/dist/igv.min.js"></script>
+</head>
+
+
+<body>
+    <h2>IGV.js for mutations</h2>
+
+    <div id="igvDiv"></div>
+
+        <script type="text/javascript">
+
+            document.addEventListener("DOMContentLoaded", function () {
+                <!-- start igv report here -->
+
+                var div = document.getElementById("igvDiv"),
+
+                        options = {
+                            showKaryo: false,
+                            showNavigation: true,
+                            fastaURL: "fasta.url",
+                            showChromosomeWidget: true,
+                            locus:"seq_name:start-end",
+                            tracks: [
+                                {
+                                    type: "sequence",
+                                    order: 1
+                                },
+                                {
+                                    label: sampleInfo.SAMPLE,
+                                    url: "recalibrated.bam",
+                                    displayMode: "EXPANDED",
+                                    indexed: false,
+                                    order: 10,
+                                    type: "alignment",
+                                    sourceType: "file",
+                                    format: "bam"
+                                },
+                                {
+                                    url: "refGene.sort.bed",
+                                    label: "Genes",
+                                    height: 100,
+                                    indexed: false,
+                                    visibilityWindow: 2000000,
+                                    order: Number.MAX_VALUE,
+                                    type: "annotation",
+                                    displayMode: "SQUISHED"
+                                }
+                            ]
+                        };
+
+                igv.createBrowser(div, options);
+            });
+
+        </script>
+
+
+</body>
+
+</html>
