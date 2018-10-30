@@ -17,7 +17,8 @@ This file contains a list of fusions and it's metadata. Here is an example with 
       "Right Strand": "+", # Strand pos  
       "Spanning Fragments": "92", # number of paired-end reads that span the fusion breakpoint but the reads do not directly overlap the breakpoint.  
       "Splice Type": "DOES NOT Include Reference" # SpliceType: category of support at the fusion breakpoint: 
-                                                  # {ONLY_REF_SPLICE: fusion breakpoint occurs at reference (known) splice junctions.                                                     # INCL_NON_REF_SPLICE: fusion breakpoint occurs at a breakpoint that does not involve all reference (known) exon junctions. 
+                                                  # {ONLY_REF_SPLICE: fusion breakpoint occurs at reference (known) splice junctions.
+                                                  # INCL_NON_REF_SPLICE: fusion breakpoint occurs at a breakpoint that does not involve all reference (known) exon junctions. 
                                                   # NO_JUNCTION_READS_IDENTIFIED: only spanning fragments support the fusion. (can only happen if --min_junction_reads is set to zero).}  
     },  
     {..},  
