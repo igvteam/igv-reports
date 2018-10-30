@@ -20,8 +20,10 @@ This file contains list of fusions and it's metadata. Here is an example with de
                                                   # ONLY_REF_SPLICE: fusion breakpoint occurs at reference (known) splice junctions.  
                                                   # INCL_NON_REF_SPLICE: fusion breakpoint occurs at a breakpoint that does not involve all reference (known) exon junctions.  
                                                   # NO_JUNCTION_READS_IDENTIFIED: only spanning fragments support the fusion. (can only happen if --min_junction_reads is set to zero).  
-                                                  }
-    },{..},{..}],  
+                                                  }  
+    },  
+    {..},  
+    {..}],    
   "junctionReads": "finspector.junction_reads.bam.bed.sorted.bed.gz", # BED file with junction reads  
   "junctionReadsBai": "finspector.junction_reads.bam.bai", # alignments of the breakpoint-junction supporting reads (indexed).  
   "junctionReadsBam": "finspector.junction_reads.bam", # alignments of the breakpoint-junction supporting reads.  
