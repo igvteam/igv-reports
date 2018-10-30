@@ -1,6 +1,6 @@
 ## finspector.fusion_inspector_web.json
 This file contains a list of fusions and it's metadata. Here is an example with definitions:
-
+```
 {
  "cytoband": "cytoBand.txt", #IGV uses this file to draw the chromosome ideograms for the genome.  
  "fusions":[  
@@ -32,3 +32,4 @@ This file contains a list of fusions and it's metadata. Here is an example with 
   "spanningReadsBam": "finspector.spanning_reads.bam", # alignments of the breakpoint-spanning paired-end reads.  
   "trinityBed": "finspector.gmap_trinity_GG.fusions.gff3.bed.sorted.bed" # fusion-guided Trinity assembly (Optional)  
 }
+```
