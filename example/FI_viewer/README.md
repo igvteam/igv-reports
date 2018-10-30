@@ -1,5 +1,5 @@
 ## finspector.fusion_inspector_web.json
-This file contains list of fusions and it's metadata. Here is an example with definitions:
+This file contains a list of fusions and it's metadata. Here is an example with definitions:
 
 {
  "cytoband": "cytoBand.txt", #IGV uses this file to draw the chromosome ideograms for the genome.  
