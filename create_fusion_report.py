@@ -7,21 +7,25 @@ QUOTES = {"'", '"'}
 SCRIPT_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
-def create_report(url):
-    if not url.startswith('/'):
-        url = os.path.join(SCRIPT_PATH, url)
-    basedir = os.path.dirname(url)
+def create_report(path):
+
+    basedir = os.path.dirname(path)
     data_uris = {}
-    with open(url, "r") as f:
+
+    with open(path, "r") as f:
         data = f.readlines()
 
+    found = False
     for i, line in enumerate(data):
         j = line.find('<!-- start igv report here -->')
         if j >= 0:
+            found = True
             space = ' ' * j
             report_start = i + 1
             break
-    else:
+
+    # This is a strange construct, and I'm not even sure why it works.  The if is in another block.   JTR
+    if not found:
         print("file must contain the line \"<!-- start igv report here -->\"")
         return
 
@@ -53,12 +57,13 @@ def create_report(url):
             filename = line[start:i]
             json_uri=data_uri.file_to_data_uri(os.path.join(basedir, filename))
             report_data[line_index] = line[:start - 1] + '"'+json_uri+'"'+line[i+1:]
-            #data_uris[filename] = data_uri.file_to_data_uri(os.path.join(basedir, filename))
-            #print(data_uri.file_to_data_uri(os.path.join(basedir, filename)))
 
-    new_html_data = data[:report_start] + data_uri.create_data_var(data_uris, space) + report_data
+    report_header =  data[:report_start]
+    report_data_uris = data_uri.create_data_var(data_uris, space)
+    report_body = report_data
+    new_html_data = report_header + report_data_uris + report_body
 
-    output_name = os.path.join(basedir, url[:-5] + '_report' + url[-5:])
+    output_name = os.path.join(path[:-5] + '_report' + path[-5:])
     with open(output_name, 'w') as f:
         f.writelines(new_html_data)
 
