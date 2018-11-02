@@ -265,7 +265,7 @@
     }
 
     function orderTableKeysBeginning(arrayToOrder, forcedOrder) {
-        newArray = [];
+        var newArray = [];
         for (arrayElement = 0; arrayElement < arrayToOrder.length; arrayElement++) {
             if (!(forcedOrder.indexOf(arrayToOrder[arrayElement]) >= 0)) {
                 newArray.push(arrayToOrder[arrayElement]);
@@ -289,7 +289,7 @@
     function getFusionAnnotationFromRow(infoHeader, dataRow) {
         var index = fusionInspectorState.cache.fusionKeys.indexOf(infoHeader);
         if (index == -1) {
-            return (None);
+            return (undefined);
         }
         return (dataRow[index]);
     }
