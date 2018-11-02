@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     parser.add_argument("filename", help="name of file to be converted to data uri")
     parser.add_argument("-t", "--filetype", help="type of file to be converted to data uri")
-    parser.add_argument("-r", "--range" , help="genomic range to be converted - only applicable for bam or tbi files")
+    parser.add_argument("-r", "--range" , help="genomic range to be converted in the form chr:start-stop")
 
     args = parser.parse_args()
 

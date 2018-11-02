@@ -15,7 +15,7 @@ def create_fusion_report(template):
     with open(template, "r") as f:
         data = f.readlines()
 
-    found = False
+
     for i, line in enumerate(data):
         j = line.find('<!-- start igv report here -->')
         if j >= 0:
@@ -24,13 +24,19 @@ def create_fusion_report(template):
             report_start = i + 1
             break
 
-    if not found:
+    else:
         print("file must contain the line \"<!-- start igv report here -->\"")
         return
 
-    report_data = data[report_start:]
+    input_lines = data[report_start:]
+    output_lines = []
 
-    for line_index, line in enumerate(report_data):
+    for line_index, line in enumerate(input_lines):
+
+        is_index = line.find('indexURL:') > 0
+        if is_index:
+            continue
+
         i = line.lower().find('url:')
         json_line = line.lower().find('getjson(')
         if i >= 0:
@@ -42,10 +48,10 @@ def create_fusion_report(template):
             while line[i] not in QUOTES and i < len(line):
                 i += 1
             filename = line[start:i]
-            report_data[line_index] = line[:start - 1] + 'data["' + filename + '"]' + line[i+1:]
+            output_lines.append(line[:start - 1] + 'data["' + filename + '"]' + line[i+1:])
             data_uris[filename] = data_uri.file_to_data_uri(os.path.join(basedir, filename))
 
-        if json_line >= 0:
+        elif json_line >= 0:
             i += 6
             while line[i] not in QUOTES and i < len(line):
                 i += 1
@@ -55,11 +61,18 @@ def create_fusion_report(template):
                 i += 1
             filename = line[start:i]
             json_uri=data_uri.file_to_data_uri(os.path.join(basedir, filename))
-            report_data[line_index] = line[:start - 1] + '"'+json_uri+'"'+line[i+1:]
+
+            output_lines.append(line[:start - 1] + '"'+json_uri+'"'+line[i+1:])
+
+        else:
+            output_lines.append(line)
 
     report_header =  data[:report_start]
+
     report_data_uris = data_uri.create_data_var(data_uris, space)
-    report_body = report_data
+
+    report_body = output_lines
+
     new_html_data = report_header + report_data_uris + report_body
 
     output_name = os.path.join(template[:-5] + '_report' + template[-5:])
