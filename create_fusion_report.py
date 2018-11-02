@@ -7,7 +7,7 @@ QUOTES = {"'", '"'}
 SCRIPT_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
-def create_report(template):
+def create_fusion_report(template):
 
     basedir = os.path.dirname(template)
     data_uris = {}
@@ -74,4 +74,4 @@ if __name__ == "__main__":
     parser.add_argument("filename", help="the html file to be converted")
     args = parser.parse_args()
 
-    create_report(args.filename)
+    create_fusion_report(args.filename)

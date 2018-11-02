@@ -9,26 +9,24 @@
 
     <title>IGV </title>
 
-    <link rel="stylesheet" type="text/css"
-          href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css"/>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <!-- Font Awesome CSS -->
-    <link rel="stylesheet" type="text/css"
-          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.8/css/dataTables.bootstrap.min.css">
 
-
-    <!-- IGV JS-->
+    <!-- jquery -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script type="text/javascript"
-            src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.8/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.8/js/dataTables.bootstrap.min.js"></script>
-    <!-- Bootstrap JS -->
+
+    <!-- Bootstrap-->
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
+    <!-- data tables -->
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.8/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.8/js/dataTables.bootstrap.min.js"></script>
+
+    <!-- igv -->
     <script type="text/javascript" src="https://igv.org/web/test/dist/igv.min.js"></script>
+
 </head>
 
 <body>
@@ -98,9 +96,7 @@
                 loadIGVBrowser(
                     getFusionAnnotationFromRow('Fusion', curFusionRow),
                     getFusionAnnotationFromRow('Junction Reads', curFusionRow),
-                    getFusionAnnotationFromRow('Spanning Fragments', curFusionRow),
-                    getFusionAnnotationFromRow('Right Pos', curFusionRow),
-                    getFusionAnnotationFromRow('Left Pos', curFusionRow)
+                    getFusionAnnotationFromRow('Spanning Fragments', curFusionRow)
                 );//loadIGVBrowser
             });//#fusionTable
 
@@ -119,22 +115,46 @@
     }) //JSON read
 
 
+    function loadIGVBrowser(curFusion, curJunctionReads, curSpanningReads) {
+
+        // Update header no matter if the browser is being made.
+        setFusionDetails(curFusion, curJunctionReads, curSpanningReads);
+
+        // Do not remake browser.
+        if (!fusionInspectorState.cache["curBrowser"]) {
+
+            // Add and show tab for IGV
+            $('#tabDescription').append('<li role="presentation" id="igvTab"><a href="#igvBrowser" data-toggle="tab">IGV Detail</a></li>')
+            $('#tabContent').append('<div role="tabpanel" id="igvBrowser" class="tab-panel fade"></div>')
+
+            $('.nav-tabs a[href="#igvBrowser"]').tab('show');
+
+            makeIGVBrowser(curFusion)
+                .then(function (browser) {
+                    fusionInspectorState.cache["curBrowser"] = browser;
+                    igv.visibilityChange();
+                })
+
+
+        } else {
+            goToFusion(curFusion);
+        }
+    }
+
     /**
      * Return a promise to make an igv browser.
      *
-     * @param curFusion
+     * @param initialFusion
      * @returns {*}
      */
-    function makeIGVBrowser(curFusion) {
-
-        console.log(curFusion);
+    function makeIGVBrowser(initialFusion) {
 
         var divBrowser = $("#igvBrowser")[0],
             options = {
                 showChromosomeWidget: true,
                 showNavigation: true,
                 showKaryo: false,
-                locus: curFusion,
+                locus: initialFusion,
                 reference: {
                     fastaURL: "finspector.fa",
                     cytobandURL: "cytoBand.txt",
@@ -221,44 +241,12 @@
         }
 
         return igv.createBrowser(divBrowser, options)
-            .then(function (browser) {
-                fusionInspectorState.cache["curBrowser"] = browser;
-                fusionInspectorState.browserMade = true;
-                return browser;
-            });
-
-    }
-
-    function loadIGVBrowser(curFusion, curJunctionReads, curSpanningReads, curLeftPos, curRightPos) {
-
-        // Update header no matter if the browser is being made.
-        setFusionDetails(curFusion, curJunctionReads, curSpanningReads);
-
-        // Do not remake browser.
-        if (!fusionInspectorState.browserMade) {
-
-            // Add tab for IGV and click on tab
-            $('#tabDescription').append('<li role="presentation" id="igvTab"><a href="#igvBrowser" data-toggle="tab">IGV Detail</a></li>')
-            $('#tabContent').append('<div role="tabpanel" id="igvBrowser" class="tab-panel fade"></div>')
-
-            $('.nav-tabs a[href="#igvBrowser"]').tab('show');
-
-            makeIGVBrowser(curFusion)
-                .then(function (browser) {
-                    igv.visibilityChange();
-                })
 
 
-        } else {
-            goToFusion(curFusion, curRightPos, curLeftPos);
-        }
     }
 
     function goToFusion(fusionChr) { //, fusionBreakRight, fusionBreakLeft ){
-        //var numBreakRight = parseInt( fusionBreakRight )
-        //var numBreakLeft = parseInt( fusionBreakLeft )
-        //var padLength = ( numBreakRight - numBreakLeft ) / 2
-        //fusionInspectorState.cache.curBrowser.search( fusionChr + ":" + Math.max( 0, numBreakLeft - padLength ) + "-" + ( numBreakRight + padLength ) );
+
         var location = fusionChr
         console.log("searching on location")
         console.log(location);
@@ -307,6 +295,7 @@
     }
 
     function loadFusionDataTable() {
+
         var forcedHeaderKeyOrder = ['Fusion', 'Junction Reads', 'Spanning Fragments', 'Splice Type', 'Left Gene', 'Left Chr', 'Left Pos', 'Left Strand', 'Right Gene', 'Right Chr', 'Right Pos', "Right Strand"];
 
         var fusionKeys = [];
@@ -315,16 +304,13 @@
                 fusionKeys.push(fusionKey);
             }
         }
-        // fusionInspectorState.cache[ "fusionKeys" ] = orderTableKeysBeginning( forcedHeaderKeyOrder, fusionKeys );
+
         // Make data table header and footer
         var fusionTable = $('#fusionTable');
-        // var fusionHeader = fusionInspectorState.cache.fusionKeys.map( toTableRowHeaderElement );
-        // For loop instead of map
         var fusionHeader = [];
         for (var header = 0; header < forcedHeaderKeyOrder.length; header++) {
             fusionHeader.push('<th>' + forcedHeaderKeyOrder[header] + '</th>');
         }
-        // console.log(fusionHeader);
         fusionTable.append('<thead><tr>' + fusionHeader.join('') + '</tr></thead>');
         fusionTable.append('<tfoot><tr>' + fusionHeader.join('') + '</tr></tfoot>');
 
