@@ -7,12 +7,12 @@ QUOTES = {"'", '"'}
 SCRIPT_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
-def create_report(path):
+def create_report(template):
 
-    basedir = os.path.dirname(path)
+    basedir = os.path.dirname(template)
     data_uris = {}
 
-    with open(path, "r") as f:
+    with open(template, "r") as f:
         data = f.readlines()
 
     found = False
@@ -24,7 +24,6 @@ def create_report(path):
             report_start = i + 1
             break
 
-    # This is a strange construct, and I'm not even sure why it works.  The if is in another block.   JTR
     if not found:
         print("file must contain the line \"<!-- start igv report here -->\"")
         return
@@ -63,7 +62,7 @@ def create_report(path):
     report_body = report_data
     new_html_data = report_header + report_data_uris + report_body
 
-    output_name = os.path.join(path[:-5] + '_report' + path[-5:])
+    output_name = os.path.join(template[:-5] + '_report' + template[-5:])
     with open(output_name, 'w') as f:
         f.writelines(new_html_data)
 
