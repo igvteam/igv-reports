@@ -24,14 +24,11 @@ This file contains a list of fusions and it's metadata. This JSON file will load
     {..},  
     {..}],    
   "junctionReads": "finspector.junction_reads.bam.bed.sorted.bed.gz", # BED file with junction reads  
-  "junctionReadsBai": "finspector.junction_reads.bam.bai", # alignments of the breakpoint-junction supporting reads (indexed).  
   "junctionReadsBam": "finspector.junction_reads.bam", # alignments of the breakpoint-junction supporting reads.  
   "junctionSpanning": "finspector.igv.FusionJuncSpan", # scaffolds with spanning_frag_coords  
   "reference": "finspector.fa", # the candidate fusion-gene contigs.   
   "referenceBed": "finspector.bed", # the reference gene structure annotations for fusion partners.  
-  "referenceIndex": "finspector.fa.fai", # the candidate fusion-gene contigs (indexed).  
   "spanningReads": "finspector.spanning_reads.bam.bed.sorted.bed.gz", # BED file with breakpoint-spanning reads  
-  "spanningReadsBai": "finspector.spanning_reads.bam.bai", # alignments of the breakpoint-spanning paired-end reads (indexed).  
   "spanningReadsBam": "finspector.spanning_reads.bam", # alignments of the breakpoint-spanning paired-end reads.  
   "trinityBed": "finspector.gmap_trinity_GG.fusions.gff3.bed.sorted.bed" # fusion-guided Trinity assembly (Optional)  
 }
