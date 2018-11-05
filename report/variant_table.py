@@ -1,48 +1,58 @@
 import io
+import json
 
-class HTMLTable:
+from pysam import VariantFile
+
+
+class VariantTable:
 
     # Always remember the *self* argument
     def __init__(self, vcfFile, headerFile):
 
-        self.header = []
+        self.infoFields = []
         with open(headerFile, "r") as f:
             data = f.readlines()
             for h in data:
-                self.header.append(h.strip('\n\r'))
+                self.infoFields.append(h.strip('\n\r'))
 
-        self.rows = []
-
-    def addRow(self, row):
-
-        if len(row) != len(self.header):
-            raise Exception("Row size != header size")
-        self.rows.append(row)
+        vcf = VariantFile(vcfFile)
+        self. variants = vcf.fetch()
 
 
+    def to_JSON(self):
 
-    def __str__(self):
+        out = io.StringIO()
 
-        html = io.StringIO()
+        jsonArray = [];
 
-        html.write("<table><tr>")
-        for h in self.header:
-            html.write("<td>")
-            html.write(h)
-            html.write("</td>")
+        for variant in self.variants:
 
-        for row in self.rows:
+            obj = dict()
 
-            html.write("<tr>")
+            obj["CHROM"] = variant.chrom
+            obj["POSITION"] = variant.pos
+            obj["REF"] = variant.ref
+            obj["ALT"] = ','.join(variant.alts)
 
-            for v in row:
 
-                html.write("<td>")
-                html.write(v)
-                html.write("</td>")
+            for h in self.infoFields:
 
-            html.write("</tr>")
+                keys = set(variant.info.keys())
 
-        html.write("</table>")
+                if h in keys:
+                    v = ','.join(variant.info[h])
+                else:
+                    v = ''
 
-        return html.getvalue()
+                if h == "COSMIC_ID":
+                    v = '<a href = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=4006021" target="_blank">' + v + '</a>'
+
+                obj[h] = v
+
+            jsonArray.append(obj)
+
+        json.dump(jsonArray, out)
+
+        return out.getvalue();
+
+

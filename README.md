@@ -38,7 +38,7 @@ where filename is the path to the igv.js html template file.
 To run the example execute
 
 ```sh
-python create_report.py example/FI_viewer/igvjs_fusion.html
+python create_fusion_report.py example/FI_viewer/igvjs_fusion.html
 ```
 
 After, running the script, see example/FI_viewer/igvjs_fusion_viewer_report.html for the result.

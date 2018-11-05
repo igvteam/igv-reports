@@ -19,7 +19,6 @@ def create_fusion_report(template):
     for i, line in enumerate(data):
         j = line.find('<!-- start igv report here -->')
         if j >= 0:
-            found = True
             space = ' ' * j
             report_start = i + 1
             break

@@ -20,10 +20,11 @@ def file_to_data_uri(filename, filetype=None, genomic_range=None):
 
 
 def get_data(filename, filetype, genomic_range):
+
     if filetype == "bam":
         return bam.get_bam_data(filename, genomic_range)
-    if filetype == "tbi":
-        return tabix.get_data(filename, genomic_range)
+
+
     if filetype == "json":
         return json.get_data(filename)
     '''

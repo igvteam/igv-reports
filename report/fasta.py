@@ -23,8 +23,6 @@ def get_data(fasta_file,region=None):
         slice_name = slice.name
         slice_seq = slice.seq
 
-        print(slice_seq)
-
         return slice_seq
 
         # extracted_seq=unicodedata.normalize('NFKD',seq_uni).encode('ascii','ignore')

@@ -184,7 +184,7 @@
                         order: 20
                     },
                     {
-                        url: "finspector.junction_reads.bam.bed.sorted.bed.gz",
+                        url: "finspector.junction_reads.bam.bed.gz",
                         label: "Junction_Reads",
                         displayMode: "SQUISHED",
                         minHeight: 30,
@@ -196,7 +196,6 @@
                     },
                     {
                         url: "finspector.junction_reads.bam",
-                        indexURL: "finspector.junction_reads.bam.bai",
                         label: "Junction_Reads_Alignments",
                         type: "bam",
                         height: 100,
@@ -205,7 +204,7 @@
                         order: 45
                     },
                     {
-                        url: "finspector.spanning_reads.bam.bed.sorted.bed.gz",
+                        url: "finspector.spanning_reads.bam.bed.gz",
                         label: "Spanning_Reads",
                         displayMode: "SQUISHED",
                         minHeight: 30,
@@ -217,7 +216,6 @@
                     },
                     {
                         url: "finspector.spanning_reads.bam",
-                        indexURL: "finspector.spanning_reads.bam.bai",
                         type: "bam",
                         label: "Spanning_Reads_Alignments",
                         height: 100,
@@ -231,7 +229,7 @@
         if ("finspector.gmap_trinity_GG.fusions.gff3.bed.sorted.bed") {
             options.tracks.push({
                 label: "Trinity_Fusion",
-                url: "finspector.gmap_trinity_GG.fusions.gff3.bed.sorted.bed",
+                url: "finspector.gmap_trinity_GG.fusions.bed",
                 displayMode: "EXPANDED",
                 color: "green",
                 indexed: false,
