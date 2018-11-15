@@ -49,7 +49,8 @@ def create_fusion_report(template):
                 i += 1
             filename = line[start:i]
             output_lines.append(line[:start - 1] + 'data["' + filename + '"]' + line[i+1:])
-            data_uris[filename] = data_uri.file_to_data_uri(os.path.join(basedir, filename))
+            if os.path.exists(os.path.join(basedir, filename)):
+                data_uris[filename] = data_uri.file_to_data_uri(os.path.join(basedir, filename))
 
         elif json_line >= 0:
             i += 6
