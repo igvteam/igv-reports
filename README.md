@@ -31,14 +31,14 @@ Directly below this line a javscript variable called "data" will be created so i
   
 Then use the create_fusion_report.py script to create a new self-contained html file.
 ```sh
-python fusion_report.py [filename]
+python create_fusion_report.py [filename]
 ```
 where filename is the path to the igv.js html template file.  
 
 To run the example execute
 
 ```sh
-python fusion_report.py example/FI_viewer/igvjs_fusion.html
+python create_fusion_report.py example/FI_viewer/igvjs_fusion.html
 ```
 
 After, running the script, see example/FI_viewer/igvjs_fusion_viewer_report.html for the result.
