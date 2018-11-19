@@ -16,7 +16,9 @@ class VariantTable:
                 self.infoFields.append(h.strip('\n\r'))
 
         vcf = VariantFile(vcfFile)
-        self. variants = vcf.fetch()
+        self.variants = []
+        for var in vcf.fetch():
+            self.variants.append(var)
 
 
     def to_JSON(self):

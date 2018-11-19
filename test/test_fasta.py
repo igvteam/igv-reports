@@ -15,7 +15,7 @@ class FastaTest(unittest.TestCase):
 
     def test_region(self):
 
-        region = 'ACACA--STAC2:500-1000'
+        region = 'ACACA--STAC2:61-70'
         expected = 'ACAAATATTA'
 
         data = fasta.get_data('data/finspector.fa', region)
@@ -24,4 +24,4 @@ class FastaTest(unittest.TestCase):
         print(data)
 
         self.assertTrue(data)
-        #self.assertEqual(expected, data)
+        self.assertEqual(expected, data)

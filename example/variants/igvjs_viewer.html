@@ -10,7 +10,7 @@
     <title>IGV Variant Inspector </title>
 
     <!-- igv -->
-    <script type="text/javascript" src="https://igv.org/web/test/dist/igv.min.js"></script>
+    <script type="text/javascript" src="http://localhost/igv-web/dist/igv.js"></script>
 
 
     <!-- selector table style -->
@@ -86,7 +86,7 @@
 </ul>
 
 <div id="firstTab">
-    <div id="tableSelectorDiv" style="overflow: auto"/>
+    <div id="tableSelectorDiv" style="overflow: auto"></div>
 </div>
 
 <div id="igvTab">
@@ -96,7 +96,7 @@
 
 <script type="text/javascript">
 
-    var tableJson =   [
+    var tableJson = [
         {
             "ALT": "G",
             "CHASM_FDR": "0.3",
@@ -416,53 +416,11 @@
 
         initTabs();
 
-        var table = document.createElement("table");
+        initIGV();
 
-        table.style.width = "100%";
+        initTable();
 
-        document.getElementById("tableSelectorDiv").appendChild(table);
 
-        var thead = document.createElement('thead');
-        table.appendChild(thead);
-        var headerRow = thead.insertRow(0);
-
-        // Assume all json objects have the same keys
-        var headers = Object.keys(tableJson[0]);
-
-        for (var j = 0; j < headers.length; j++) {
-            var cell = document.createElement("th");
-            headerRow.appendChild(cell);
-            cell.innerHTML = headers[j];
-
-        }
-
-        var tbody = document.createElement('tbody');
-        table.appendChild(tbody);
-
-        for (var i = 0; i < tableJson.length; i++) {
-
-            var json = tableJson[i];
-
-            var row = document.createElement("tr");
-            row.id = "row_" + i;
-            tbody.appendChild(row);
-
-            row.onclick = function (event) {
-
-                console.log(event.target.parentElement.id);
-            }
-
-            for (j = 0; j < headers.length; j++) {
-                var key = headers[j];
-                var value = json[key];
-
-                cell = document.createElement("td");
-                cell.rowID = i;
-                row.appendChild(cell);
-                cell.innerHTML = value;
-            }
-
-        }
     });
 
 
@@ -531,6 +489,69 @@
         function getHash(url) {
             var hashPos = url.lastIndexOf('#');
             return url.substring(hashPos + 1);
+        }
+    }
+
+    function initIGV() {
+
+        var igvDiv, options;
+        igvDiv = document.getElementById("igvDiv");
+        options =
+            {
+                reference: {"fastaURL": "data:application/gzip;base64,H4sIANPl5VsC/71SOW7DMBDs84o8QkHcJPBiCn5gPiCwUGqH/0d2ZkkpdYCYhCxyuZxL/uxfj7fX+/177I/xsb1v2+32gpYjfk3oQbRG+tfrrK0GqKVmFuE6QLe4Q/c5DwROVt/V8Y8ET3XxdxQUDlAL6ADBVjNBeFLNbq2SJ43UUW4oaD3iMZdswtdpXi5ZBgpHIbxwRbenTlpwGLFZsLTV1sJDyKbEEm33WBLDUqogFoPM2K2ZqBhyIFxOkakoKE/nlykoAciOUTnzE3Ng0bWVNspGJeL4JcTuqCzTqmOv01ZpXJXZWH+Ty7p9Sqg8UETeiczqJc0LRlQurS7JkrLhvGI98Evs5eHM0SHaJZS0BJMVufClapmJaDNNuCUCU0sseTl67/txDL/Gka8+vN33Hxi5BuH/AwAA"}
+
+
+            };
+        igv.createBrowser(igvDiv, options);
+    }
+
+    function initTable() {
+        var table = document.createElement("table");
+
+        table.style.width = "100%";
+
+        document.getElementById("tableSelectorDiv").appendChild(table);
+
+        var thead = document.createElement('thead');
+        table.appendChild(thead);
+        var headerRow = thead.insertRow(0);
+
+        // Assume all json objects have the same keys
+        var headers = Object.keys(tableJson[0]);
+
+        for (var j = 0; j < headers.length; j++) {
+            var cell = document.createElement("th");
+            headerRow.appendChild(cell);
+            cell.innerHTML = headers[j];
+
+        }
+
+        var tbody = document.createElement('tbody');
+        table.appendChild(tbody);
+
+        for (var i = 0; i < tableJson.length; i++) {
+
+            var json = tableJson[i];
+
+            var row = document.createElement("tr");
+            row.id = "row_" + i;
+            tbody.appendChild(row);
+
+            row.onclick = function (event) {
+
+                console.log(event.target.parentElement.id);
+            }
+
+            for (j = 0; j < headers.length; j++) {
+                var key = headers[j];
+                var value = json[key];
+
+                cell = document.createElement("td");
+                cell.rowID = i;
+                row.appendChild(cell);
+                cell.innerHTML = value;
+            }
+
         }
     }
 

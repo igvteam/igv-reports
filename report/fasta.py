@@ -1,7 +1,5 @@
-from pyfaidx import Fasta
-from os.path import splitext,basename,join,dirname
-import unicodedata
-
+from . import regions
+from pysam import FastaFile
 
 def get_data(fasta_file,region=None):
 
@@ -13,15 +11,19 @@ def get_data(fasta_file,region=None):
 
     else :
 
-        fasta = Fasta(fasta_file)
+        #fasta = Fasta(fasta_file)
+        if isinstance(region,str):
+            region = regions.parse_region(region)
 
-        chr_name = region.split(":")[0]
-        start = int(((region.split(":")[1])).split("-")[0]) - 1
-        end = int(((region.split(":")[1])).split("-")[1])
+        chr = region["chr"]
+        start = region["start"] - 1
+        end = region["end"]
 
-        slice = fasta[chr_name][start:end]
-        slice_name = slice.name
-        slice_seq = slice.seq
+        fasta = FastaFile(fasta_file)
+
+        slice_seq = fasta.fetch(chr , start, end)
+
+        fasta.close()
 
         return slice_seq
 

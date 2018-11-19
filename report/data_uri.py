@@ -5,6 +5,15 @@ from gzip import compress
 from report import bam, tabix, json, fasta
 
 
+def get_data_uri(data):
+
+    if isinstance(data, str):
+        data = compress(data.encode())
+    enc_str = b64encode(data)
+    data_uri = "data:application/gzip;base64," + str(enc_str)[2:-1]
+    return data_uri
+
+
 def file_to_data_uri(filename, filetype=None, genomic_range=None):
     if not filetype:
         filetype = infer_filetype(filename)
