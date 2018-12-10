@@ -17,9 +17,10 @@ class VariantTable:
 
         vcf = VariantFile(vcfFile)
         self.variants = []
+        unique_id = 1
         for var in vcf.fetch():
-            self.variants.append(var)
-
+            self.variants.append((var, unique_id))
+            unique_id += 1
 
     def to_JSON(self):
 
@@ -27,10 +28,12 @@ class VariantTable:
 
         jsonArray = [];
 
-        for variant in self.variants:
+        for tuple in self.variants:
 
+            variant = tuple[0]
+            unique_id = tuple[1]
             obj = dict()
-
+            obj["unique_id"] = unique_id
             obj["CHROM"] = variant.chrom
             obj["POSITION"] = variant.pos
             obj["REF"] = variant.ref
