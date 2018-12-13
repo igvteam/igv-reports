@@ -11,6 +11,8 @@ import report.ideogram
 def create_report_from_vcf():
     # TODO -- make all this input
     input = {
+        'template': 'example/variants/variant_template.html',
+        'output': 'example/variants/igv_viewer.html',
         'flanking': 100,
         'panning': 500,
         'vcf': "example/variants/cancer.vcf.gz",
@@ -25,7 +27,8 @@ def create_report_from_vcf():
     table = VariantTable(vcf, info_columns)
 
     # TODO insert table.toJSON into html file
-    print(table.to_JSON())
+    table_json = table.to_JSON()
+    print(table_json)
 
 
     session_dict = {}
@@ -92,11 +95,27 @@ def create_report_from_vcf():
 
         session_dict[str(unique_id)] = session_uri
 
-    print(json.dumps(session_dict))
+    session_dict = json.dumps(session_dict)
 
+    template_file = input['template']
+    output_file = input['output']
 
+    with open(template_file, "r") as f:
+        data = f.readlines()
 
+        with open(output_file, "w") as o:
 
+            for i, line in enumerate(data):
+
+                j = line.find('@TABLE_JSON@')
+                if j >= 0:
+                    line = line.replace('@TABLE_JSON@', table_json)
+
+                j = line.find('@SESSION_DICTIONARY')
+                if j >= 0:
+                    line = line.replace('@SESSION_DICTIONARY@', session_dict)
+
+                o.write(line)
 
 
 
