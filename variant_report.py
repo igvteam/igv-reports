@@ -1,34 +1,47 @@
 import os
 import json
-from report import data_uri
 from report import fasta
 from report.variant_table import VariantTable
 from report import data_uri
+from report.vcf import extract_vcf_region
+from report.bam import get_bam_data
+import report.ideogram
 
 
 def create_report_from_vcf():
     # TODO -- make all this input
     input = {
-        'flanking': 500,
+        'template': 'example/variants/variant_template.html',
+        'output': 'example/variants/igv_viewer.html',
+        'flanking': 100,
+        'panning': 500,
         'vcf': "example/variants/cancer.vcf.gz",
         'info_columns': 'example/variants/info_columns.txt',
-        'fasta': '/Users/jrobinso/Dropbox/Data/IGV/hg38.fa'
-
+        'fasta': '/Users/jrobinso/Dropbox/Data/IGV/hg38.fa',
+        'bam': 'example/variants/recalibrated.bam',
+        'bed': 'example/variants/refgene.sort.bed.gz',
+        'ideogram': 'example/variants/cytoBandIdeo.txt'
     }
     vcf = input['vcf']
     info_columns = input['info_columns']
     table = VariantTable(vcf, info_columns)
 
     # TODO insert table.toJSON into html file
+    table_json = table.to_JSON()
+    print(table_json)
 
-    variants = table.variants;
 
+    session_dict = {}
     # loop through variants
-    for variant in table.variants:
+    for tuple in table.variants:
+
+        variant = tuple[0]
+        unique_id = tuple[1]
+
         chr = variant.chrom
-        position = variant.pos
-        start = max(0, position - input["flanking"] - 1)
-        end = position + input["flanking"]
+        position = variant.pos - 1
+        start = position - input["panning"] / 2
+        end = position + input["panning"] / 2
 
         region = {
             "chr": chr,
@@ -36,23 +49,89 @@ def create_report_from_vcf():
             "end": end
         }
 
-        # TODO slice fasta, create reference json
+        # Initial locus, +/- 100 bases
+        initial_locus =  chr + ":" + str(position - input['flanking']/2) + "-" + str(position + input['flanking']/2)
 
+        #Ideogram
+        ideo_string = report.ideogram.fetch_chromosome(input['ideogram'], chr)
+        ideo_uri = data_uri.get_data_uri(ideo_string)
+
+        # Fasta
         data = fasta.get_data(input['fasta'], region)
-        fa = '>' + chr + ' @start=' + str(start) + '\n' + data
+        fa = '>' + chr + ':' + str(start) + '-' + str(end) + '\n' + data
         fasta_uri = data_uri.get_data_uri(fa)
         fastaJson = {
-            "fastaURL": fasta_uri
+            "fastaURL": fasta_uri,
+            "cytobandURL": ideo_uri
         }
-        print(json.dumps(fastaJson))
+        session_json = {
+            "locus": initial_locus,
+            "reference": fastaJson,
+            "tracks": []
+        }
 
-        # TODO loop through tracks / files,  create track json
+        # VCF
+        vcfFileString = extract_vcf_region(input['vcf'], chr, start, end)
+        vcfData = data_uri.get_data_uri(vcfFileString)
+        session_json["tracks"].append({
+            "type": "variant",
+            "format": "vcf",
+            "url": vcfData
+        })
 
-        # TODO compress session json, insert into html file var->session table
+        # BAM
 
-    # TODO insert var->session table into html file
+        bam_data_uri = data_uri.file_to_data_uri(input['bam'], 'bam', genomic_range = chr + ":" + str(start) + "-" + str(end));
+        session_json["tracks"].append( {
+            "name": "alignments",
+            "type": "alignment",
+            "format": "bam",
+            "url": bam_data_uri
+        })
 
-    # TODO insert javascript functions into html file
+        session_string = json.dumps(session_json);
+
+        session_uri = data_uri.get_data_uri(session_string)
+
+        session_dict[str(unique_id)] = session_uri
+
+    session_dict = json.dumps(session_dict)
+
+    template_file = input['template']
+    output_file = input['output']
+
+    with open(template_file, "r") as f:
+        data = f.readlines()
+
+        with open(output_file, "w") as o:
+
+            for i, line in enumerate(data):
+
+                j = line.find('@TABLE_JSON@')
+                if j >= 0:
+                    line = line.replace('@TABLE_JSON@', table_json)
+
+                j = line.find('@SESSION_DICTIONARY')
+                if j >= 0:
+                    line = line.replace('@SESSION_DICTIONARY@', session_dict)
+
+                o.write(line)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Deprecated methods

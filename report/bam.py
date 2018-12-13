@@ -8,8 +8,7 @@ from report.regions import merge_regions
 def get_bam_data(bam_file, regions=None):
     args = ["-b", "-h",  bam_file]
     if regions:
-        merged_regions = merge_regions(regions)
-        args.extend(merged_regions)
+        args.append(regions)
     return pysam.view(*args)
 
 
