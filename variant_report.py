@@ -5,6 +5,7 @@ from report.variant_table import VariantTable
 from report import data_uri
 from report.vcf import extract_vcf_region
 from report.bam import get_bam_data
+import report.ideogram
 
 
 def create_report_from_vcf():
@@ -16,7 +17,8 @@ def create_report_from_vcf():
         'info_columns': 'example/variants/info_columns.txt',
         'fasta': '/Users/jrobinso/Dropbox/Data/IGV/hg38.fa',
         'bam': 'example/variants/recalibrated.bam',
-        'bed': 'example/variants/refgene.sort.bed.gz'
+        'bed': 'example/variants/refgene.sort.bed.gz',
+        'ideogram': 'example/variants/cytoBandIdeo.txt'
     }
     vcf = input['vcf']
     info_columns = input['info_columns']
@@ -47,12 +49,17 @@ def create_report_from_vcf():
         # Initial locus, +/- 100 bases
         initial_locus =  chr + ":" + str(position - input['flanking']/2) + "-" + str(position + input['flanking']/2)
 
+        #Ideogram
+        ideo_string = report.ideogram.fetch_chromosome(input['ideogram'], chr)
+        ideo_uri = data_uri.get_data_uri(ideo_string)
+
         # Fasta
         data = fasta.get_data(input['fasta'], region)
         fa = '>' + chr + ':' + str(start) + '-' + str(end) + '\n' + data
         fasta_uri = data_uri.get_data_uri(fa)
         fastaJson = {
-            "fastaURL": fasta_uri
+            "fastaURL": fasta_uri,
+            "cytobandURL": ideo_uri
         }
         session_json = {
             "locus": initial_locus,
