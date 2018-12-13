@@ -76,6 +76,7 @@ def create_report_from_vcf():
         session_json["tracks"].append({
             "type": "variant",
             "format": "vcf",
+            "name": "variants",
             "url": vcfData
         })
 
@@ -86,6 +87,7 @@ def create_report_from_vcf():
             "name": "alignments",
             "type": "alignment",
             "format": "bam",
+            "name": "alignments",
             "url": bam_data_uri
         })
 

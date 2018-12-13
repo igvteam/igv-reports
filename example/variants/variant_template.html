@@ -1,5 +1,8 @@
 <html>
 <head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -233,7 +236,9 @@
                 console.log(event.target.parentElement.id);
                 var uniqueId = rowID.substring(4);
                 var session = sessionDictionary[uniqueId]
-                igv.browser.loadSession(session)
+                igv.browser.loadSession({
+                    url: session
+                })
 
             }
 
