@@ -12,7 +12,7 @@ def create_report_from_vcf():
     # TODO -- make all this input
     input = {
         'template': 'example/variants/variant_template.html',
-        'output': 'example/variants/igv_viewer.html',
+        'output': 'example/variants/igvjs_viewer.html',
         'flanking': 100,
         'panning': 500,
         'vcf': "example/variants/cancer.vcf.gz",
@@ -111,7 +111,7 @@ def create_report_from_vcf():
                 if j >= 0:
                     line = line.replace('@TABLE_JSON@', table_json)
 
-                j = line.find('@SESSION_DICTIONARY')
+                j = line.find('@SESSION_DICTIONARY@')
                 if j >= 0:
                     line = line.replace('@SESSION_DICTIONARY@', session_dict)
 
