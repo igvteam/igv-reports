@@ -27,7 +27,7 @@ class BAMTest(unittest.TestCase):
 
         regions = ["chr5:474489-475489", "chr8:143923259-143924259"]
 
-        bam_data = bam.get_bam_data(bam_file_path, regions)
+        bam_data = bam.get_data(bam_file_path, regions)
 
         self.assertTrue(bam_data)
 

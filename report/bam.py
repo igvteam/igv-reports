@@ -5,7 +5,7 @@ from os.path import splitext, basename,join,dirname
 from report.regions import merge_regions
 
 
-def get_bam_data(bam_file, regions=None):
+def get_data(bam_file, regions=None):
     args = ["-b", "-h",  bam_file]
     if regions:
         args.append(regions)

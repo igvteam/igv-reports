@@ -9,13 +9,19 @@ class VariantTable:
     # Always remember the *self* argument
     def __init__(self, vcfFile, headerFile):
 
-        self.infoFields = []
-        with open(headerFile, "r") as f:
-            data = f.readlines()
-            for h in data:
-                self.infoFields.append(h.strip('\n\r'))
-
         vcf = VariantFile(vcfFile)
+
+        self.infoFields = []
+        if headerFile:
+            self.infoFields = headerFile.split(",")
+        else:
+            for x in vcf.header.records:
+                if x.key == "INFO":
+                    for attr in x.attrs:
+                        if attr[0] == "ID":
+                            self.infoFields.append(attr[1])
+                            break
+
         self.variants = []
         unique_id = 1
         for var in vcf.fetch():
@@ -38,7 +44,6 @@ class VariantTable:
             obj["POSITION"] = variant.pos
             obj["REF"] = variant.ref
             obj["ALT"] = ','.join(variant.alts)
-
 
             for h in self.infoFields:
 

@@ -1,8 +1,8 @@
 <html>
 <head>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -12,7 +12,14 @@
     <title>IGV Variant Inspector </title>
 
     <!-- igv -->
-    <script type="text/javascript" src="https://igv.org/web/test/dist/igv.min.js"></script>
+    <script type="text/javascript" src="http://localhost/igv-web/dist/igv.js"></script>
+
+    <style type="text/css">
+        body {
+            font-size: 80%;
+            font-family: 'Lucida Grande', Verdana, Arial, Sans-Serif;
+        }
+    </style>
 
     <!-- selector table style -->
     <style>
@@ -30,49 +37,79 @@
         }
     </style>
 
+    <!-- accordian style,  ref: https://alligator.io/css/collapsible/ -->
     <style type="text/css">
-        body {
-            font-size: 80%;
-            font-family: 'Lucida Grande', Verdana, Arial, Sans-Serif;
+        .wrap-collabsible {
+            margin-bottom: 1.2rem;
         }
 
-        ul#tabs {
-            list-style-type: none;
-            margin: 30px 0 0 0;
-            padding: 0 0 0.3em 0;
-        }
-
-        ul#tabs li {
-            display: inline;
-        }
-
-        ul#tabs li a {
-            color: #42454a;
-            background-color: #dedbde;
-            border: 1px solid #c9c3ba;
-            border-bottom: none;
-            padding: 0.3em;
-            text-decoration: none;
-        }
-
-        ul#tabs li a:hover {
-            background-color: #f1f0ee;
-        }
-
-        ul#tabs li a.selected {
-            color: #000;
-            background-color: #f1f0ee;
-            font-weight: bold;
-            padding: 0.7em 0.3em 0.38em 0.3em;
-        }
-
-        div.tabContent {
-            border: 1px solid #c9c3ba;
-            padding: 0.5em;
-        }
-
-        div.tabContent.hide {
+        input[type='checkbox'] {
             display: none;
+        }
+
+        .lbl-toggle {
+            display: block;
+
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            text-align: left;
+
+            padding: 1rem;
+
+            color: black;
+            background: #dddddd;
+
+            cursor: pointer;
+
+            border-radius: 7px;
+            transition: all 0.25s ease-out;
+        }
+
+        .lbl-toggle:hover {
+            color: blue;
+        }
+
+        .lbl-toggle::before {
+            content: ' ';
+            display: inline-block;
+
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 5px solid currentColor;
+            vertical-align: middle;
+            margin-right: .7rem;
+            transform: translateY(-2px);
+
+            transition: transform .2s ease-out;
+        }
+
+        .toggle:checked + .lbl-toggle::before {
+            transform: rotate(90deg) translateX(-3px);
+        }
+
+        .collapsible-content {
+            max-height: 0px;
+            overflow: auto;
+            transition: max-height .25s ease-in-out;
+        }
+
+        .toggle:checked + .lbl-toggle + .collapsible-content {
+            max-height: 350px;
+        }
+
+        .toggle:checked + .lbl-toggle {
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .collapsible-content .content-inner {
+            background: rgba(250, 224, 66, .2);
+            border-bottom: 1px solid rgba(250, 224, 66, .45);
+            border-bottom-left-radius: 7px;
+            border-bottom-right-radius: 7px;
+            padding: .5rem 1rem;
         }
     </style>
 
@@ -81,106 +118,34 @@
 <body>
 
 
-<ul id="tabs">
-    <li><a href="#firstTab">Variant Table</a></li>
-    <li><a href="#igvTab">IGV View</a></li>
-</ul>
-
-<div id="firstTab">
-    <div id="tableSelectorDiv" style="overflow: auto"></div>
+<div id="tableTab" class="wrap-collabsible">
+    <input id="collapsible" class="toggle" type="checkbox" checked>
+    <label for="collapsible" class="lbl-toggle">Variants</label>
+    <div class="collapsible-content">
+        <div id="tableSelectorDiv" style="overflow: auto"></div>
+    </div>
 </div>
 
 <div id="igvTab">
-    <div id="igvDiv" style="margin-top: 10px; border-style: solid; border-color: lightgray"></div>
+    <div id="igvDiv"></div>
 </div>
 
 
 <script type="text/javascript">
 
-    var tableJson = @TABLE_JSON@
+    var tableJson = "@TABLE_JSON@"
 
-    var sessionDictionary =  @SESSION_DICTIONARY@
+    var sessionDictionary = "@SESSION_DICTIONARY@"
 
 
     document.addEventListener("DOMContentLoaded", function () {
-
-        //initTabs();
 
         initIGV();
 
         initTable();
 
-
     });
 
-
-    function initTabs() {
-
-        var tabs = [];
-
-        // Grab the tab links and content divs from the page
-        var liItems = Array.from(document.getElementById('tabs').childNodes).filter(function (item) {
-            return item.nodeName === 'LI'
-        });
-
-        var tabLinks = liItems.map(function (li) {
-            return getFirstChildWithTagName(li, 'A');
-        })
-
-        tabLinks.forEach(function (tabLink) {
-            tabLink.onclick = showTab;
-            tabLink.onfocus = function () {
-                this.blur()
-            };
-            var id = getHash(tabLink.getAttribute('href'));
-            var contentDiv = document.getElementById(id);
-            tabs.push({
-                id: id,
-                link: tabLink,
-                content: contentDiv
-            });
-        })
-
-        tabs[0].content.className = 'tabContent';
-        tabs[0].link.className = 'tabContent hide' //'selected';
-        for (var i = 1; i < tabs.length; i++) {
-            tabs[i].link.className = '';
-            tabs[i].content.className = 'selected' //'tabContent hide'
-        }
-
-        function showTab() {
-
-            var selectedId = getHash(this.getAttribute('href'));
-
-            tabs.forEach(function (tab) {
-
-                if (tab.id == selectedId) {
-                    tab.link.className = 'selected';
-                    tab.content.className = 'tabContent';
-                } else {
-                    tab.link.className = '';
-                    tab.content.className = 'tabContent hide';
-                }
-            });
-
-            igv.visibilityChange();
-
-            // Stop the browser following the link
-            return false;
-        }
-
-
-        function getFirstChildWithTagName(element, tagName) {
-            for (var i = 0; i < element.childNodes.length; i++) {
-                if (element.childNodes[i].nodeName == tagName) return element.childNodes[i];
-            }
-        }
-
-        function getHash(url) {
-            var hashPos = url.lastIndexOf('#');
-            return url.substring(hashPos + 1);
-        }
-    }
 
     function initIGV() {
 
@@ -188,8 +153,8 @@
         igvDiv = document.getElementById("igvDiv");
         var options =
             {
-                sessionURL: "data:application/gzip;base64,H4sIAEI9C1wC/w3MyZKiMAAA0F+Z8spUIYJAemoOBGVkERoQkdwiRIiyCWHt6n+fPr7L+9p05EE6Uqdk8/Hra/PAPcNR4Pxgk2GGP3DbljTFjDY1n6+0/XPHPZGl3yepN7WjCXRh0nlFCL2tYpzhoR/8IasFOfeN1pX88QxD89ZEeD8Ciljgvi1HvxriAOqSJzP/VEm3iGg33gF7k6eCwYgPNYXqhRQ6eP3EXjV0WvxuqyiWDkxjCoNgzT34Alcx46diunMyd9jaek4aeAu1xOaQ6SwN6rJ4Qe4/meai4fhERYXjDqfO1bmbo3lGM0My2M49WlLmmWviXJ8YV2NhxsElaaodWRYrCcvr0WQQDWt8MfyzF2hDqxaRYYW1rPZRqcHXLNOUS1773nvKYcHKZrZmHlo0E8IYZ/Es7KrR9RT7bi/8EovZJ71GJ5pTZRtUADkVDM/vUpBv6Fij1JDn05iXYLSmPcl9JbDsuHEsWq5S1N3OwWeILDaFOX6VZTelibQC7yjzK3UfEh/sREWFpuVzgJcOmqb93Xx//wcHEMXw4AEAAA==",
-
+                sessionURL: sessionDictionary["1"],
+                showChromosomeWidget: false
             };
 
         igv.createBrowser(igvDiv, options)
@@ -251,7 +216,6 @@
                 row.appendChild(cell);
                 cell.innerHTML = value;
             }
-
         }
     }
 

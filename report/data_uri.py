@@ -4,13 +4,18 @@ from gzip import compress
 
 from report import bam, tabix, json, fasta
 
+# application/octet-stream
 
 def get_data_uri(data):
 
+
     if isinstance(data, str):
         data = compress(data.encode())
+        mediatype = "data:application/gzip"
+    else:
+        mediatype = "data:application/octet-stream"
     enc_str = b64encode(data)
-    data_uri = "data:application/gzip;base64," + str(enc_str)[2:-1]
+    data_uri = mediatype + ";base64," + str(enc_str)[2:-1]
     return data_uri
 
 
@@ -21,8 +26,10 @@ def file_to_data_uri(filename, filetype=None, genomic_range=None):
         filetype = filetype.lower()
 
     data = get_data(filename, filetype, genomic_range)
-    if filetype != "bam" and filetype != "tbi" and filetype != "gz" and filetype != "json": #and filetype != "bed" and filetype != "fa":
+
+    if filetype != "bam" and filetype != "gz" and filetype != "json": #and filetype != "bed" and filetype != "fa":
         data = compress(data)
+
     enc_str = b64encode(data)
     data_uri = "data:application/gzip;base64," + str(enc_str)[2:-1]
     return data_uri
@@ -31,7 +38,7 @@ def file_to_data_uri(filename, filetype=None, genomic_range=None):
 def get_data(filename, filetype, genomic_range):
 
     if filetype == "bam":
-        return bam.get_bam_data(filename, genomic_range)
+        return bam.get_data(filename, genomic_range)
 
 
     if filetype == "json":
@@ -54,8 +61,6 @@ def infer_filetype(filename):
     filename = filename.lower()
     if filename.endswith(".bam"):
         return "bam"
-    elif filename.endswith(".gz.tbi"):
-        return "tbi"
     elif filename.endswith(".fa"):
         return "fa"
     elif filename.endswith(".gz"):

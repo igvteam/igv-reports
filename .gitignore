@@ -106,3 +106,4 @@ venv.bak/
 # pyCharm
 *.iml
 .idea/
+/venv2/

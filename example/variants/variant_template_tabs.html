@@ -1,0 +1,261 @@
+<html>
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>IGV Variant Inspector </title>
+
+    <!-- igv -->
+    <script type="text/javascript" src="http://localhost/igv-web/dist/igv.js"></script>
+
+    <!-- selector table style -->
+    <style>
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: lightblue;
+        }
+
+        th {
+            background-color: lightskyblue;
+            color: white;
+        }
+    </style>
+
+    <style type="text/css">
+        body {
+            font-size: 80%;
+            font-family: 'Lucida Grande', Verdana, Arial, Sans-Serif;
+        }
+
+        ul#tabs {
+            list-style-type: none;
+            margin: 30px 0 0 0;
+            padding: 0 0 0.3em 0;
+        }
+
+        ul#tabs li {
+            display: inline;
+        }
+
+        ul#tabs li a {
+            color: #42454a;
+            background-color: #dedbde;
+            border: 1px solid #c9c3ba;
+            border-bottom: none;
+            padding: 0.3em;
+            text-decoration: none;
+        }
+
+        ul#tabs li a:hover {
+            background-color: #f1f0ee;
+        }
+
+        ul#tabs li a.selected {
+            color: #000;
+            background-color: #f1f0ee;
+            font-weight: bold;
+            padding: 0.7em 0.3em 0.38em 0.3em;
+        }
+
+        div.tabContent {
+            border: 1px solid #c9c3ba;
+            padding: 0.5em;
+        }
+
+        div.tabContent.hide {
+            display: none;
+        }
+    </style>
+
+</head>
+
+<body>
+
+
+<ul id="tabs">
+    <li><a href="#tableTab">Variant Table</a></li>
+    <li><a href="#igvTab">IGV View</a></li>
+</ul>
+
+<div id="tableTab">
+    <div id="tableSelectorDiv" style="overflow: auto"></div>
+</div>
+
+<div id="igvTab">
+    <div id="igvDiv"></div>
+</div>
+
+
+<script type="text/javascript">
+
+    var tableJson = "@TABLE_JSON@"
+
+    var sessionDictionary =  "@SESSION_DICTIONARY@"
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        initTabs();
+
+        initIGV();
+
+        initTable();
+
+
+    });
+
+
+    function initTabs() {
+
+        var tabs = [];
+
+        // Grab the tab links and content divs from the page
+        var liItems = Array.from(document.getElementById('tabs').childNodes).filter(function (item) {
+            return item.nodeName === 'LI'
+        });
+
+        var tabLinks = liItems.map(function (li) {
+            return getFirstChildWithTagName(li, 'A');
+        })
+
+        tabLinks.forEach(function (tabLink) {
+            tabLink.onclick = showTab;
+            tabLink.onfocus = function () {
+                this.blur()
+            };
+            var id = getHash(tabLink.getAttribute('href'));
+            var contentDiv = document.getElementById(id);
+            tabs.push({
+                id: id,
+                link: tabLink,
+                content: contentDiv
+            });
+        })
+
+        tabs[0].content.className = 'tabContent';
+        tabs[0].link.className = 'selected';
+        for (var i = 1; i < tabs.length; i++) {
+            tabs[i].link.className = '';
+            tabs[i].content.className = 'tabContent hide'
+        }
+
+        function showTab() {
+
+            var selectedId = getHash(this.getAttribute('href'));
+
+            tabs.forEach(function (tab) {
+
+                if (tab.id == selectedId) {
+                    tab.link.className = 'selected';
+                    tab.content.className = 'tabContent';
+                } else {
+                    tab.link.className = '';
+                    tab.content.className = 'tabContent hide';
+                }
+            });
+
+            igv.visibilityChange();
+
+            // Stop the browser following the link
+            return false;
+        }
+
+
+        function getFirstChildWithTagName(element, tagName) {
+            for (var i = 0; i < element.childNodes.length; i++) {
+                if (element.childNodes[i].nodeName == tagName) return element.childNodes[i];
+            }
+        }
+
+        function getHash(url) {
+            var hashPos = url.lastIndexOf('#');
+            return url.substring(hashPos + 1);
+        }
+    }
+
+    function initIGV() {
+
+        var igvDiv;
+        igvDiv = document.getElementById("igvDiv");
+        var options =
+            {
+                sessionURL: sessionDictionary["1"],
+                showChromosomeWidget: false
+            };
+
+        igv.createBrowser(igvDiv, options)
+            .then(function (b) {
+                igv.browser = b;
+            })
+    }
+
+    function initTable() {
+        var table = document.createElement("table");
+
+        table.style.width = "100%";
+
+        document.getElementById("tableSelectorDiv").appendChild(table);
+
+        var thead = document.createElement('thead');
+        table.appendChild(thead);
+        var headerRow = thead.insertRow(0);
+
+        // Assume all json objects have the same keys
+        var headers = Object.keys(tableJson[0]);
+
+        for (var j = 1; j < headers.length; j++) {
+            var cell = document.createElement("th");
+            headerRow.appendChild(cell);
+            cell.innerHTML = headers[j];
+
+        }
+
+        var tbody = document.createElement('tbody');
+        table.appendChild(tbody);
+
+        for (var i = 0; i < tableJson.length; i++) {
+
+            var json = tableJson[i];
+            var unique_id = json['unique_id']
+            var row = document.createElement("tr");
+            row.id = "row_" + unique_id;
+            tbody.appendChild(row);
+
+            row.onclick = function (event) {
+
+                var rowID = event.target.parentElement.id;
+                console.log(event.target.parentElement.id);
+                var uniqueId = rowID.substring(4);
+                var session = sessionDictionary[uniqueId]
+                igv.browser.loadSession({
+                    url: session
+                })
+
+            }
+
+            for (j = 1; j < headers.length; j++) {
+                var key = headers[j];
+                var value = json[key];
+
+                cell = document.createElement("td");
+                cell.rowID = i;
+                row.appendChild(cell);
+                cell.innerHTML = value;
+            }
+        }
+    }
+
+
+</script>
+
+
+</body>
