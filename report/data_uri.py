@@ -4,8 +4,6 @@ from gzip import compress
 
 from report import bam, vcf, tracks, tabix
 
-# application/octet-stream
-
 def get_data_uri(data):
 
     if isinstance(data, str):

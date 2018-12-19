@@ -1,30 +1,17 @@
-import os
-import json
 import argparse
+import json
 
-from report import fasta
-from report.variant_table import VariantTable
-from report import data_uri
-from report.vcf import extract_vcf_region
-from report import tracks
 import report.ideogram
 import report.tabix
+from report import data_uri
+from report import fasta
+from report import tracks
+from report.variant_table import VariantTable
 
 
-def create_report_from_vcf():
-    # TODO -- make all this input
-    input = {
-        'template': 'example/variants/variant_template.html',
-        'output': 'example/variants/igvjs_viewer.html',
-        'flanking': 1000,
-        'variants': "example/variants/cancer.vcf.gz",
-        'infoColumns': "GENE,TISSUE,TUMOR,COSMIC_ID,GENE,SOMATIC",
-        'fasta': '/Users/jrobinso/Dropbox/Data/IGV/hg38.fa',
-        'tracks': 'example/variants/recalibrated.bam,example/variants/refgene.sort.bed.gz',
-        'ideogram': 'example/variants/cytoBandIdeo.txt'
-    }
-    vcf = input['variants']
-    info_columns = input['infoColumns']
+def create_report_from_vcf(args):
+    vcf = args.variants
+    info_columns = args.infoColumns
     table = VariantTable(vcf, info_columns)
 
     table_json = table.to_JSON()
@@ -38,8 +25,8 @@ def create_report_from_vcf():
 
         chr = variant.chrom
         position = variant.pos - 1
-        start = position - input["flanking"] / 2
-        end = position + input["flanking"] / 2
+        start = position - int(args.flanking) / 2
+        end = position + int(args.flanking) / 2
 
         region = {
             "chr": chr,
@@ -48,11 +35,11 @@ def create_report_from_vcf():
         }
 
         # Ideogram
-        ideo_string = report.ideogram.fetch_chromosome(input['ideogram'], chr)
+        ideo_string = report.ideogram.fetch_chromosome(args.ideogram, chr)
         ideo_uri = data_uri.get_data_uri(ideo_string)
 
         # Fasta
-        data = fasta.get_data(input['fasta'], region)
+        data = fasta.get_data(args.fasta, region)
         fa = '>' + chr + ':' + str(start) + '-' + str(end) + '\n' + data
         fasta_uri = data_uri.get_data_uri(fa)
         fastaJson = {
@@ -68,14 +55,13 @@ def create_report_from_vcf():
             "tracks": []
         }
 
-        if(input['tracks']):
-            tracks = input['tracks'].split(',')
+        if (args.tracks):
+            tracks = args.tracks.split(',')
             for track in tracks:
                 trackObj = report.tracks.get_track_json_dict(track)
                 datauri = data_uri.file_to_data_uri(track, trackObj['format'], region)
                 trackObj["url"] = datauri
                 session_json["tracks"].append(trackObj)
-
 
         # Build session uri
 
@@ -87,8 +73,8 @@ def create_report_from_vcf():
 
     session_dict = json.dumps(session_dict)
 
-    template_file = input['template']
-    output_file = input['output']
+    template_file = args.template
+    output_file = args.output
 
     with open(template_file, "r") as f:
         data = f.readlines()
@@ -110,28 +96,16 @@ def create_report_from_vcf():
 
 if __name__ == "__main__":
 
-
     parser = argparse.ArgumentParser()
-
     parser.add_argument("variants", help="vcf file defining variants, required")
-    parser.add_argument("--fasta", help="reference fasta file, required")
+    parser.add_argument("fasta", help="reference fasta file, required")
     parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
     parser.add_argument("--tracks", help="comma-delimited list of track files")
     parser.add_argument("--template", help="html template file", default="example/variants/variant_template.html")
+    parser.add_argument("--output", help="output file name", default="example/variants/igvjs_viewer.html")
     parser.add_argument("--infoColumns", help="comma delimited list of info column names for variant table")
+    parser.add_argument("--flanking", help="genomic region to include either side of variant", default=1000)
 
     args = parser.parse_args()
 
-    create_report_from_vcf()
-
-    input = {
-        'template': 'example/variants/variant_template.html',
-        'output': 'example/variants/igvjs_viewer.html',
-        'flanking': 500,
-        'vcf': "example/variants/cancer.vcf.gz",
-        'info_columns': 'example/variants/info_columns.txt',
-        'fasta': '/Users/jrobinso/Dropbox/Data/IGV/hg38.fa',
-        'bam': 'example/variants/recalibrated.bam',
-        'bed': 'example/variants/refgene.sort.bed.gz',
-        'ideogram': 'example/variants/cytoBandIdeo.txt'
-    }
+    create_report_from_vcf(args)
