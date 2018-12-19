@@ -1,10 +1,12 @@
 import os
 import json
+import argparse
+
 from report import fasta
 from report.variant_table import VariantTable
 from report import data_uri
 from report.vcf import extract_vcf_region
-from report.bam import get_data
+from report import tracks
 import report.ideogram
 import report.tabix
 
@@ -14,19 +16,17 @@ def create_report_from_vcf():
     input = {
         'template': 'example/variants/variant_template.html',
         'output': 'example/variants/igvjs_viewer.html',
-        'flanking': 500,
+        'flanking': 1000,
         'variants': "example/variants/cancer.vcf.gz",
         'infoColumns': "GENE,TISSUE,TUMOR,COSMIC_ID,GENE,SOMATIC",
         'fasta': '/Users/jrobinso/Dropbox/Data/IGV/hg38.fa',
-        'bam': 'example/variants/recalibrated.bam',
-        'bed': 'example/variants/refgene.sort.bed.gz',
+        'tracks': 'example/variants/recalibrated.bam,example/variants/refgene.sort.bed.gz',
         'ideogram': 'example/variants/cytoBandIdeo.txt'
     }
     vcf = input['variants']
     info_columns = input['infoColumns']
     table = VariantTable(vcf, info_columns)
 
-    # TODO insert table.toJSON into html file
     table_json = table.to_JSON()
     print(table_json)
 
@@ -60,7 +60,7 @@ def create_report_from_vcf():
             "cytobandURL": ideo_uri
         }
 
-        # Initial locus, +/- 100 bases
+        # Initial locus, +/- 20 bases
         initial_locus = chr + ":" + str(position - 20) + "-" + str(position + 20)
         session_json = {
             "locus": initial_locus,
@@ -68,41 +68,14 @@ def create_report_from_vcf():
             "tracks": []
         }
 
-        # VCF
-        vcfFileString = extract_vcf_region(input['variants'], chr, start, end)
-        vcfData = data_uri.get_data_uri(vcfFileString)
-        session_json["tracks"].append({
-            "type": "variant",
-            "format": "vcf",
-            "name": "variants",
-            "url": vcfData
-        })
+        if(input['tracks']):
+            tracks = input['tracks'].split(',')
+            for track in tracks:
+                trackObj = report.tracks.get_track_json_dict(track)
+                datauri = data_uri.file_to_data_uri(track, trackObj['format'], region)
+                trackObj["url"] = datauri
+                session_json["tracks"].append(trackObj)
 
-        # BAM
-
-        bam_data_uri = data_uri.file_to_data_uri(input['bam'], 'bam',
-                                                 genomic_range=chr + ":" + str(start) + "-" + str(end));
-        session_json["tracks"].append({
-            "name": "alignments",
-            "type": "alignment",
-            "format": "bam",
-            "name": "alignments",
-            "url": bam_data_uri
-        })
-
-        # Annotation
-
-        bed_data = report.tabix.get_data(input['bed'], genomic_range=chr + ":" + str(start) + "-" + str(end))
-        print(bed_data)
-        bed_data_uri = data_uri.get_data_uri(bed_data)
-        session_json["tracks"].append(
-            {
-                "name": "genes",
-                "type": "annotation",
-                "format": "bed",
-                "url": bed_data_uri
-            }
-        )
 
         # Build session uri
 
@@ -136,7 +109,7 @@ def create_report_from_vcf():
 
 
 if __name__ == "__main__":
-    import argparse
+
 
     parser = argparse.ArgumentParser()
 

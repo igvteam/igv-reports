@@ -37,7 +37,9 @@ def create_fusion_report(template):
             continue
 
         i = line.lower().find('url:')
+
         json_line = line.lower().find('getjson(')
+
         if i >= 0:
             i += 4
             while line[i] not in QUOTES and i < len(line):

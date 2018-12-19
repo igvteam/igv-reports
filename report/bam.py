@@ -2,8 +2,6 @@ import pysam
 import subprocess
 from os.path import splitext, basename,join,dirname
 
-from report.regions import merge_regions
-
 
 def get_data(bam_file, regions=None):
     args = ["-b", "-h",  bam_file]

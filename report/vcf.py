@@ -16,7 +16,7 @@ def get_variants(vcfFile):
 
 
 
-def extract_vcf_region(vcfFile, chr, start, end):
+def extract_vcf_region(vcfFile, region):
 
     vcf = VariantFile(vcfFile)
 
@@ -24,7 +24,7 @@ def extract_vcf_region(vcfFile, chr, start, end):
 
     fileString = str(header)
 
-    for rec in vcf.fetch(chr, start, end):
+    for rec in vcf.fetch(region['chr'], region['start'], region['end']):
 
         fileString += (str(rec))
 
