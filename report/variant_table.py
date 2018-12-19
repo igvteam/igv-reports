@@ -14,13 +14,6 @@ class VariantTable:
         self.infoFields = []
         if headerFile:
             self.infoFields = headerFile.split(",")
-        else:
-            for x in vcf.header.records:
-                if x.key == "INFO":
-                    for attr in x.attrs:
-                        if attr[0] == "ID":
-                            self.infoFields.append(attr[1])
-                            break
 
         self.variants = []
         unique_id = 1
@@ -50,7 +43,7 @@ class VariantTable:
                 keys = set(variant.info.keys())
 
                 if h in keys:
-                    v = ','.join(variant.info[h])
+                    v = ','.join(str(variant.info[h]))
                 else:
                     v = ''
 

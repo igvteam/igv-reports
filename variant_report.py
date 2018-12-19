@@ -34,9 +34,6 @@ def create_report_from_vcf(args):
             "end": end
         }
 
-        # Ideogram
-        ideo_string = report.ideogram.fetch_chromosome(args.ideogram, chr)
-        ideo_uri = data_uri.get_data_uri(ideo_string)
 
         # Fasta
         data = fasta.get_data(args.fasta, region)
@@ -44,8 +41,14 @@ def create_report_from_vcf(args):
         fasta_uri = data_uri.get_data_uri(fa)
         fastaJson = {
             "fastaURL": fasta_uri,
-            "cytobandURL": ideo_uri
         }
+
+        # Ideogram
+        if(args.ideogram):
+            ideo_string = report.ideogram.fetch_chromosome(args.ideogram, chr)
+            ideo_uri = data_uri.get_data_uri(ideo_string)
+            fastaJson["cytobandURL"] = ideo_uri
+
 
         # Initial locus, +/- 20 bases
         initial_locus = chr + ":" + str(position - 20) + "-" + str(position + 20)
@@ -61,6 +64,17 @@ def create_report_from_vcf(args):
                 trackObj = report.tracks.get_track_json_dict(track)
                 datauri = data_uri.file_to_data_uri(track, trackObj['format'], region)
                 trackObj["url"] = datauri
+
+                if(trackObj["type"] == "alignment"):
+                    trackObj["height"] = 500
+
+                # Sort TODO -- do this only for SNV
+                # if (trackObj["type"]) == "alignment":
+                #     trackObj["sort"] = {
+                #         "option": "NUCLEOTIDE",
+                #         "locus": chr + ":" + str(variant.pos - 1)
+                #     }
+
                 session_json["tracks"].append(trackObj)
 
         # Build session uri
