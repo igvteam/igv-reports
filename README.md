@@ -3,7 +3,7 @@
 Python application to generate dataURIs from genomic data files and self-contained igv.js pages that can
 be opened within a browser with "file" protocol.
 
-**_Requires Python 3. _**
+**_Requires Python 3.7 _**
 
 ## Installation
 First install all requirements.

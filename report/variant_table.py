@@ -1,7 +1,6 @@
 import io
 import json
-
-from pysam import VariantFile
+import pysam
 
 
 class VariantTable:
@@ -9,7 +8,7 @@ class VariantTable:
     # Always remember the *self* argument
     def __init__(self, vcfFile, headerFile):
 
-        vcf = VariantFile(vcfFile)
+        vcf = pysam.VariantFile(vcfFile)
 
         self.infoFields = []
         if headerFile:
@@ -23,7 +22,6 @@ class VariantTable:
 
     def to_JSON(self):
 
-        out = io.StringIO()
 
         jsonArray = [];
 
@@ -43,7 +41,12 @@ class VariantTable:
                 keys = set(variant.info.keys())
 
                 if h in keys:
-                    v = ','.join(str(variant.info[h]))
+                    v = ""
+                    tuples = variant.info[h]
+                    for e in tuples:
+                        if(v):
+                            v = v + ","
+                        v = v + str(e)
                 else:
                     v = ''
 
@@ -54,8 +57,8 @@ class VariantTable:
 
             jsonArray.append(obj)
 
-        json.dump(jsonArray, out)
+        return json.dumps(jsonArray)
 
-        return out.getvalue();
+
 
 

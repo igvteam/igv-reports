@@ -115,8 +115,8 @@ if __name__ == "__main__":
     parser.add_argument("fasta", help="reference fasta file, required")
     parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
     parser.add_argument("--tracks", help="comma-delimited list of track files")
-    parser.add_argument("--template", help="html template file", default="example/variants/variant_template.html")
-    parser.add_argument("--output", help="output file name", default="example/variants/igvjs_viewer.html")
+    parser.add_argument("--template", help="html template file", default="report/templates/variant_template.html")
+    parser.add_argument("--output", help="output file name", default="igvjs_viewer.html")
     parser.add_argument("--infoColumns", help="comma delimited list of info column names for variant table")
     parser.add_argument("--flanking", help="genomic region to include either side of variant", default=1000)
 

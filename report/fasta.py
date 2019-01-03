@@ -1,5 +1,5 @@
 from . import regions
-from pysam import FastaFile
+import pysam
 
 def get_data(fasta_file,region=None):
 
@@ -19,7 +19,7 @@ def get_data(fasta_file,region=None):
         start = region["start"] - 1
         end = region["end"]
 
-        fasta = FastaFile(fasta_file)
+        fasta = pysam.FastaFile(fasta_file)
 
         slice_seq = fasta.fetch(chr , start, end)
 

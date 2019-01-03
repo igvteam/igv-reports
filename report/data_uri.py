@@ -1,13 +1,13 @@
 import sys
 from base64 import b64encode
-from gzip import compress
+import gzip
 
 from report import bam, vcf, tracks, tabix
 
 def get_data_uri(data):
 
     if isinstance(data, str):
-        data = compress(data.encode())
+        data = gzip.compress(data.encode())
         mediatype = "data:application/gzip"
     else:
         if data[0] == 0x1f and data[1] == 0x8b:

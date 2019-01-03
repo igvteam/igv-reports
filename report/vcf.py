@@ -1,8 +1,8 @@
-from pysam import VariantFile
+import pysam
 
 def get_header(vcfFile):
 
-    vcf = VariantFile(vcfFile)
+    vcf = pysam.VariantFile(vcfFile)
 
     return vcf.header
 
@@ -10,7 +10,7 @@ def get_header(vcfFile):
 
 def get_variants(vcfFile):
 
-    vcf = VariantFile(vcfFile)
+    vcf = pysam.VariantFile(vcfFile)
 
     return vcf.fetch()
 
@@ -18,7 +18,7 @@ def get_variants(vcfFile):
 
 def extract_vcf_region(vcfFile, region):
 
-    vcf = VariantFile(vcfFile)
+    vcf = pysam.VariantFile(vcfFile)
 
     header = vcf.header
 

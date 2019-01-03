@@ -1,9 +1,7 @@
+from .context import report
+
 import unittest
 
-import pysam
-
-import report.regions
-from report import bam
 
 class BAMTest(unittest.TestCase):
 
@@ -14,7 +12,7 @@ class BAMTest(unittest.TestCase):
 
         regions = ["chr5:474489-475489", "chr8:143923259-143924259"]
 
-        alignments = bam.get_sam_data(bam_file_path, regions)
+        alignments = report.bam.get_sam_data(bam_file_path, regions)
 
         self.assertTrue(alignments)
 
@@ -27,7 +25,7 @@ class BAMTest(unittest.TestCase):
 
         regions = ["chr5:474489-475489", "chr8:143923259-143924259"]
 
-        bam_data = bam.get_data(bam_file_path, regions)
+        bam_data = report.bam.get_data(bam_file_path, regions)
 
         self.assertTrue(bam_data)
 
@@ -42,7 +40,7 @@ class BAMTest(unittest.TestCase):
 
         region = "chr5:474489-475489"
 
-        depth = bam.get_depth(bam_file_path, region)
+        depth = report.bam.get_depth(bam_file_path, region)
 
         self.assertTrue(depth)
 
