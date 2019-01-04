@@ -6,14 +6,11 @@ import pysam
 class VariantTable:
 
     # Always remember the *self* argument
-    def __init__(self, vcfFile, headerFile):
+    def __init__(self, vcfFile, infoColumns=None):
 
         vcf = pysam.VariantFile(vcfFile)
 
-        self.infoFields = []
-        if headerFile:
-            self.infoFields = headerFile.split(",")
-
+        self.infoFields =  infoColumns if infoColumns else []
         self.variants = []
         unique_id = 1
         for var in vcf.fetch():

@@ -18,6 +18,5 @@ class TrackTest(unittest.TestCase):
         type = igv_reports.tracks.get_track_type(format)
         self.assertEqual('variant', type)
 
-        self.assertTrue(igv_reports.tracks.is_tabix(path))
 
 

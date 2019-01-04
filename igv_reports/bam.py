@@ -1,7 +1,8 @@
 import pysam
 
-def get_data(bam_file, regions=None):
+def get_data(bam_file, region=None):
     args = ["-b", "-h",  bam_file]
-    if regions:
-        args.append(regions)
+    if region:
+        range_string = region['chr'] + ":" + str(region['start']) + "-" + str(region['end'])
+        args.append(range_string)
     return pysam.view(*args)

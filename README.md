@@ -28,7 +28,7 @@ pip install pysam
 
 ####Examples
 
-Example 1:  Fill in path to fasta for human assembly hg38
+Example 1:  Note: to run first replace <PATH to hg38.fa> with the path to a fasta for human assembly hg38
 
 ```bash
 

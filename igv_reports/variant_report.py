@@ -6,7 +6,7 @@ from igv_reports import fasta, ideogram, data_uri, variant_table, tracks
 def create_report_from_vcf(args):
 
     vcf = args.variants
-    info_columns = args.infoColumns
+    info_columns = args.infoColumns.split(",") if args.infoColumns else None
     table = variant_table.VariantTable(vcf, info_columns)
 
     table_json = table.to_JSON()

@@ -1,10 +1,11 @@
 import pysam
 
-def get_data(filename, genomic_range):
+def get_data(filename, region):
 
     tb = pysam.TabixFile(filename)
-    if genomic_range:
-        it = tb.fetch(genomic_range)
+    if region:
+        range_string = region['chr'] + ":" + str(region['start']) + "-" + str(region['end'])
+        it = tb.fetch(range_string)
     else:
         it = tb.fetch()
 

@@ -10,7 +10,7 @@ def get_data(cyto_file, region):
 
             tokens = line.split('\t')
 
-            if chr == None or tokens[0] == region:
+            if chr == None or tokens[0] == chr:
 
                 result += line
 

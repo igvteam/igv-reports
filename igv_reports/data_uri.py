@@ -42,21 +42,16 @@ def file_to_data_uri(filename, filetype=None, genomic_range=None):
     return data_uri
 
 
-def _get_data(filename, filetype, genomic_range):
-
-    if(genomic_range):
-        range_string = genomic_range['chr'] + ":" + str(genomic_range['start']) + "-" + str(genomic_range['end'])
-    else:
-        range_string = None
+def _get_data(filename, filetype, region):
 
     if filetype == "bam":
-        return bam.get_data(filename, range_string)
+        return bam.get_data(filename, region)
 
     elif filetype == "vcf":
-        return vcf.get_data(input['variants'], genomic_range)
+        return vcf.get_data(input['variants'], region)
 
     elif _istabix(filename):
-        return tabix.get_data(filename, range_string)
+        return tabix.get_data(filename, region)
 
     elif filename.endswith(".gz"):
         with open(filename, "rb") as f:
