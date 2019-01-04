@@ -1,13 +1,12 @@
 import unittest
 
-from report.ideogram import fetch_chromosome
+from igv_reports import ideogram
 
-class VcfTest(unittest.TestCase):
+class IdeogramTest(unittest.TestCase):
 
     def test_extract_chr(self):
 
-
-        extracted = fetch_chromosome('data/cytoBandIdeo.txt', 'chr1')
+        extracted = ideogram.get_data('data/cytoBandIdeo.txt', {"chr": "chr1"})
 
         self.assertTrue(extracted)
 

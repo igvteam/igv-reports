@@ -1,39 +1,34 @@
-import argparse
+import os
+import sys
 import json
-
-import report.ideogram
-import report.tabix
-from report import data_uri
-from report import fasta
-from report import tracks
-from report.variant_table import VariantTable
-
+from igv_reports import fasta, ideogram, data_uri, variant_table, tracks
 
 def create_report_from_vcf(args):
+
     vcf = args.variants
     info_columns = args.infoColumns
-    table = VariantTable(vcf, info_columns)
+    table = variant_table.VariantTable(vcf, info_columns)
 
     table_json = table.to_JSON()
-    print(table_json)
 
     session_dict = {}
-    # loop through variants
+
+    # loop through variants creating an igv.js session for each one
     for tuple in table.variants:
+
         variant = tuple[0]
         unique_id = tuple[1]
 
+        # Define a genomic region around the variant
         chr = variant.chrom
         position = variant.pos - 1
         start = position - int(args.flanking) / 2
         end = position + int(args.flanking) / 2
-
         region = {
             "chr": chr,
             "start": start,
             "end": end
         }
-
 
         # Fasta
         data = fasta.get_data(args.fasta, region)
@@ -45,7 +40,7 @@ def create_report_from_vcf(args):
 
         # Ideogram
         if(args.ideogram):
-            ideo_string = report.ideogram.fetch_chromosome(args.ideogram, chr)
+            ideo_string = ideogram.get_data(args.ideogram, region)
             ideo_uri = data_uri.get_data_uri(ideo_string)
             fastaJson["cytobandURL"] = ideo_uri
 
@@ -59,9 +54,9 @@ def create_report_from_vcf(args):
         }
 
         if (args.tracks):
-            tracks = args.tracks.split(',')
-            for track in tracks:
-                trackObj = report.tracks.get_track_json_dict(track)
+            trackList = args.tracks.split(',')
+            for track in trackList:
+                trackObj = tracks.get_track_json_dict(track)
                 datauri = data_uri.file_to_data_uri(track, trackObj['format'], region)
                 trackObj["url"] = datauri
 
@@ -77,7 +72,8 @@ def create_report_from_vcf(args):
 
                 session_json["tracks"].append(trackObj)
 
-        # Build session uri
+
+        # Build the session data URI
 
         session_string = json.dumps(session_json);
 
@@ -88,6 +84,9 @@ def create_report_from_vcf(args):
     session_dict = json.dumps(session_dict)
 
     template_file = args.template
+    if None == template_file:
+        template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/variant_template.html'
+
     output_file = args.output
 
     with open(template_file, "r") as f:
@@ -106,20 +105,3 @@ def create_report_from_vcf(args):
                     line = line.replace('"@SESSION_DICTIONARY@"', session_dict)
 
                 o.write(line)
-
-
-if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("variants", help="vcf file defining variants, required")
-    parser.add_argument("fasta", help="reference fasta file, required")
-    parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
-    parser.add_argument("--tracks", help="comma-delimited list of track files")
-    parser.add_argument("--template", help="html template file", default="report/templates/variant_template.html")
-    parser.add_argument("--output", help="output file name", default="igvjs_viewer.html")
-    parser.add_argument("--infoColumns", help="comma delimited list of info column names for variant table")
-    parser.add_argument("--flanking", help="genomic region to include either side of variant", default=1000)
-
-    args = parser.parse_args()
-
-    create_report_from_vcf(args)

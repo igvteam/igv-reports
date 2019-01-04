@@ -1,6 +1,4 @@
-from __future__ import print_function
-
-from report import data_uri
+from igv_reports import data_uri
 
 
 def get_datauri(filename, filetype=None, genomic_range=None):

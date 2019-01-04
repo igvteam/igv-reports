@@ -1,7 +1,7 @@
 from __future__ import print_function
 import os
 
-from report import data_uri
+from igv_reports import data_uri
 
 QUOTES = {"'", '"'}
 SCRIPT_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -71,7 +71,7 @@ def create_fusion_report(template):
 
     report_header =  data[:report_start]
 
-    report_data_uris = data_uri.create_data_var(data_uris, space)
+    report_data_uris = create_data_var(data_uris, space)
 
     report_body = output_lines
 
@@ -80,6 +80,13 @@ def create_fusion_report(template):
     output_name = os.path.join(template[:-5] + '_report' + template[-5:])
     with open(output_name, 'w') as f:
         f.writelines(new_html_data)
+
+
+def create_data_var(data_uris, space=''):
+    data = []
+    for i, (key, value) in enumerate(data_uris.items()):
+        data.append('{}"{}": "{}"{}\n'.format(space + ' ' * 4, key, value, ',' if i < len(data_uris) - 1 else ''))
+    return [space + "var data = {\n"] + data + [space+"};\n"]
 
 
 if __name__ == "__main__":

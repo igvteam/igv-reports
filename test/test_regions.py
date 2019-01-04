@@ -2,8 +2,8 @@ import unittest
 
 import pysam
 
-import report.regions
-from report import bam
+import igv_reports.regions
+from igv_reports import bam
 
 class RegionsTest(unittest.TestCase):
 
@@ -11,7 +11,7 @@ class RegionsTest(unittest.TestCase):
 
         regions = ["chr1:1000-2000", "chr1:1005-3000", "chr1:2000-2500", "chr1:50000-60000", "chr2:200"]
 
-        merged_regions = report.regions.merge_regions(regions)
+        merged_regions = igv_reports.regions.merge_regions(regions)
 
         self.assertEquals(3, len(merged_regions))
 

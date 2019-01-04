@@ -1,6 +1,6 @@
 import unittest
 
-from report import fasta
+from igv_reports import fasta
 
 
 class FastaTest(unittest.TestCase):

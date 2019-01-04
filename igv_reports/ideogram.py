@@ -1,15 +1,16 @@
 
 
-def fetch_chromosome(cyto_file, chr):
+def get_data(cyto_file, region):
 
     result = ''
+    chr = region['chr'] if region else None
     with open(cyto_file) as f:
 
         for line in f:
 
             tokens = line.split('\t')
 
-            if tokens[0] == chr:
+            if chr == None or tokens[0] == region:
 
                 result += line
 

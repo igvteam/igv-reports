@@ -1,6 +1,6 @@
 import unittest
 
-from report.variant_table import VariantTable
+from igv_reports.variant_table import VariantTable
 
 class TableTest(unittest.TestCase):
 

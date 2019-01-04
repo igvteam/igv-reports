@@ -1,4 +1,4 @@
-from .context import report
+from .context import igv_reports
 
 import unittest
 
@@ -12,7 +12,7 @@ class BAMTest(unittest.TestCase):
 
         regions = ["chr5:474489-475489", "chr8:143923259-143924259"]
 
-        alignments = report.bam.get_sam_data(bam_file_path, regions)
+        alignments = igv_reports.bam.get_sam_data(bam_file_path, regions)
 
         self.assertTrue(alignments)
 
@@ -25,7 +25,7 @@ class BAMTest(unittest.TestCase):
 
         regions = ["chr5:474489-475489", "chr8:143923259-143924259"]
 
-        bam_data = report.bam.get_data(bam_file_path, regions)
+        bam_data = igv_reports.bam.get_data(bam_file_path, regions)
 
         self.assertTrue(bam_data)
 
@@ -40,7 +40,7 @@ class BAMTest(unittest.TestCase):
 
         region = "chr5:474489-475489"
 
-        depth = report.bam.get_depth(bam_file_path, region)
+        depth = igv_reports.bam.get_depth(bam_file_path, region)
 
         self.assertTrue(depth)
 
@@ -50,7 +50,7 @@ class BAMTest(unittest.TestCase):
 
         regions = ["chr1:1000-2000", "chr1:1005-3000", "chr1:2000-2500", "chr1:50000-60000", "chr2:200"]
 
-        merged_regions = report.regions.merge_regions(regions)
+        merged_regions = igv_reports.regions.merge_regions(regions)
 
         self.assertEquals(3, len(merged_regions))
 

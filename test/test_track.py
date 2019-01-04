@@ -1,6 +1,6 @@
 import unittest
 
-import report.tracks
+import igv_reports.tracks
 
 
 class TrackTest(unittest.TestCase):
@@ -9,15 +9,15 @@ class TrackTest(unittest.TestCase):
 
         path = 'data/minigenome/variants.vcf.gz'
         expected = 'variants.vcf'
-        name = report.tracks.get_name(path)
+        name = igv_reports.tracks.get_name(path)
         self.assertEqual(name, expected)
 
-        format = report.tracks.infer_format(path)
+        format = igv_reports.tracks.infer_format(path)
         self.assertEqual('vcf', format)
 
-        type = report.tracks.get_track_type(format)
+        type = igv_reports.tracks.get_track_type(format)
         self.assertEqual('variant', type)
 
-        self.assertTrue(report.tracks.is_tabix(path))
+        self.assertTrue(igv_reports.tracks.is_tabix(path))
 
 

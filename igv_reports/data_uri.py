@@ -1,13 +1,20 @@
-import sys
+import os
 from base64 import b64encode
-import gzip
+from gzip import compress
+from igv_reports import bam, vcf, tabix
 
-from report import bam, vcf, tracks, tabix
+
+#This module exports functions to convert text or binary data to a data URI readable by igv.js.
+
 
 def get_data_uri(data):
 
+    """
+    Return a data uri for the input, which can be either a string or byte array
+    """
+
     if isinstance(data, str):
-        data = gzip.compress(data.encode())
+        data = compress(data.encode())
         mediatype = "data:application/gzip"
     else:
         if data[0] == 0x1f and data[1] == 0x8b:
@@ -24,18 +31,18 @@ def get_data_uri(data):
 def file_to_data_uri(filename, filetype=None, genomic_range=None):
 
     if not filetype:
-        filetype = infer_filetype(filename)
+        filetype = _infer_filetype(filename)
     else:
         filetype = filetype.lower()
 
-    data = get_data(filename, filetype, genomic_range)
+    data = _get_data(filename, filetype, genomic_range)
 
     data_uri = get_data_uri(data)
 
     return data_uri
 
 
-def get_data(filename, filetype, genomic_range):
+def _get_data(filename, filetype, genomic_range):
 
     if(genomic_range):
         range_string = genomic_range['chr'] + ":" + str(genomic_range['start']) + "-" + str(genomic_range['end'])
@@ -46,9 +53,9 @@ def get_data(filename, filetype, genomic_range):
         return bam.get_data(filename, range_string)
 
     elif filetype == "vcf":
-        return vcf.extract_vcf_region(input['variants'], genomic_range)
+        return vcf.get_data(input['variants'], genomic_range)
 
-    elif tracks.istabix(filename):
+    elif _istabix(filename):
         return tabix.get_data(filename, range_string)
 
     elif filename.endswith(".gz"):
@@ -64,7 +71,7 @@ def get_data(filename, filetype, genomic_range):
 
 
 
-def infer_filetype(filename):
+def _infer_filetype(filename):
     filename = filename.lower()
     if filename.endswith(".bam"):
         return "bam"
@@ -79,8 +86,7 @@ def infer_filetype(filename):
         return "bed"
     '''
 
-def create_data_var(data_uris, space=''):
-    data = []
-    for i, (key, value) in enumerate(data_uris.items()):
-        data.append('{}"{}": "{}"{}\n'.format(space + ' ' * 4, key, value, ',' if i < len(data_uris) - 1 else ''))
-    return [space + "var data = {\n"] + data + [space+"};\n"]
+
+def _istabix(filename):
+
+    return filename.endswith(".gz") and os.path.exists(filename + ".tbi")

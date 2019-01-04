@@ -1,4 +1,14 @@
-import os
+
+def get_track_json_dict(filename):
+
+    name = get_name(filename)
+    format = infer_format(filename)
+    type = get_track_type(format)
+    return {
+        "name": name,
+        "type": type,
+        "format": format
+    }
 
 
 def infer_format(filename):
@@ -52,18 +62,3 @@ def get_track_type(format):
         "vcf": "variant"
     }
     return dict[format]
-
-def get_track_json_dict(filename):
-
-    name = get_name(filename)
-    format = infer_format(filename)
-    type = get_track_type(format)
-    return {
-        "name": name,
-        "type": type,
-        "format": format
-    }
-
-def istabix(filename):
-
-    return filename.endswith(".gz") and os.path.exists(filename + ".tbi")
