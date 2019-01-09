@@ -1,13 +1,12 @@
 # igv.js-reports
 
-Python application to generate dataURIs from genomic data files and self-contained igv.js pages that can
-be opened within a browser with "file" protocol. 
+Python application to generate self-contained igv.js pages that can be opened within a browser with "file" protocol.   
 
 **Requires Python 3.6**
 
 ## Installation
 
-igv.js-reports requires pysam.  From pysams [docs](https://pysam.readthedocs.io/en/latest/installation.html#installation), the recoomended way to install pysam is through conda/bioconda
+igv.js-reports requires pysam.  From pysams [docs](https://pysam.readthedocs.io/en/latest/installation.html#installation), the recommended way to install pysam is through conda/bioconda
 
 ```bash
 conda config --add channels r
@@ -18,13 +17,34 @@ conda install pysam
 As noted, _"This will install pysam from the bioconda channel and automatically makes sure that dependencies are installed. 
 Also, compilation flags will be set automatically, which will potentially save a lot of trouble on OS X."_
 
-pip can sometimes be used, but at the current time often fails on a OS X due to missing denpendencies.
+At the current time installying pysam via pip often fails on OS X due to missing dependencies.
 
-```sh
-pip install pysam
-```
+``
 
 ## Creating a variant report
+
+A variant report consists of a table of variants and associated igv views for each variant.  Variant
+reports are created with the script create_variant_report.py.  Command line arguments are described below.
+Although _--tracks_ is optional, a typical report will include an alignment (BAM) file from which the 
+variants were called.  
+
+**Arguments:**
+* Required
+    * variants    _vcf file defining variants_
+    * fasta   _reference fasta file, must be indexed_
+* Optional
+    * --tracks _comma-delimited list of track files, see below for supported formats_
+    * --ideogram _ideogram file in UCSC cytoIdeo format_
+    * --template _html template file_
+    * --output _output file name default="igvjs_viewer.html"_
+    * --infoColumns _comma delimited list of info column names for variant table_
+    * --flanking _genomic region to include either side of variant, default=1000_
+
+**Track file formats:**
+
+Currently supported track file formats are BAM, VCF, BED, GFF3, and GTF.   All files, with the exception of the
+variants file, must be indexed.   Indexes for all supported formats can be created with pysam or samtools
+
 
 ####Examples
 

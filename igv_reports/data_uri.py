@@ -53,16 +53,21 @@ def _get_data(filename, filetype, region):
     elif _istabix(filename):
         return tabix.get_data(filename, region)
 
-    elif filename.endswith(".gz"):
-        with open(filename, "rb") as f:
-            return f.read()
     else:
-        with open(filename,"r") as f:
-            b = bytes(f.read(),"utf-8")
-            if filetype == 'json':
-                return b     # Quirk of jQuery, used in fusion report -- can't handle gzipped data urls
-            else:
-                return compress(b)
+
+        if region != None:
+            raise Exception("Track files must be indexed with tabix.  No index found for: " + filename)
+
+        if filename.endswith(".gz"):
+            with open(filename, "rb") as f:
+                return f.read()
+        else:
+            with open(filename,"r") as f:
+                b = bytes(f.read(),"utf-8")
+                if filetype == 'json':
+                    return b     # Quirk of jQuery, used in fusion report -- can't handle gzipped data urls
+                else:
+                    return compress(b)
 
 
 
@@ -84,4 +89,4 @@ def _infer_filetype(filename):
 
 def _istabix(filename):
 
-    return filename.endswith(".gz") and os.path.exists(filename + ".tbi")
+    return filename.endswith(".gz") and (os.path.exists(filename + ".tbi") or os.path.exists(filename + ".csi"))
