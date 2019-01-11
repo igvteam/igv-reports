@@ -63,11 +63,7 @@ def _get_data(filename, filetype, region):
                 return f.read()
         else:
             with open(filename,"r") as f:
-                b = bytes(f.read(),"utf-8")
-                if filetype == 'json':
-                    return b     # Quirk of jQuery, used in fusion report -- can't handle gzipped data urls
-                else:
-                    return compress(b)
+                return f.read()
 
 
 

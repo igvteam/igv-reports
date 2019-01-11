@@ -37,7 +37,7 @@ variants were called.
     * --ideogram _ideogram file in UCSC cytoIdeo format_
     * --template _html template file_
     * --output _output file name default="igvjs_viewer.html"_
-    * --infoColumns _comma delimited list of info column names for variant table_
+    * --infoColumns _comma delimited list of VCF info field names to include in variant table_
     * --flanking _genomic region to include either side of variant, default=1000_
 
 **Track file formats:**

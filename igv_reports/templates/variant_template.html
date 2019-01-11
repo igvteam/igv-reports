@@ -23,6 +23,10 @@
 
     <!-- selector table style -->
     <style>
+
+        tr {
+            cursor: default;
+        }
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
@@ -34,6 +38,10 @@
         th {
             background-color: lightskyblue;
             color: white;
+        }
+
+        .selected {
+            background-color: cornflowerblue !important;
         }
     </style>
 
@@ -164,6 +172,7 @@
 
     function initTable() {
         var table = document.createElement("table");
+        table.id = "variant_table"
 
         table.style.width = "100%";
 
@@ -191,13 +200,23 @@
             var json = tableJson[i];
             var unique_id = json['unique_id']
             var row = document.createElement("tr");
+
             row.id = "row_" + unique_id;
             tbody.appendChild(row);
 
+            // First row selected by default
+            if(i === 0) row.classList.add("selected")
+
             row.onclick = function (event) {
 
+                var list= document.getElementById("variant_table").getElementsByTagName("tr")
+                for (var i = 0; i < list.length; i++) {
+                    list[i].classList.remove("selected")
+                }
+
                 var rowID = event.target.parentElement.id;
-                console.log(event.target.parentElement.id);
+                var row = document.getElementById(rowID)
+                row.classList.add("selected")
                 var uniqueId = rowID.substring(4);
                 var session = sessionDictionary[uniqueId]
                 igv.browser.loadSession({
