@@ -1,7 +1,7 @@
 import os
 from base64 import b64encode
 from gzip import compress
-from igv_reports import bam, vcf, tabix
+from . import bam, vcf, tabix
 
 
 #This module exports functions to convert text or binary data to a data URI readable by igv.js.
@@ -85,4 +85,8 @@ def _infer_filetype(filename):
 
 def _istabix(filename):
 
-    return filename.endswith(".gz") and (os.path.exists(filename + ".tbi") or os.path.exists(filename + ".csi"))
+    # If this is a url we will be hopeful that the index is there.  pysam will throw an exception if it is not
+    if (filename.startswith("http://") or filename.startswith("https://")) and filename.endswith(".gz"):
+        return True
+    else:
+        return filename.endswith(".gz") and (os.path.exists(filename + ".tbi") or os.path.exists(filename + ".csi"))

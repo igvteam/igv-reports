@@ -1,11 +1,7 @@
 from igv_reports import data_uri
 
-
-def get_datauri(filename, filetype=None, genomic_range=None):
-    print(data_uri.file_to_data_uri(filename, filetype, genomic_range))
-
-
 if __name__ == "__main__":
+
     import argparse
 
     parser = argparse.ArgumentParser()
@@ -16,4 +12,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    get_datauri(args.filename, filetype=args.filetype, genomic_range=args.range)
+    uri = data_uri.file_to_data_uri(args.filename, args.filetype, args.range)
+
+    print(uri)

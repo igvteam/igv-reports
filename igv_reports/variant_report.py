@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+from urllib.request import urlopen
 from igv_reports import fasta, ideogram, data_uri, variant_table, tracks
 
 def create_report_from_vcf(args):
@@ -89,6 +90,7 @@ def create_report_from_vcf(args):
 
     output_file = args.output
 
+    standalone = args.standalone
     with open(template_file, "r") as f:
         data = f.readlines()
 
@@ -96,12 +98,34 @@ def create_report_from_vcf(args):
 
             for i, line in enumerate(data):
 
-                j = line.find('"@TABLE_JSON@"')
-                if j >= 0:
-                    line = line.replace('"@TABLE_JSON@"', table_json)
+                if standalone and line.find("<script") and line.find(".js") > 0:
+                    print(inline_script(line, o))
 
-                j = line.find('"@SESSION_DICTIONARY@"')
-                if j >= 0:
-                    line = line.replace('"@SESSION_DICTIONARY@"', session_dict)
+                else:
+                    j = line.find('"@TABLE_JSON@"')
+                    if j >= 0:
+                        line = line.replace('"@TABLE_JSON@"', table_json)
 
-                o.write(line)
+                    j = line.find('"@SESSION_DICTIONARY@"')
+                    if j >= 0:
+                        line = line.replace('"@SESSION_DICTIONARY@"', session_dict)
+
+                    o.write(line)
+
+
+def inline_script(line, o):
+    #<script type="text/javascript" src="https://igv.org/web/test/dist/igv.min.js"></script>
+    s = line.find('src="')
+    if s > 0:
+        e = line.find('">', s)
+        url = line[s+5:e]
+
+        response = urlopen(url)
+        js = response.read().decode('utf-8')
+        response.close()
+
+        o.write('<script type="text/javascript">\n')
+        o.write(js)
+        o.write('</script>\n')
+
+

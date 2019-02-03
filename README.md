@@ -25,8 +25,8 @@ At the current time installying pysam via pip often fails on OS X due to missing
 
 A variant report consists of a table of variants and associated igv views for each variant.  Variant
 reports are created with the script create_variant_report.py.  Command line arguments are described below.
-Although _--tracks_ is optional, a typical report will include an alignment (BAM) file from which the 
-variants were called.  
+Although _--tracks_ is optional, a typical report will include at least an alignment track
+(BAM or CRAM) file from which the variants were called.  
 
 **Arguments:**
 * Required
@@ -39,6 +39,7 @@ variants were called.
     * --output _output file name default="igvjs_viewer.html"_
     * --infoColumns _comma delimited list of VCF info field names to include in variant table_
     * --flanking _genomic region to include either side of variant, default=1000_
+    * --standalone _embed all javascript referenced via ```<script>``` tags in the page_
 
 **Track file formats:**
 
@@ -54,7 +55,7 @@ Example 1:  Note: to run first replace <PATH to hg38.fa> with the path to a fast
 
 python create_variant_report.py \ 
 examples/variants/cancer.vcf.gz \
-<PATH TO hg38.fa> \
+https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
 --ideogram examples/variants/cytoBandIdeo.txt \
 --flanking 1000 \
 --infoColumns GENE,TISSUE,TUMOR,COSMIC_ID,GENE,SOMATIC \

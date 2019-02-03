@@ -13,7 +13,7 @@ if __name__ == "__main__":
     parser.add_argument("--output", help="output file name", default="igvjs_viewer.html")
     parser.add_argument("--infoColumns", help="comma delimited list of VCF info field names to include in variant table")
     parser.add_argument("--flanking", help="genomic region to include either side of variant", default=1000)
-
+    parser.add_argument('--standalone', help='Print more data', action='store_true')
     args = parser.parse_args()
 
     variant_report.create_report_from_vcf(args)

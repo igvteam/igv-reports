@@ -26,3 +26,13 @@ class FastaTest(unittest.TestCase):
 
         self.assertTrue(data)
         self.assertEqual(expected, data)
+
+    def test_remote(self):
+
+        data = fasta.get_data("https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa",
+                              {"chr": "chr1",
+                               "start": 100,
+                               "end": 200})
+        self.assertTrue(data)
+
+
