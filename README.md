@@ -2,11 +2,29 @@
 
 Python application to generate self-contained igv.js pages that can be opened within a browser with "file" protocol.   
 
-**Requires Python 3.6**
-
 ## Installation
 
-igv.js-reports requires pysam.  From pysams [docs](https://pysam.readthedocs.io/en/latest/installation.html#installation), the recommended way to install pysam is through conda/bioconda
+igv-reports requires Python 3.6 or greater and pysam version 0.15.1 or greater.  As with all python projects use of 
+a virtual environment is reccommended.  We recommend the Anaconda distribution.  This will allow you
+to install pysam as recommened below.   The steps below assume no Python is installed and used the Anaconda distribution, however
+if Python is already installed and/or you prefer another distribution skip to the last step, ```pip install igv-reports```.
+
+#### 1. Install Anaconda:  https://docs.anaconda.com/anaconda/
+
+#### 2. Create a virtual environment
+
+```html
+conda create -n reports python=3.7.1
+conda activate
+conda install pip
+```
+
+#### 3. Install pysam
+
+From pysam [docs](https://pysam.readthedocs.io/en/latest/installation.html#installation);  
+_"The recommended way to install pysam is through conda/bioconda. 
+This will install pysam from the bioconda channel and automatically makes sure that dependencies are installed. 
+Also, compilation flags will be set automatically, which will potentially save a lot of trouble on OS X."_
 
 ```bash
 conda config --add channels r
@@ -14,12 +32,16 @@ conda config --add channels bioconda
 conda install pysam
 ```
 
-As noted, _"This will install pysam from the bioconda channel and automatically makes sure that dependencies are installed. 
-Also, compilation flags will be set automatically, which will potentially save a lot of trouble on OS X."_
+_""_
 
 At the current time installying pysam via pip often fails on OS X due to missing dependencies.
 
-``
+#### 4. Install igv-reports
+
+```
+pip install igv-reports
+
+```
 
 ## Creating a variant report
 
@@ -47,9 +69,9 @@ Currently supported track file formats are BAM, VCF, BED, GFF3, and GTF.   All f
 variants file, must be indexed.   Indexes for all supported formats can be created with pysam or samtools
 
 
-####Examples
+#### Examples
 
-Example 1:  Note: to run first replace <PATH to hg38.fa> with the path to a fasta for human assembly hg38
+Example:  
 
 ```bash
 
@@ -59,25 +81,14 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
 --ideogram examples/variants/cytoBandIdeo.txt \
 --flanking 1000 \
 --infoColumns GENE,TISSUE,TUMOR,COSMIC_ID,GENE,SOMATIC \
---tracks examples/variants/recalibrated.bam,examples/variants/refgene.sort.bed.gz \
+--tracks examples/variants/cancer.vcf.gz,examples/variants/recalibrated.bam,examples/variants/refgene.sort.bed.gz \
 --output igvjs_viewer.html
 
 ```
 
-Example 2
-
-```bash
-python create_variant_report.py  \ 
-test/data/minigenome/variants.vcf.gz \ 
-test/data/minigenome/minigenome.fa \
---flanking 1000 \
---tracks test/data/minigenome/alignments.bam,test/data/minigenome/annotations.gtf \
---output minigenome.html
-
-```
 
 
-## Creating a fusion inspector report from an existing html file
+## Creating a fusion inspector report 
 
 Note: These instructions are specifically for Fusion Inspector reports.  See [https://github.com/FusionInspector/FusionInspector/wiki](https://github.com/FusionInspector/FusionInspector/wiki)
 

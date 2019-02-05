@@ -1,30 +1,38 @@
 import os
 import sys
 import json
+import math
 from urllib.request import urlopen
-from igv_reports import fasta, ideogram, data_uri, variant_table, tracks
+from igv_reports import fasta, ideogram, data_uri, tracks
+from .variant_table import VariantTable
+from .bed_table import BedTable
 
-def create_report_from_vcf(args):
+def create_report(args):
 
-    vcf = args.variants
-    info_columns = args.infoColumns.split(",") if args.infoColumns else None
-    table = variant_table.VariantTable(vcf, info_columns)
+    variants_file = args.variants
+
+    if variants_file.endswith(".vcf") or variants_file.endswith (".vcf.gz"):
+        info_columns = args.infoColumns.split(",") if args.infoColumns else None
+        table = VariantTable(variants_file, info_columns)
+
+    elif variants_file.endswith(".bed") or variants_file.endswith(".bed.gz"):
+        table = BedTable(variants_file)
 
     table_json = table.to_JSON()
 
     session_dict = {}
 
     # loop through variants creating an igv.js session for each one
-    for tuple in table.variants:
+    for tuple in table.features:
 
-        variant = tuple[0]
+        feature = tuple[0]
         unique_id = tuple[1]
 
         # Define a genomic region around the variant
-        chr = variant.chrom
-        position = variant.pos - 1
-        start = position - int(args.flanking) / 2
-        end = position + int(args.flanking) / 2
+        chr = feature.chr
+        position = int(math.floor((feature.start + feature.end) / 2)) + 1   # center of region in 1-based coordinates
+        start = int (math.floor(feature.start - int(args.flanking) / 2))
+        end = int (math.ceil(feature.end + int(args.flanking) / 2))
         region = {
             "chr": chr,
             "start": start,

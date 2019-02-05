@@ -11,15 +11,15 @@ setuptools.setup(name='igv-reports',
                  long_description_content_type="text/markdown",
                  license='MIT',
                  author='Jim Robinson',
-                 url='https://github.com/igvteam/igv.js-reports',
-                 # download_url='https://github.com/igvteam/igv.js-jupyter/archive/0.2.1.tar.gz',
+                 url='https://github.com/igvteam/igv-reports',
                  keywords=['igv', 'bioinformatics', 'genomics', 'visualization', 'variant' ],
                  classifiers=[
-                     'Development Status :: 4 - Beta',
+                     'Programming Language :: Python :: 3',
+                     'Development Status :: 4 - Beta ',
                      'Intended Audience :: Science/Research',
                      'Intended Audience :: Developers',
                      'License :: OSI Approved :: MIT License',
-                     'Programming Language :: Python'
+                     'Topic :: Scientific/Engineering :: Bio-Informatics '
                  ],
                  package_data={'igv_reports': ['templates/*']},
                  )

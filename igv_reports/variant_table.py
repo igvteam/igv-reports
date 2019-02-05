@@ -1,7 +1,7 @@
 import io
 import json
 import pysam
-
+from .feature import Feature
 
 class VariantTable:
 
@@ -12,9 +12,15 @@ class VariantTable:
 
         self.infoFields =  infoColumns if infoColumns else []
         self.variants = []
+        self.features = []   #Bed-like features
+
         unique_id = 1
         for var in vcf.fetch():
             self.variants.append((var, unique_id))
+            chr = var.chrom
+            start = var.pos - 1
+            end = start + 1       #TODO -- handle structure variants and deletions > 1 base
+            self.features.append((Feature(chr, start, end, ''), unique_id))
             unique_id += 1
 
     def to_JSON(self):
