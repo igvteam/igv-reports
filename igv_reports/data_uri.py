@@ -6,7 +6,6 @@ from . import bam, vcf, tabix
 
 #This module exports functions to convert text or binary data to a data URI readable by igv.js.
 
-
 def get_data_uri(data):
 
     """

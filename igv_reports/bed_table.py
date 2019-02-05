@@ -1,28 +1,22 @@
 import io
 import json
+import gzip
 import pysam
 
 
-class VariantTable:
+class BedTable:
 
     # Always remember the *self* argument
-    def __init__(self, vcfFile, infoColumns=None):
+    def __init__(self, bed_file, infoColumns=None):
 
         vcf = pysam.VariantFile(vcfFile)
 
         self.infoFields =  infoColumns if infoColumns else []
         self.variants = []
-        self.features = []   #Bed-like features
-
         unique_id = 1
         for var in vcf.fetch():
             self.variants.append((var, unique_id))
             unique_id += 1
-
-            chr = var.chrom
-            start = var.pos - 1
-            end = start + 1       #TODO -- handle structure variants and deletions > 1 base
-            self.features.append(({"chr": chr, "start": start, "end": end}, unique_id))
 
     def to_JSON(self):
 
@@ -62,6 +56,18 @@ class VariantTable:
             jsonArray.append(obj)
 
         return json.dumps(jsonArray)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
