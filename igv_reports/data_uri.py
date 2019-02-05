@@ -47,7 +47,7 @@ def _get_data(filename, filetype, region):
         return bam.get_data(filename, region)
 
     elif filetype == "vcf":
-        return vcf.get_data(input['variants'], region)
+        return vcf.get_data(filename, region)
 
     elif _istabix(filename):
         return tabix.get_data(filename, region)

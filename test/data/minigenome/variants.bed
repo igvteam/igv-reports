@@ -1,5 +1,5 @@
 # Four column bed file describing snps
-minigenome	4749	4750	G->A
-minigenome	4754	4754	A->G
+minigenome	4750	4751	G->A
+minigenome	4754	4755	A->G
 minigenome	6019	6020	C->T
 minigenome	37929	37930

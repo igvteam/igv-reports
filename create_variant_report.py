@@ -16,4 +16,4 @@ if __name__ == "__main__":
     parser.add_argument('--standalone', help='Print more data', action='store_true')
     args = parser.parse_args()
 
-    report.create_report_from_vcf(args)
+    report.create_report(args)

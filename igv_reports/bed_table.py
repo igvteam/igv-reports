@@ -1,74 +1,36 @@
-import io
 import json
-import gzip
-import pysam
+
+from .bed import parse
 
 
 class BedTable:
 
     # Always remember the *self* argument
-    def __init__(self, bed_file, infoColumns=None):
+    def __init__(self, bed_file):
 
-        vcf = pysam.VariantFile(vcfFile)
+        self.features = []
 
-        self.infoFields =  infoColumns if infoColumns else []
-        self.variants = []
+        featureList = parse(bed_file)
         unique_id = 1
-        for var in vcf.fetch():
-            self.variants.append((var, unique_id))
+        for var in featureList:
+            self.features.append((var, unique_id))
             unique_id += 1
 
     def to_JSON(self):
 
-
         jsonArray = [];
 
-        for tuple in self.variants:
-
-            variant = tuple[0]
+        for tuple in self.features:
+            feature = tuple[0]
             unique_id = tuple[1]
-            obj = dict()
-            obj["unique_id"] = unique_id
-            obj["CHROM"] = variant.chrom
-            obj["POSITION"] = variant.pos
-            obj["REF"] = variant.ref
-            obj["ALT"] = ','.join(variant.alts)
-
-            for h in self.infoFields:
-
-                keys = set(variant.info.keys())
-
-                if h in keys:
-                    v = ""
-                    tuples = variant.info[h]
-                    for e in tuples:
-                        if(v):
-                            v = v + ","
-                        v = v + str(e)
-                else:
-                    v = ''
-
-                if h == "COSMIC_ID":
-                    v = '<a href = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=4006021" target="_blank">' + v + '</a>'
-
-                obj[h] = v
+            obj = {
+                "unique_id": unique_id,
+                "Chrom": feature.chr,
+                "Start": feature.start + 1,
+                "End": feature.end,
+                "Name": feature.name
+            }
 
             jsonArray.append(obj)
 
         return json.dumps(jsonArray)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

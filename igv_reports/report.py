@@ -3,14 +3,20 @@ import sys
 import json
 import math
 from urllib.request import urlopen
-from igv_reports import fasta, ideogram, data_uri, variant_table, tracks
+from igv_reports import fasta, ideogram, data_uri, tracks
+from .variant_table import VariantTable
+from .bed_table import BedTable
 
+def create_report(args):
 
-def create_report_from_vcf(args):
+    variants_file = args.variants
 
-    vcf = args.variants
-    info_columns = args.infoColumns.split(",") if args.infoColumns else None
-    table = variant_table.VariantTable(vcf, info_columns)
+    if variants_file.endswith(".vcf") or variants_file.endswith (".vcf.gz"):
+        info_columns = args.infoColumns.split(",") if args.infoColumns else None
+        table = VariantTable(variants_file, info_columns)
+
+    elif variants_file.endswith(".bed") or variants_file.endswith(".bed.gz"):
+        table = BedTable(variants_file)
 
     table_json = table.to_JSON()
 
@@ -22,14 +28,16 @@ def create_report_from_vcf(args):
         feature = tuple[0]
         unique_id = tuple[1]
 
-        # Center position in 1-based coordinates
-        position = math.floor((feature["start"] + feature["end"]) / 2) + 1
-
-        # Define a genomic region around the feature
-        chr = feature["chr"]
-        start = math.floor(feature["start"] - int(args.flanking) / 2)
-        end = math.ceil(feature["end"] + int(args.flanking) / 2)
-        region = {"chr": chr, "start": start, "end": end}
+        # Define a genomic region around the variant
+        chr = feature.chr
+        position = int(math.floor((feature.start + feature.end) / 2)) + 1   # center of region in 1-based coordinates
+        start = int (math.floor(feature.start - int(args.flanking) / 2))
+        end = int (math.ceil(feature.end + int(args.flanking) / 2))
+        region = {
+            "chr": chr,
+            "start": start,
+            "end": end
+        }
 
         # Fasta
         data = fasta.get_data(args.fasta, region)
@@ -63,6 +71,13 @@ def create_report_from_vcf(args):
 
                 if(trackObj["type"] == "alignment"):
                     trackObj["height"] = 500
+
+                # Sort TODO -- do this only for SNV
+                # if (trackObj["type"]) == "alignment":
+                #     trackObj["sort"] = {
+                #         "option": "NUCLEOTIDE",
+                #         "locus": chr + ":" + str(variant.pos - 1)
+                #     }
 
                 session_json["tracks"].append(trackObj)
 

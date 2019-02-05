@@ -17,13 +17,14 @@ if Python is already installed and/or you prefer another distribution skip to th
 conda create -n reports python=3.7.1
 conda activate
 conda install pip
-
-
 ```
 
-#### 3. Install Pysam
+#### 3. Install pysam
 
-igv.js-reports requires pysam.  From pysams [docs](https://pysam.readthedocs.io/en/latest/installation.html#installation);  _the recommended way to install pysam is through conda/bioconda_
+From pysam [docs](https://pysam.readthedocs.io/en/latest/installation.html#installation);  
+_"The recommended way to install pysam is through conda/bioconda. 
+This will install pysam from the bioconda channel and automatically makes sure that dependencies are installed. 
+Also, compilation flags will be set automatically, which will potentially save a lot of trouble on OS X."_
 
 ```bash
 conda config --add channels r
@@ -31,8 +32,7 @@ conda config --add channels bioconda
 conda install pysam
 ```
 
-As noted, _"This will install pysam from the bioconda channel and automatically makes sure that dependencies are installed. 
-Also, compilation flags will be set automatically, which will potentially save a lot of trouble on OS X."_
+_""_
 
 At the current time installying pysam via pip often fails on OS X due to missing dependencies.
 
@@ -71,7 +71,7 @@ variants file, must be indexed.   Indexes for all supported formats can be creat
 
 #### Examples
 
-Example:  Note: to run first replace <PATH to hg38.fa> with the path to a fasta for human assembly hg38
+Example:  
 
 ```bash
 
@@ -81,7 +81,7 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
 --ideogram examples/variants/cytoBandIdeo.txt \
 --flanking 1000 \
 --infoColumns GENE,TISSUE,TUMOR,COSMIC_ID,GENE,SOMATIC \
---tracks examples/variants/recalibrated.bam,examples/variants/refgene.sort.bed.gz \
+--tracks examples/variants/cancer.vcf.gz,examples/variants/recalibrated.bam,examples/variants/refgene.sort.bed.gz \
 --output igvjs_viewer.html
 
 ```
