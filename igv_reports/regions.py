@@ -43,9 +43,9 @@ def parse_region(region):
     chr = tokens[0]
 
     t2 = tokens[1].split('-')
-    start = int(t2[0])
+    start = int(t2[0].replace(',', ''))
     if len(t2) > 1:
-        end = int(t2[1])
+        end = int(t2[1].replace(',',''))
     else:
         end = start
 

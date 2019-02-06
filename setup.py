@@ -21,5 +21,14 @@ setuptools.setup(name='igv-reports',
                      'License :: OSI Approved :: MIT License',
                      'Topic :: Scientific/Engineering :: Bio-Informatics '
                  ],
+                 install_requires=[
+                     'pysam'
+                 ],
+                 entry_points={
+                     'console_scripts': [
+                         'create_report=igv_reports.report:main',
+                         'create_datauri=igv_reports.datauri:main'
+                     ],
+                 },
                  package_data={'igv_reports': ['templates/*']},
                  )

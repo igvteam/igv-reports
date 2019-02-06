@@ -1,8 +1,9 @@
 import os
 from base64 import b64encode
 from gzip import compress
-from . import bam, vcf, tabix
-
+import argparse
+from igv_reports import bam, vcf, tabix
+from igv_reports.regions import parse_region
 
 #This module exports functions to convert text or binary data to a data URI readable by igv.js.
 
@@ -43,7 +44,7 @@ def file_to_data_uri(filename, filetype=None, genomic_range=None):
 
 def _get_data(filename, filetype, region):
 
-    if filetype == "bam":
+    if filetype == "bam" or filetype == "cram":
         return bam.get_data(filename, region)
 
     elif filetype == "vcf":
@@ -67,19 +68,18 @@ def _get_data(filename, filetype, region):
 
 
 def _infer_filetype(filename):
+
     filename = filename.lower()
-    if filename.endswith(".bam"):
-        return "bam"
-    elif filename.endswith(".fa"):
-        return "fa"
-    elif filename.endswith(".gz"):
-        return "gz"
-    elif filename.endswith(".json"):
-        return "json"
-    '''
-    elif filename.endswith(".bed"):
-        return "bed"
-    '''
+
+    if filename.endswith(".gz"):
+        filename = filename[:-3]
+
+    idx = filename.rfind(".")
+    if idx > 0:
+        return filename[idx+1:]
+    else:
+        return None
+
 
 
 def _istabix(filename):
@@ -89,3 +89,22 @@ def _istabix(filename):
         return True
     else:
         return filename.endswith(".gz") and (os.path.exists(filename + ".tbi") or os.path.exists(filename + ".csi"))
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("filename", help="name of file to be converted to data uri")
+    parser.add_argument("-t", "--filetype", help="type of file to be converted to data uri")
+    parser.add_argument("-r", "--region" , help="genomic region to be converted in the form chr:start-stop")
+    args = parser.parse_args()
+
+    if args.region:
+        region = parse_region(args.region)
+    else:
+        region = None
+
+    uri = file_to_data_uri(args.filename, args.filetype, region)
+    print(uri)
+
+if __name__ == "__main__":
+    main()

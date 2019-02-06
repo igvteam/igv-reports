@@ -16,7 +16,5 @@ class BAMTest(unittest.TestCase):
         }
 
         bam_file_path = str((pathlib.Path(__file__).parent / "data/minigenome/alignments.bam").resolve())
-
-        alignments = bam.get_data(bam_file_path, region)
-
-        self.assertTrue(alignments)
+        data = bam.get_data(bam_file_path, region)
+        self.assertTrue(data)

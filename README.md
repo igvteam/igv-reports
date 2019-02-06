@@ -4,24 +4,30 @@ Python application to generate self-contained igv.js pages that can be opened wi
 
 ## Installation
 
-igv-reports requires Python 3.6 or greater and pysam version 0.15.1 or greater.  As with all python projects use of 
-a virtual environment is reccommended.  We recommend the Anaconda distribution.  This will allow you
-to install pysam as recommened below.   The steps below assume no Python is installed and used the Anaconda distribution, however
-if Python is already installed and/or you prefer another distribution skip to the last step, ```pip install igv-reports```.
+#### Prerequisites
+
+igv-reports requires Python 3.6 or greater.  As with all pythong projects use of a virtual enviornment is recommended. 
+Instructions for creating a virtual environment using ```conda``` follow.
 
 #### 1. Install Anaconda:  https://docs.anaconda.com/anaconda/
 
 #### 2. Create a virtual environment
 
-```html
+```bash
 conda create -n reports python=3.7.1
 conda activate
 conda install pip
 ```
 
-#### 3. Install pysam
+#### Installing igv-reports
 
-From pysam [docs](https://pysam.readthedocs.io/en/latest/installation.html#installation);  
+```bash
+pip install igv-reports
+```
+
+igv-reports requires the package _pysam_ which should be installed automatically.  However on OSX this sometimes 
+fails due to missing dependent libraries.  This can be fixed following the procedure below, from the pysam 
+[docs](https://pysam.readthedocs.io/en/latest/installation.html#installation);  
 _"The recommended way to install pysam is through conda/bioconda. 
 This will install pysam from the bioconda channel and automatically makes sure that dependencies are installed. 
 Also, compilation flags will be set automatically, which will potentially save a lot of trouble on OS X."_
@@ -32,27 +38,17 @@ conda config --add channels bioconda
 conda install pysam
 ```
 
-_""_
-
-At the current time installying pysam via pip often fails on OS X due to missing dependencies.
-
-#### 4. Install igv-reports
-
-```
-pip install igv-reports
-
-```
 
 ## Creating a variant report
 
 A variant report consists of a table of variants and associated igv views for each variant.  Variant
-reports are created with the script create_variant_report.py.  Command line arguments are described below.
+reports are created with command line script ```create_report```.  Command line arguments are described below.
 Although _--tracks_ is optional, a typical report will include at least an alignment track
 (BAM or CRAM) file from which the variants were called.  
 
 **Arguments:**
 * Required
-    * variants    _vcf file defining variants_
+    * variants    _vcf or bed file of variant sites_
     * fasta   _reference fasta file, must be indexed_
 * Optional
     * --tracks _comma-delimited list of track files, see below for supported formats_
@@ -68,15 +64,17 @@ Although _--tracks_ is optional, a typical report will include at least an align
 Currently supported track file formats are BAM, VCF, BED, GFF3, and GTF.   All files, with the exception of the
 variants file, must be indexed.   Indexes for all supported formats can be created with pysam or samtools
 
+## Examples
 
-#### Examples
+Data for the examples are available for [download](https://s3.amazonaws.com/igv.org.test/reports/examples.zip).
 
-Example:  
+
+#### Creating a variant report from a VCF file:  
 
 ```bash
 
-python create_variant_report.py \ 
-examples/variants/cancer.vcf.gz \
+create_report \ 
+examples/variants/variants.vcf.gz \
 https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
 --ideogram examples/variants/cytoBandIdeo.txt \
 --flanking 1000 \
@@ -86,38 +84,26 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
 
 ```
 
+#### Converting genomic files to data URIs for use in igv.js 
+
+The script ```create_datauri`` converts the contents of a file to a data uri for use in igv.js.   The datauri will be
+printed to stdout.  
 
 
-## Creating a fusion inspector report 
 
-Note: These instructions are specifically for Fusion Inspector reports.  See [https://github.com/FusionInspector/FusionInspector/wiki](https://github.com/FusionInspector/FusionInspector/wiki)
+**Convert a gzipped vcf file to a datauri.**
 
-Fusion inspector reports are created by combining Fusion Inpsector output with an html template file.
+```bash
+create_datauri examples/variants/variants.vcf.gz
 
-First make sure that the html template file contains the comment line `<!-- start igv report here -->` within a script tag.
-Directly below this line a javscript variable called "data" will be created so insure that no other variable names conflict.  
-  
-Then use the create_fusion_report.py script to create a new self-contained html file.
-```sh
-python create_fusion_report.py [filename]
-```
-where filename is the path to the igv.js html template file.  
-
-To run the example execute
-
-```sh
-python create_fusion_report.py examples/fusions/igvjs_fusion.html
 ```
 
-After, running the script, see examples/fusions/igvjs_fusion_viewer_report.html for the result.
+**Convert a slice of a remote cram file to a datauri.**
 
-
-
-
-## Converting a genomic data file to an igv.js Data URI
-
-If you just want to get a data URI that can be read by igv.js in place of a url to a data file, use the get_datauri.py script
-```sh
-python igv_reports/get_datauri.py [filename]
+```bash
+create_datauri \
+--region 8:127,738,322-127,738,508 \
+https://s3.amazonaws.com/1000genomes/data/HG00096/alignment/HG00096.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram 
 ```
-The data uri will be printed to stdout.
+
+

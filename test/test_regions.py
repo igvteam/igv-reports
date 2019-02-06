@@ -1,9 +1,7 @@
 import unittest
 
-import pysam
-
 import igv_reports.regions
-from igv_reports import bam
+
 
 class RegionsTest(unittest.TestCase):
 

@@ -2,10 +2,11 @@ import os
 import sys
 import json
 import math
+import argparse
 from urllib.request import urlopen
-from igv_reports import fasta, ideogram, data_uri, tracks
-from .variant_table import VariantTable
-from .bed_table import BedTable
+from igv_reports import fasta, ideogram, datauri, tracks
+from igv_reports.variant_table import VariantTable
+from igv_reports.bed_table import BedTable
 
 def create_report(args):
 
@@ -42,7 +43,7 @@ def create_report(args):
         # Fasta
         data = fasta.get_data(args.fasta, region)
         fa = '>' + chr + ':' + str(start) + '-' + str(end) + '\n' + data
-        fasta_uri = data_uri.get_data_uri(fa)
+        fasta_uri = datauri.get_data_uri(fa)
         fastaJson = {
             "fastaURL": fasta_uri,
         }
@@ -50,7 +51,7 @@ def create_report(args):
         # Ideogram
         if(args.ideogram):
             ideo_string = ideogram.get_data(args.ideogram, region)
-            ideo_uri = data_uri.get_data_uri(ideo_string)
+            ideo_uri = datauri.get_data_uri(ideo_string)
             fastaJson["cytobandURL"] = ideo_uri
 
 
@@ -66,8 +67,8 @@ def create_report(args):
             trackList = args.tracks.split(',')
             for track in trackList:
                 trackObj = tracks.get_track_json_dict(track)
-                datauri = data_uri.file_to_data_uri(track, trackObj['format'], region)
-                trackObj["url"] = datauri
+                trackObj["url"] = datauri.file_to_data_uri(track, trackObj['format'], region)
+
 
                 if(trackObj["type"] == "alignment"):
                     trackObj["height"] = 500
@@ -86,7 +87,7 @@ def create_report(args):
 
         session_string = json.dumps(session_json);
 
-        session_uri = data_uri.get_data_uri(session_string)
+        session_uri = datauri.get_data_uri(session_string)
 
         session_dict[str(unique_id)] = session_uri
 
@@ -137,3 +138,21 @@ def inline_script(line, o):
         o.write('</script>\n')
 
 
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("variants", help="vcf file defining variants, required")
+    parser.add_argument("fasta", help="reference fasta file, required")
+    parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
+    parser.add_argument("--tracks", help="comma-delimited list of track files")
+    parser.add_argument("--template", help="html template file", default=None)
+    parser.add_argument("--output", help="output file name", default="igvjs_viewer.html")
+    parser.add_argument("--infoColumns", help="comma delimited list of VCF info field names to include in variant table")
+    parser.add_argument("--flanking", help="genomic region to include either side of variant", default=1000)
+    parser.add_argument('--standalone', help='Print more data', action='store_true')
+    args = parser.parse_args()
+    create_report(args)
+
+if __name__ == "__main__":
+
+    main()
