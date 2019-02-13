@@ -1,11 +1,5 @@
-import pysam
-import requests
 import gzip
 import io
-from intervaltree import IntervalTree
-import gzip
-import io
-
 import pysam
 import requests
 from intervaltree import IntervalTree
@@ -25,6 +19,7 @@ class FeatureReader:
 
     def __init__(self, path):
 
+        tabix = None
         if path.endswith(".gz"):
             # Might be a tabix file
             try:

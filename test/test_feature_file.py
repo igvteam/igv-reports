@@ -59,7 +59,7 @@ class FeatureFileTest(unittest.TestCase):
     def test_nongzipped_query(self):
 
         gff = str((pathlib.Path(__file__).parent / "data/minigenome/variants.bed").resolve())
-        feature_file = _NonIndexed(gff)
+        feature_file = FeatureReader(gff)
         content = feature_file.slice({"chr": "minigenome", "start": 4000, "end": 7000})
         features = parse_bed(io.StringIO(content))
         self.assertEqual(len(features), 3)
