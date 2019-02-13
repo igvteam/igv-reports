@@ -39,16 +39,16 @@ conda install pysam
 ```
 
 
-## Creating a variant report
+## Creating a report
 
-A variant report consists of a table of variants and associated igv views for each variant.  Variant
-reports are created with command line script ```create_report```.  Command line arguments are described below.
+A report consists of a table of sites or regions and associated igv views for each sites.  Reports are created with 
+command line script ```create_report```.  Command line arguments are described below.
 Although _--tracks_ is optional, a typical report will include at least an alignment track
 (BAM or CRAM) file from which the variants were called.  
 
 **Arguments:**
 * Required
-    * variants    _vcf or bed file of variant sites_
+    * sites    _vcf or bed file of genomic sites_
     * fasta   _reference fasta file, must be indexed_
 * Optional
     * --tracks _comma-delimited list of track files, see below for supported formats_
@@ -61,8 +61,8 @@ Although _--tracks_ is optional, a typical report will include at least an align
 
 **Track file formats:**
 
-Currently supported track file formats are BAM, VCF, BED, GFF3, and GTF.   All files, with the exception of the
-variants file, must be indexed.   Indexes for all supported formats can be created with pysam or samtools
+Currently supported track file formats are BAM, CRAM, VCF, BED, GFF3, and GTF.  FASTA. BAM, CRAM, and VCF  files must 
+be indexed.  Tabix is supported for other file types and it is recommended that all large files be indexed.   \
 
 ## Examples
 

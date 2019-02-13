@@ -37,9 +37,9 @@ def merge_regions(regions, threhold = 500):
     return merged_regions
 
 
-def parse_region(region):
+def parse_region(locus_string):
 
-    tokens = region.split(":")
+    tokens = locus_string.split(":")
     chr = tokens[0]
 
     t2 = tokens[1].split('-')

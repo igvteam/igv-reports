@@ -1,20 +1,33 @@
 import pysam
 
-def get_data(vcfFile, region = None):
+def get_data(path, region = None):
 
-    vcf = pysam.VariantFile(vcfFile)
+    vcf = VcfReader(path)
 
-    header = vcf.header
+    return vcf.slice(region)
 
-    fileString = str(header)
 
-    if region == None:
-        records = vcf.fetch()
-    else:
-        records = vcf.fetch(region['chr'], region['start'], region['end'])
+class VcfReader:
 
-    for rec in records:
+    def __init__(self, path):
 
-        fileString += (str(rec))
+        self.file = pysam.VariantFile(path)
 
-    return fileString
+    def slice(self, region = None):
+
+        vcf = self.file
+        header = vcf.header
+
+        fileString = str(header)
+
+        if region == None:
+            records = vcf.fetch()
+        else:
+            records = vcf.fetch(region['chr'], region['start'], region['end'])
+
+        for rec in records:
+
+            fileString += (str(rec))
+
+        return fileString
+

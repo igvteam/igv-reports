@@ -1,9 +1,10 @@
-import os
+
 from base64 import b64encode
 from gzip import compress
 import argparse
-from igv_reports import bam, vcf, tabix
-from igv_reports.regions import parse_region
+from . import utils
+from .regions import parse_region
+
 
 #This module exports functions to convert text or binary data to a data URI readable by igv.js.
 
@@ -29,66 +30,11 @@ def get_data_uri(data):
 
 
 def file_to_data_uri(filename, filetype=None, genomic_range=None):
-
-    if not filetype:
-        filetype = _infer_filetype(filename)
-    else:
-        filetype = filetype.lower()
-
-    data = _get_data(filename, filetype, genomic_range)
-
+    reader = utils.getreader(filename, filetype)
+    region = parse_region(genomic_range)
+    data = reader.slice(region)
     data_uri = get_data_uri(data)
-
     return data_uri
-
-
-def _get_data(filename, filetype, region):
-
-    if filetype == "bam" or filetype == "cram":
-        return bam.get_data(filename, region)
-
-    elif filetype == "vcf":
-        return vcf.get_data(filename, region)
-
-    elif _istabix(filename):
-        return tabix.get_data(filename, region)
-
-    else:
-
-        if region != None:
-            raise Exception("Track files must be indexed with tabix.  No index found for: " + filename)
-
-        if filename.endswith(".gz"):
-            with open(filename, "rb") as f:
-                return f.read()
-        else:
-            with open(filename,"r") as f:
-                return f.read()
-
-
-
-def _infer_filetype(filename):
-
-    filename = filename.lower()
-
-    if filename.endswith(".gz"):
-        filename = filename[:-3]
-
-    idx = filename.rfind(".")
-    if idx > 0:
-        return filename[idx+1:]
-    else:
-        return None
-
-
-
-def _istabix(filename):
-
-    # If this is a url we will be hopeful that the index is there.  pysam will throw an exception if it is not
-    if (filename.startswith("http://") or filename.startswith("https://")) and filename.endswith(".gz"):
-        return True
-    else:
-        return filename.endswith(".gz") and (os.path.exists(filename + ".tbi") or os.path.exists(filename + ".csi"))
 
 
 def main():

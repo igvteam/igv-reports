@@ -1,6 +1,6 @@
 import json
 
-from .bed import parse
+from .feature import parse
 
 
 class BedTable:

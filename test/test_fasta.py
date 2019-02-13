@@ -21,9 +21,6 @@ class FastaTest(unittest.TestCase):
 
         data = fasta.get_data('data/finspector.fa', region)
 
-        print('\n')
-        print(data)
-
         self.assertTrue(data)
         self.assertEqual(expected, data)
 

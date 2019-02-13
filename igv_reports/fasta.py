@@ -20,7 +20,7 @@ def get_data(fasta_file,region=None):
 
         fasta = pysam.FastaFile(fasta_file)
 
-        slice_seq = fasta.fetch(chr , start, end)
+        slice_seq = fasta.fetch(chr, start, end)
 
         fasta.close()
 

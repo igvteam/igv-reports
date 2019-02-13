@@ -4,13 +4,14 @@ import json
 import math
 import argparse
 from urllib.request import urlopen
-from igv_reports import fasta, ideogram, datauri, tracks
-from igv_reports.variant_table import VariantTable
-from igv_reports.bed_table import BedTable
+from igv_reports import fasta, ideogram, datauri, tracks, feature, bam, vcf, utils
+from igv_reports.varianttable import VariantTable
+from igv_reports.bedtable import BedTable
+
 
 def create_report(args):
 
-    variants_file = args.variants
+    variants_file = args.sites
 
     if variants_file.endswith(".vcf") or variants_file.endswith (".vcf.gz"):
         info_columns = args.infoColumns.split(",") if args.infoColumns else None
@@ -22,6 +23,18 @@ def create_report(args):
     table_json = table.to_JSON()
 
     session_dict = {}
+
+    # Create file readers for tracks.  This is done outside the loop so initialization happens onc
+    trackreaders = []
+    if (args.tracks):
+        trackList = args.tracks.split(',')
+        for track in trackList:
+            reader = utils.getreader(track)
+            trackreaders.append({
+                "track": track,
+                "reader": reader
+            })
+
 
     # loop through variants creating an igv.js session for each one
     for tuple in table.features:
@@ -63,15 +76,15 @@ def create_report(args):
             "tracks": []
         }
 
-        if (args.tracks):
-            trackList = args.tracks.split(',')
-            for track in trackList:
-                trackObj = tracks.get_track_json_dict(track)
-                trackObj["url"] = datauri.file_to_data_uri(track, trackObj['format'], region)
+        for tr in trackreaders:
 
-
-                if(trackObj["type"] == "alignment"):
-                    trackObj["height"] = 500
+            track = tr["track"]
+            reader = tr["reader"]
+            trackObj = tracks.get_track_json_dict(track)
+            data = reader.slice(region)
+            trackObj["url"] = datauri.get_data_uri(data)
+            if(trackObj["type"] == "alignment"):
+                trackObj["height"] = 500
 
                 # Sort TODO -- do this only for SNV
                 # if (trackObj["type"]) == "alignment":
@@ -80,7 +93,7 @@ def create_report(args):
                 #         "locus": chr + ":" + str(variant.pos - 1)
                 #     }
 
-                session_json["tracks"].append(trackObj)
+            session_json["tracks"].append(trackObj)
 
 
         # Build the session data URI
@@ -141,7 +154,7 @@ def inline_script(line, o):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("variants", help="vcf file defining variants, required")
+    parser.add_argument("sites", help="vcf file defining variants, required")
     parser.add_argument("fasta", help="reference fasta file, required")
     parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
     parser.add_argument("--tracks", help="comma-delimited list of track files")

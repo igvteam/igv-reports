@@ -1,15 +1,15 @@
 import unittest
 
-import igv_reports.regions
+from igv_reports import regions
 
 
 class RegionsTest(unittest.TestCase):
 
     def test_merge_regions(self):
 
-        regions = ["chr1:1000-2000", "chr1:1005-3000", "chr1:2000-2500", "chr1:50000-60000", "chr2:200"]
+        rlist = ["chr1:1000-2000", "chr1:1005-3000", "chr1:2000-2500", "chr1:50000-60000", "chr2:200"]
 
-        merged_regions = igv_reports.regions.merge_regions(regions)
+        merged_regions = regions.merge_regions(rlist)
 
         self.assertEquals(3, len(merged_regions))
 
