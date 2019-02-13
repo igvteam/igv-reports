@@ -31,7 +31,7 @@ def get_data_uri(data):
 
 def file_to_data_uri(filename, filetype=None, genomic_range=None):
     reader = utils.getreader(filename, filetype)
-    region = parse_region(genomic_range)
+    region = parse_region(genomic_range) if genomic_range else None
     data = reader.slice(region)
     data_uri = get_data_uri(data)
     return data_uri
