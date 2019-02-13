@@ -25,7 +25,6 @@ class FeatureReader:
             try:
                 tabix = pysam.TabixFile(path)
             except:
-                print("Error opening as a tabix file: " + path)
                 tabix = None
 
         if tabix:
