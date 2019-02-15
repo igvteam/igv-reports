@@ -6,18 +6,9 @@ Python application to generate self-contained igv.js pages that can be opened wi
 
 #### Prerequisites
 
-igv-reports requires Python 3.6 or greater.  As with all pythong projects use of a virtual enviornment is recommended. 
-Instructions for creating a virtual environment using ```conda``` follow.
+igv-reports requires Python 3.6 or greater and pip.  As with all pythong projects use of a virtual enviornment is recommended.
+Instructions for creating a virtual environment using _conda_ are [below](#creating-a-virtual-environment) 
 
-#### 1. Install Anaconda:  https://docs.anaconda.com/anaconda/
-
-#### 2. Create a virtual environment
-
-```bash
-conda create -n reports python=3.7.1
-conda activate
-conda install pip
-```
 
 #### Installing igv-reports
 
@@ -62,12 +53,11 @@ Although _--tracks_ is optional, a typical report will include at least an align
 **Track file formats:**
 
 Currently supported track file formats are BAM, CRAM, VCF, BED, GFF3, and GTF.  FASTA. BAM, CRAM, and VCF  files must 
-be indexed.  Tabix is supported for other file types and it is recommended that all large files be indexed.   \
+be indexed.  Tabix is supported for other file types and it is recommended that all large files be indexed.   
 
 ## Examples
 
 Data for the examples are available for [download](https://s3.amazonaws.com/igv.org.test/reports/examples.zip).
-
 
 #### Creating a variant report from a VCF file:  
 
@@ -107,3 +97,16 @@ https://s3.amazonaws.com/1000genomes/data/HG00096/alignment/HG00096.alt_bwamem_G
 ```
 
 
+## Creating a virtual environment
+
+Instructions for creating a virtual environment using ```conda``` follow.
+
+#### 1. Install Anaconda:  https://docs.anaconda.com/anaconda/
+
+#### 2. Create a virtual environment
+
+```bash
+conda create -n reports python=3.7.1
+conda activate
+conda install pip
+```
