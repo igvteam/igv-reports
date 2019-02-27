@@ -14,47 +14,40 @@ class VariantTable:
         self.variants = []
         self.features = []   #Bed-like features
 
-        unique_id = 1
-        for var in vcf.fetch():
+        for unique_id, var in enumerate(vcf.fetch()):
             self.variants.append((var, unique_id))
             chr = var.chrom
             start = var.pos - 1
             end = start + 1       #TODO -- handle structure variants and deletions > 1 base
             self.features.append((Feature(chr, start, end, ''), unique_id))
-            unique_id += 1
 
     def to_JSON(self):
 
 
         jsonArray = [];
 
-        for tuple in self.variants:
-
-            variant = tuple[0]
-            unique_id = tuple[1]
-            obj = dict()
-            obj["unique_id"] = unique_id
-            obj["CHROM"] = variant.chrom
-            obj["POSITION"] = variant.pos
-            obj["REF"] = variant.ref
-            obj["ALT"] = ','.join(variant.alts)
+        for variant, unique_id in self.variants:
+            obj = {
+                "unique_id": unique_id,
+                "CHROM": variant.chrom,
+                "POSITION": variant.pos,
+                "REF": variant.ref,
+                "ALT": ','.join(variant.alts),
+            }
 
             for h in self.infoFields:
+                v = ''
+                if h in variant.info:
+                    if h == "ANN":
+                        v = decode_ann(variant)
+                    else:
+                        v = variant.info[h]
+                        if not isinstance(v, str):
+                            v = ','.join(map(render_value, v))
 
-                keys = set(variant.info.keys())
-
-                if h in keys:
-                    v = ""
-                    tuples = variant.info[h]
-                    for e in tuples:
-                        if(v):
-                            v = v + ","
-                        v = v + str(e)
-                else:
-                    v = ''
 
                 if h == "COSMIC_ID":
-                    v = '<a href = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=4006021" target="_blank">' + v + '</a>'
+                    v = '<a href = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={id}" target="_blank">{v}</a>'.format(v=v, id=v[4:])
 
                 obj[h] = v
 
@@ -63,5 +56,34 @@ class VariantTable:
         return json.dumps(jsonArray)
 
 
+def render_value(v):
+    """Render given value to string."""
+    if isinstance(v, float):
+        # ensure that we don't waste space by insignificant digits
+        return f"{v:.2g}"
+    return str(v)
 
 
+def decode_ann(variant):
+    """Decode the standardized ANN field to something human readable."""
+    annotations = [e.split("|") for e in variant.info["ANN"]]
+    effects = []
+    for allele in variant.alts:
+        for ann in annotations:
+            ann_allele, kind, impact, gene = ann[:4]
+            aa_mod = ann[10]
+            if aa_mod:
+                # add separator if present
+                aa_mod = f':{aa_mod}'
+
+            if allele != ann_allele:
+                continue
+
+            full = "|".join(ann)
+            # Keep the most severe effect.
+            # Link out to Genecards and show the full record in a tooltip.
+            effects.append(f'<a href="https://www.genecards.org/Search/Keyword?'
+                           f'queryString={gene}" target="_blank">{gene}</a>:<abbr title="{full}">'
+                           f'{kind}{aa_mod}</abbr>')
+            break
+    return ",".join(effects)
