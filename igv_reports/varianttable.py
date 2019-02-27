@@ -65,7 +65,7 @@ def decode_ann(variant):
             aa_mod = ann[10]
             if aa_mod:
                 # add separator if present
-                aa_mod = ':{aa_mod}'
+                aa_mod = f':{aa_mod}'
 
             if allele != ann_allele:
                 continue
