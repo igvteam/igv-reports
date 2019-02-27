@@ -43,7 +43,7 @@ class VariantTable:
                     else:
                         v = variant.info[h]
                         if not isinstance(v, str):
-                            v = ','.join(map(str, v))
+                            v = ','.join(map(render_value, v))
 
 
                 if h == "COSMIC_ID":
@@ -56,7 +56,16 @@ class VariantTable:
         return json.dumps(jsonArray)
 
 
+def render_value(v):
+    """Render given value to string."""
+    if isinstance(v, float):
+        # ensure that we don't waste space by insignificant digits
+        return f"{v:.2g}"
+    return str(v)
+
+
 def decode_ann(variant):
+    """Decode the standardized ANN field to something human readable."""
     annotations = [e.split("|") for e in variant.info["ANN"]]
     effects = []
     for allele in variant.alts:
@@ -71,7 +80,8 @@ def decode_ann(variant):
                 continue
 
             full = "|".join(ann)
-            # keep the most severe effect
+            # Keep the most severe effect.
+            # Link out to Genecards and show the full record in a tooltip.
             effects.append(f'<a href="https://www.genecards.org/Search/Keyword?'
                            f'queryString={gene}" target="_blank">{gene}</a>:<abbr title="{full}">'
                            f'{kind}{aa_mod}</abbr>')
