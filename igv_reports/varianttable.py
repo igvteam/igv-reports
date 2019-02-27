@@ -14,47 +14,36 @@ class VariantTable:
         self.variants = []
         self.features = []   #Bed-like features
 
-        unique_id = 1
-        for var in vcf.fetch():
+        for unique_id, var in enumerate(vcf.fetch()):
             self.variants.append((var, unique_id))
             chr = var.chrom
             start = var.pos - 1
             end = start + 1       #TODO -- handle structure variants and deletions > 1 base
             self.features.append((Feature(chr, start, end, ''), unique_id))
-            unique_id += 1
 
     def to_JSON(self):
 
 
         jsonArray = [];
 
-        for tuple in self.variants:
-
-            variant = tuple[0]
-            unique_id = tuple[1]
-            obj = dict()
-            obj["unique_id"] = unique_id
-            obj["CHROM"] = variant.chrom
-            obj["POSITION"] = variant.pos
-            obj["REF"] = variant.ref
-            obj["ALT"] = ','.join(variant.alts)
+        for variant, unique_id in self.variants:
+            obj = {
+                "unique_id": unique_id,
+                "CHROM": variant.chrom,
+                "POSITION": variant.pos,
+                "REF": variant.ref,
+                "ALT": ','.join(variant.alts),
+            }
 
             for h in self.infoFields:
-
-                keys = set(variant.info.keys())
-
-                if h in keys:
-                    v = ""
-                    tuples = variant.info[h]
-                    for e in tuples:
-                        if(v):
-                            v = v + ","
-                        v = v + str(e)
-                else:
-                    v = ''
+                v = ''
+                if h in variant.info:
+                    v = variant.info[h]
+                    if not isinstance(v, str):
+                        v = ','.join(map(str, v))
 
                 if h == "COSMIC_ID":
-                    v = '<a href = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=4006021" target="_blank">' + v + '</a>'
+                    v = '<a href = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={id}" target="_blank">{v}</a>'.format(v=v, id=v[4:])
 
                 obj[h] = v
 
