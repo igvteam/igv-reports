@@ -38,9 +38,13 @@ class VariantTable:
             for h in self.infoFields:
                 v = ''
                 if h in variant.info:
-                    v = variant.info[h]
-                    if not isinstance(v, str):
-                        v = ','.join(map(str, v))
+                    if h == "ANN":
+                        v = decode_ann(variant)
+                    else:
+                        v = variant.info[h]
+                        if not isinstance(v, str):
+                            v = ','.join(map(str, v))
+
 
                 if h == "COSMIC_ID":
                     v = '<a href = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={id}" target="_blank">{v}</a>'.format(v=v, id=v[4:])
@@ -52,5 +56,24 @@ class VariantTable:
         return json.dumps(jsonArray)
 
 
+def decode_ann(variant):
+    annotations = [e.split("|") for e in variant.info["ANN"]]
+    effects = []
+    for allele in variant.alts:
+        for ann in annotations:
+            ann_allele, kind, impact, gene = ann[:4]
+            aa_mod = ann[10]
+            if aa_mod:
+                # add separator if present
+                aa_mod = ':{aa_mod}'
 
+            if allele != ann_allele:
+                continue
 
+            full = "|".join(ann)
+            # keep the most severe effect
+            effects.append(f'<a href="https://www.genecards.org/Search/Keyword?'
+                           f'queryString={gene}" target="_blank">{gene}</a>:<abbr title="{full}">'
+                           f'{kind}{aa_mod}</abbr>')
+            break
+    return ",".join(effects)
