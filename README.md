@@ -6,7 +6,7 @@ Python application to generate self-contained igv.js pages that can be opened wi
 
 #### Prerequisites
 
-igv-reports requires Python 3.6 or greater and pip.  As with all pythong projects use of a virtual enviornment is recommended.
+igv-reports requires Python 3.6 or greater and pip.  As with all Python projects use of a virtual enviornment is recommended.
 Instructions for creating a virtual environment using _conda_ are [below](#creating-a-virtual-environment) 
 
 
