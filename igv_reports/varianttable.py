@@ -6,11 +6,12 @@ from .feature import Feature
 class VariantTable:
 
     # Always remember the *self* argument
-    def __init__(self, vcfFile, infoColumns=None):
+    def __init__(self, vcfFile, info_columns, sample_columns):
 
         vcf = pysam.VariantFile(vcfFile)
 
-        self.infoFields =  infoColumns if infoColumns else []
+        self.info_fields =  info_columns
+        self.sample_fields = sample_columns
         self.variants = []
         self.features = []   #Bed-like features
 
@@ -24,44 +25,76 @@ class VariantTable:
     def to_JSON(self):
 
 
-        jsonArray = [];
+        json_array = [];
 
         for variant, unique_id in self.variants:
             obj = {
-                "unique_id": unique_id,
-                "CHROM": variant.chrom,
-                "POSITION": variant.pos,
-                "REF": variant.ref,
-                "ALT": ','.join(variant.alts),
+                'unique_id': unique_id,
+                'CHROM': variant.chrom,
+                'POSITION': variant.pos,
+                'REF': variant.ref,
+                'ALT': ','.join(variant.alts),
+                'ID': ''
             }
 
-            for h in self.infoFields:
+            if variant.id is not None:
+                obj['ID'] = render_ids(variant.id)
+
+            for h in self.info_fields:
                 v = ''
                 if h in variant.info:
-                    if h == "ANN":
+                    if h == 'ANN':
                         v = decode_ann(variant)
+                    elif h == 'COSMIC_ID':
+                        v = render_id(v)
                     else:
-                        v = variant.info[h]
-                        if not isinstance(v, str):
-                            v = ','.join(map(render_value, v))
-
-
-                if h == "COSMIC_ID":
-                    v = '<a href = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={id}" target="_blank">{v}</a>'.format(v=v, id=v[4:])
+                        v = render_values(variant.info[h])
 
                 obj[h] = v
 
-            jsonArray.append(obj)
+            for h in self.sample_fields:
+                for sample, values in variant.samples.items():
+                    v = ''
+                    try:
+                        v = values[h]
+                    except KeyError:
+                        # ignore if key is not present
+                        pass
 
-        return json.dumps(jsonArray)
+                    obj[f'{sample}:{h}'] = render_values(v)
+
+            json_array.append(obj)
+
+        if not any(obj['ID'] for obj in json_array):
+            # Remove ID column if none of the records actually had an ID.
+            for obj in json_array:
+                del obj['ID']
+        return json.dumps(json_array)
 
 
 def render_value(v):
     """Render given value to string."""
     if isinstance(v, float):
         # ensure that we don't waste space by insignificant digits
-        return f"{v:.2g}"
+        return f'{v:.2g}'
     return str(v)
+
+
+def render_values(v):
+    if not isinstance(v, str):
+        return ','.join(map(render_value, v))
+    return v
+
+
+def render_id(v):
+    if v.startswith('COSM'):
+        return (f'<a href = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?'
+                f'id={v[4:]}" target="_blank">{v}</a>')
+    return v
+
+
+def render_ids(v):
+    return ','.join(map(render_id, v.split(';')))
 
 
 def decode_ann(variant):
@@ -79,11 +112,11 @@ def decode_ann(variant):
             if allele != ann_allele:
                 continue
 
-            full = "|".join(ann)
+            full = '|'.join(ann)
             # Keep the most severe effect.
             # Link out to Genecards and show the full record in a tooltip.
-            effects.append(f'<a href="https://www.genecards.org/Search/Keyword?'
-                           f'queryString={gene}" target="_blank">{gene}</a>:<abbr title="{full}">'
+            effects.append(f'<a href="https://www.genecards.org/cgi-bin/carddisp.pl?'
+                           f'gene={gene}" target="_blank">{gene}</a>:<abbr title="{full}">'
                            f'{kind}{aa_mod}</abbr>')
             break
-    return ",".join(effects)
+    return ','.join(effects)
