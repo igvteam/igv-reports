@@ -1,4 +1,4 @@
-# igv.js-reports
+# igv-reports
 
 Python application to generate self-contained igv.js pages that can be opened within a browser with "file" protocol.   
 
@@ -106,7 +106,8 @@ Instructions for creating a virtual environment using ```conda``` follow.
 #### 2. Create a virtual environment
 
 ```bash
-conda create -n reports python=3.7.1
+conda create -n myenv python=3.7.1
+conda install -n myenv pip
 conda activate
 conda install pip
 ```

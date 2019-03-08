@@ -19,7 +19,7 @@ python -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 **Upload to pypi**
 
 ```bash
-python twine upload
+python -m twine upload dist/*
 ```
 
 
