@@ -10,8 +10,8 @@ class VariantTable:
 
         vcf = pysam.VariantFile(vcfFile)
 
-        self.info_fields =  info_columns
-        self.sample_fields = sample_columns
+        self.info_fields =  info_columns or []
+        self.sample_fields = sample_columns or []
         self.variants = []
         self.features = []   #Bed-like features
 

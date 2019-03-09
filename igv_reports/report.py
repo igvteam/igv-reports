@@ -25,12 +25,13 @@ def create_report(args):
 
     # Create file readers for tracks.  This is done outside the loop so initialization happens onc
     trackreaders = []
-    for track in args.tracks:
-        reader = utils.getreader(track)
-        trackreaders.append({
-            "track": track,
-            "reader": reader
-        })
+    if args.tracks is not None:
+        for track in args.tracks:
+            reader = utils.getreader(track)
+            trackreaders.append({
+                "track": track,
+                "reader": reader
+            })
 
 
     # loop through variants creating an igv.js session for each one
