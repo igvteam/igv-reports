@@ -42,11 +42,12 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * sites    _vcf or bed file of genomic sites_
     * fasta   _reference fasta file, must be indexed_
 * Optional
-    * --tracks _comma-delimited list of track files, see below for supported formats_
+    * --tracks _space-delimited list of track files, see below for supported formats_
     * --ideogram _ideogram file in UCSC cytoIdeo format_
     * --template _html template file_
     * --output _output file name default="igvjs_viewer.html"_
-    * --infoColumns _comma delimited list of VCF info field names to include in variant table_
+    * --infoColumns _space delimited list of VCF info field names to include in variant table_
+    * --sample-columns _space delimited list of VCF sample/format field names to include in variant table_
     * --flanking _genomic region to include either side of variant, default=1000_
     * --standalone _embed all javascript referenced via ```<script>``` tags in the page_
 
@@ -63,14 +64,8 @@ Data for the examples are available for [download](https://s3.amazonaws.com/igv.
 
 ```bash
 
-create_report \ 
-examples/variants/variants.vcf.gz \
-https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
---ideogram examples/variants/cytoBandIdeo.txt \
---flanking 1000 \
---infoColumns GENE,TISSUE,TUMOR,COSMIC_ID,GENE,SOMATIC \
---tracks examples/variants/cancer.vcf.gz,examples/variants/recalibrated.bam,examples/variants/refgene.sort.bed.gz \
---output igvjs_viewer.html
+create_report examples/variants/variants.vcf.gz https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --tracks examples/variants/variants.vcf.gz examples/variants/recalibrated.bam examples/variants/refgene.sort.bed.gz --output igvjs_viewer.html
+
 
 ```
 
