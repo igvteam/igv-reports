@@ -14,8 +14,7 @@ def create_report(args):
     variants_file = args.sites
 
     if variants_file.endswith(".vcf") or variants_file.endswith (".vcf.gz"):
-        info_columns = args.infoColumns.split(",") if args.infoColumns else None
-        table = VariantTable(variants_file, info_columns)
+        table = VariantTable(variants_file, args.info_columns, args.sample_columns)
 
     elif variants_file.endswith(".bed") or variants_file.endswith(".bed.gz"):
         table = BedTable(variants_file)
@@ -26,9 +25,8 @@ def create_report(args):
 
     # Create file readers for tracks.  This is done outside the loop so initialization happens onc
     trackreaders = []
-    if (args.tracks):
-        trackList = args.tracks.split(',')
-        for track in trackList:
+    if args.tracks is not None:
+        for track in args.tracks:
             reader = utils.getreader(track)
             trackreaders.append({
                 "track": track,
@@ -157,10 +155,11 @@ def main():
     parser.add_argument("sites", help="vcf file defining variants, required")
     parser.add_argument("fasta", help="reference fasta file, required")
     parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
-    parser.add_argument("--tracks", help="comma-delimited list of track files")
+    parser.add_argument("--tracks", nargs="+", help="list of track files")
     parser.add_argument("--template", help="html template file", default=None)
     parser.add_argument("--output", help="output file name", default="igvjs_viewer.html")
-    parser.add_argument("--infoColumns", help="comma delimited list of VCF info field names to include in variant table")
+    parser.add_argument("--info-columns", nargs="+", help="list of VCF info field names to include in variant table")
+    parser.add_argument("--sample-columns", nargs="+", help="list of VCF sample/format field names to include in variant table")
     parser.add_argument("--flanking", help="genomic region to include either side of variant", default=1000)
     parser.add_argument('--standalone', help='Print more data', action='store_true')
     args = parser.parse_args()
