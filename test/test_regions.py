@@ -11,9 +11,9 @@ class RegionsTest(unittest.TestCase):
 
         merged_regions = regions.merge_regions(rlist)
 
-        self.assertEquals(3, len(merged_regions))
+        self.assertEqual(3, len(merged_regions))
 
         m = merged_regions[0]
-        self.assertEquals('chr1', m['chr'])
-        self.assertEquals(1000, m['start'])
-        self.assertEquals(3000, m['end'])
+        self.assertEqual('chr1', m['chr'])
+        self.assertEqual(1000, m['start'])
+        self.assertEqual(3000, m['end'])

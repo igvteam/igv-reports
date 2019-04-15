@@ -6,7 +6,7 @@ from .feature import Feature
 class VariantTable:
 
     # Always remember the *self* argument
-    def __init__(self, vcfFile, info_columns, sample_columns):
+    def __init__(self, vcfFile, info_columns = None, sample_columns = None):
 
         vcf = pysam.VariantFile(vcfFile)
 
