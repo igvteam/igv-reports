@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(name='igv-reports',
                  packages=['igv_reports'],
-                 version='0.2.1',
+                 version='0.9.0',
                  description='Creates self-contained html pages for visual variant review with IGV (igv.js).',
                  long_description=long_description,
                  long_description_content_type="text/markdown",
