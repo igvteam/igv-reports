@@ -20,8 +20,4 @@ class BamReader:
         if region:
             range_string = region['chr'] + ":" + str(region['start']) + "-" + str(region['end'])
             args.append(range_string)
-
-        args2 = [self.filename, range_string]
-        samview = pysam.view(*args2)
-
         return pysam.view(*args)

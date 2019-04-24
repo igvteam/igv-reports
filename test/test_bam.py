@@ -18,3 +18,10 @@ class BAMTest(unittest.TestCase):
         bam_file_path = str((pathlib.Path(__file__).parent / "data/minigenome/alignments.bam").resolve())
         data = bam.get_data(bam_file_path, region)
         self.assertTrue(data)
+
+
+    def test_bam_noregion(self):
+
+        bam_file_path = str((pathlib.Path(__file__).parent / "data/minigenome/alignments.bam").resolve())
+        data = bam.get_data(bam_file_path)
+        self.assertTrue(data)
