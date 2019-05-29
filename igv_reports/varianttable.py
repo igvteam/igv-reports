@@ -104,10 +104,15 @@ def decode_ann(variant):
     for allele in variant.alts:
         for ann in annotations:
             ann_allele, kind, impact, gene = ann[:4]
-            aa_mod = ann[10]
+            feature_id = ann[6]
+            nt_mod, aa_mod = ann[9:11]
             if aa_mod:
                 # add separator if present
                 aa_mod = f':{aa_mod}'
+            if nt_mod:
+                # add separator if present
+                nt_mod = f':{nt_mod}'
+
 
             if allele != ann_allele:
                 continue
@@ -117,6 +122,6 @@ def decode_ann(variant):
             # Link out to Genecards and show the full record in a tooltip.
             effects.append(f'<a href="https://www.genecards.org/cgi-bin/carddisp.pl?'
                            f'gene={gene}" target="_blank">{gene}</a>:<abbr title="{full}">'
-                           f'{kind}{aa_mod}</abbr>')
+                           f'{kind}:{feature_id}{aa_mod}{nt_mod}</abbr>')
             break
     return ','.join(effects)
