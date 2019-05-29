@@ -81,9 +81,9 @@ def render_value(v):
 
 
 def render_values(v):
-    if not isinstance(v, str):
-        return ','.join(map(render_value, v))
-    return v
+    if isinstance(v, str) or isinstance(v, int) or isinstance(v, float):
+        return render_value(v)
+    return ','.join(map(render_value, v))
 
 
 def render_id(v):
