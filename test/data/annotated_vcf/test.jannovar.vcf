@@ -1,0 +1,19 @@
+##fileformat=VCFv4.2
+##FORMAT=<ID=AF,Number=A,Type=Float,Description="Maximum a posteriori probability estimate of allele frequency">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth (reads with MQ=255 or with bad mates are filtered)">
+##FORMAT=<ID=OBS,Number=A,Type=String,Description="Posterior odds for alt allele of each fragment as Kass Raftery scores: N=none, B=barely, P=positive, S=strong, V=very strong (lower case if probability for correct mapping of fragment is <95%)">
+##FORMAT=<ID=SB,Number=A,Type=String,Description="Strand bias estimate: + indicates that ALT allele is associated with forward strand, - indicates that ALT allele is associated with reverse strand, - indicates no strand bias.">
+##INFO=<ID=ANN,Number=1,Type=String,Description="Functional annotations:'Allele|Annotation|Annotation_Impact|Gene_Name|Gene_ID|Feature_Type|Feature_ID|Transcript_BioType|Rank|HGVS.c|HGVS.p|cDNA.pos / cDNA.length|CDS.pos / CDS.length|AA.pos / AA.length|Distance|ERRORS / WARNINGS / INFO'">
+##INFO=<ID=PROB_ABSENT,Number=A,Type=Float,Description="Posterior probability for event absent">
+##INFO=<ID=PROB_ALT,Number=A,Type=Float,Description="Posterior probability for event alt">
+##INFO=<ID=PROB_ARTIFACT,Number=A,Type=Float,Description="Posterior probability for strand bias artifact">
+##INFO=<ID=PROB_VERY_RARE,Number=A,Type=Float,Description="Posterior probability for event very_rare">
+##INFO=<ID=SVLEN,Number=A,Type=Integer,Description="Difference in length between REF and ALT alleles">
+##bcftools_viewCommand=view -o varlociraptor/filter/fdr/test_snvs.vcf -O v varlociraptor/filter/fdr/test_snvs.bcf; Date=Tue May 28 17:02:12 2019
+##bcftools_viewVersion=1.9+htslib-1.9
+##contig=<ID=chr7,length=159345973>
+##jannovarCommand=annotate-vcf --database data/ref/jannovar/hg38/refseq/hg38_refseq.ser --input-vcf varlociraptor/filter/fdr/test_snvs.vcf --output-vcf jannovar/varlociraptor/filter/fdr/test_snvs.vcf.gz --show-all
+##jannovarVersion=0.25
+##bcftools_viewCommand=view test_snvs.vcf.gz; Date=Tue Jun 18 12:13:50 2019
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	tumor
+chr7	55181370	.	G	A	.	.	ANN=A|synonymous_variant|LOW|EGFR|1956|transcript|NM_001346897.1|Coding|19/26|c.2226G>A|p.(%3D)|2483/184056|2226/3276|742/1092||,A|synonymous_variant|LOW|EGFR|1956|transcript|NM_001346898.1|Coding|20/27|c.2361G>A|p.(%3D)|2618/184056|2361/3411|787/1137||,A|synonymous_variant|LOW|EGFR|1956|transcript|NM_001346899.1|Coding|19/27|c.2226G>A|p.(%3D)|2483/189060|2226/3498|742/1166||,A|synonymous_variant|LOW|EGFR|1956|transcript|NM_001346900.1|Coding|20/28|c.2202G>A|p.(%3D)|2415/98264|2202/3474|734/1158||,A|synonymous_variant|LOW|EGFR|1956|transcript|NM_001346941.1|Coding|14/22|c.1560G>A|p.(%3D)|1817/189060|1560/2832|520/944||,A|synonymous_variant|LOW|EGFR|1956|transcript|NM_005228.4|Coding|20/28|c.2361G>A|p.(%3D)|2618/189060|2361/3633|787/1211||;PROB_ABSENT=6086.16;PROB_ALT=0;PROB_ARTIFACT=3093.24;PROB_VERY_RARE=2789.3;SVLEN=.	DP:AF:OBS:SB	221:0.990543:116V-101V+2S-2N+:.
