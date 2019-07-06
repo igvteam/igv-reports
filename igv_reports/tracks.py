@@ -40,6 +40,7 @@ def get_track_type(format):
         "gff": "annotation",
         "gtf": "annotation",
         "bed": "annotation",
+        "refgene": "annotation",
         "vcf": "variant"
     }
     return dict[format]
