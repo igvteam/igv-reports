@@ -184,6 +184,7 @@ def infer_format(filename):
     Infer the genomic file format from the filename.  First known formats are checked.  Next presenece of
     the magic string "refgene" in the filename is checked for UCSC refgene files.  This is a legacy
     IGV convention.  The order is important, a recognized extension wins.
+    NOTE: Formats are for output data uris.  CRAM format is converted to BAM before output.
     :param filename:
     :return:
     '''
@@ -194,7 +195,7 @@ def infer_format(filename):
     if filename.endswith(".bam"):
         return "bam"
     if filename.endswith(".cram"):
-        return "cram"
+        return "bam"
     elif filename.endswith(".vcf"):
         return "vcf"
     elif filename.endswith(".bed"):
