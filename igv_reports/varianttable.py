@@ -99,7 +99,9 @@ def render_ids(v):
 
 def decode_ann(variant):
     """Decode the standardized ANN field to something human readable."""
-    annotations = [e.split("|") for e in variant.info["ANN"]]
+    annotations = ([variant.info['ANN'].split('|'
+                   )] if isinstance(variant.info['ANN'],
+                   str) else [e.split('|') for e in variant.info['ANN']])
     effects = []
     for allele in variant.alts:
         for ann in annotations:
