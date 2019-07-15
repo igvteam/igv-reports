@@ -118,8 +118,8 @@ def create_report(args):
 
             for i, line in enumerate(data):
 
-                if standalone and line.find("<script") and line.find(".js") > 0:
-                    print(inline_script(line, o))
+                if standalone and "<script" in line and line.find(".js") > 0:
+                    inline_script(line, o)
 
                 else:
                     j = line.find('"@TABLE_JSON@"')
