@@ -44,13 +44,18 @@ class VariantTable:
                 v = ''
                 if h in variant.info:
                     if h == 'ANN':
-                        v = decode_ann(variant)
+                        genes, effects, impacts, feature = decode_ann(variant)
                     elif h == 'COSMIC_ID':
                         v = render_id(v)
                     else:
                         v = render_values(variant.info[h])
-
-                obj[h] = v
+                if h == 'ANN':
+                    obj['GENE'] = genes
+                    obj['EFFECTS'] = effects
+                    obj['IMPACT'] = impacts
+                    obj['FEATURE'] = feature
+                else:
+                    obj[h] = v
 
             for h in self.sample_fields:
                 for sample, values in variant.samples.items():
@@ -102,7 +107,10 @@ def decode_ann(variant):
     annotations = ([variant.info['ANN'].split('|'
                    )] if isinstance(variant.info['ANN'],
                    str) else [e.split('|') for e in variant.info['ANN']])
+    genes = []
     effects = []
+    impacts = []
+    feature = []
     for allele in variant.alts:
         for ann in annotations:
             ann_allele, kind, impact, gene = ann[:4]
@@ -122,8 +130,15 @@ def decode_ann(variant):
             full = '|'.join(ann)
             # Keep the most severe effect.
             # Link out to Genecards and show the full record in a tooltip.
+            genes.append(f'<a href="https://www.genecards.org/cgi-bin/carddisp.pl?'
+                           f'gene={gene}" target="_blank">{gene}</a>')
+            effects.append(kind.replace('&', ', '))
+            impacts.append(impact)
+            feature.append(f'{feature_id}{aa_mod}{nt_mod}')
+            """
             effects.append(f'<a href="https://www.genecards.org/cgi-bin/carddisp.pl?'
                            f'gene={gene}" target="_blank">{gene}</a>:<abbr title="{full}">'
-                           f'{kind}:{feature_id}{aa_mod}{nt_mod}</abbr>')
+                           f'{kind}:{impact}:{feature_id}{aa_mod}{nt_mod}</abbr>')
+            """
             break
-    return ','.join(effects)
+    return ','.join(genes), ','.join(effects), ','.join(impacts), ','.join(feature)
