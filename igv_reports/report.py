@@ -14,7 +14,7 @@ def create_report(args):
     variants_file = args.sites
 
     if variants_file.endswith(".vcf") or variants_file.endswith (".vcf.gz"):
-        table = VariantTable(variants_file, args.info_columns, args.sample_columns)
+        table = VariantTable(variants_file, args.species, args.info_columns, args.sample_columns)
 
     elif variants_file.endswith(".bed") or variants_file.endswith(".bed.gz"):
         table = BedTable(variants_file)
@@ -160,6 +160,7 @@ def main():
     parser.add_argument("--output", help="output file name", default="igvjs_viewer.html")
     parser.add_argument("--info-columns", nargs="+", help="list of VCF info field names to include in variant table")
     parser.add_argument("--sample-columns", nargs="+", help="list of VCF sample/format field names to include in variant table")
+    parser.add_argument("--species", help="Latin species name with underscore as used by ensembl.org", default='homo_sapiens')
     parser.add_argument("--flanking", help="genomic region to include either side of variant", default=1000)
     parser.add_argument('--standalone', help='Print more data', action='store_true')
     args = parser.parse_args()
