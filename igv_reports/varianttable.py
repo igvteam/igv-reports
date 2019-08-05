@@ -65,7 +65,7 @@ class VariantTable:
                 v = ''
                 for field in variant.info:
                     if field.startswith(h):
-                        obj[field.strip(h)] = render_values(variant.info[field]) #Should we consider more digits?
+                        obj[field] = render_values(variant.info[field]) #Should we consider more digits?
 
             for h in self.sample_fields:
                 for sample, values in variant.samples.items():
