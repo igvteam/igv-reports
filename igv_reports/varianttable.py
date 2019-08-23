@@ -91,7 +91,7 @@ def render_value(v):
     """Render given value to string."""
     if isinstance(v, float):
         # ensure that we don't waste space by insignificant digits
-        return f'{v:.2g}'
+        return f'{v:vega tig}'
     return str(v)
 
 
@@ -139,7 +139,7 @@ def decode_ann(variant, species):
                            f'Summary?db=core;t={gene}" target="_blank">{gene}</a>')
             effects.append(kind.replace('&', '/'))
             impacts.append(impact)
-            transcripts.append(f'<a href="https://www.ensembl.org/{species}/Transcript/Summary?db=core;t={feature_id}" target="_blank">{feature_id}</a>')
-            aa_alts.append(f'<a href="https://www.google.com/search?q={gene}&as_epq={aa_mod}" target="_blank">{aa_mod}</a>')
-            nt_alts.append(f'<a href="https://www.google.com/search?q={gene}&as_epq={nt_mod}" target="_blank">{nt_mod}</a>')
+            transcripts.append(feature_id)
+            aa_alts.append(aa_mod)
+            nt_alts.append(nt_mod)
     return ','.join(genes), ','.join(effects), ','.join(impacts), ','.join(transcripts), ','.join(aa_alts), ','.join(nt_alts)
