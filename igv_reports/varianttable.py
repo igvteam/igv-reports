@@ -6,7 +6,7 @@ from .feature import Feature
 class VariantTable:
 
     # Always remember the *self* argument
-    def __init__(self, vcfFile, species, info_columns = None, info_columns_prefixes = None, sample_columns = None):
+    def __init__(self, vcfFile, info_columns = None, info_columns_prefixes = None, sample_columns = None):
 
         vcf = pysam.VariantFile(vcfFile)
 
@@ -15,7 +15,6 @@ class VariantTable:
         self.sample_fields = sample_columns or []
         self.variants = []
         self.features = []   #Bed-like features
-        self.species = species
 
         for unique_id, var in enumerate(vcf.fetch()):
             self.variants.append((var, unique_id))
@@ -46,7 +45,7 @@ class VariantTable:
                 v = ''
                 if h in variant.info:
                     if h == 'ANN':
-                        genes, effects, impacts, transcript, aa_alt, nt_alt = decode_ann(variant, self.species)
+                        genes, effects, impacts, transcript, aa_alt, nt_alt = decode_ann(variant)
                     elif h == 'COSMIC_ID':
                         v = render_id(v)
                     else:
@@ -112,7 +111,7 @@ def render_ids(v):
     return ','.join(map(render_id, v.split(';')))
 
 
-def decode_ann(variant, species):
+def decode_ann(variant):
     """Decode the standardized ANN field to something human readable."""
     annotations = ([variant.info['ANN'].split('|'
                    )] if isinstance(variant.info['ANN'],
