@@ -135,8 +135,7 @@ def decode_ann(variant, species):
             full = '|'.join(ann)
             # Keep the most severe effect.
             # Link out to Genecards and show the full record in a tooltip.
-            genes.append(f'<a href="https://www.ensembl.org/{species}/Gene/'
-                           f'Summary?db=core;t={gene}" target="_blank">{gene}</a>')
+            genes.append(gene)
             effects.append(kind.replace('&', '/'))
             impacts.append(impact)
             transcripts.append(feature_id)
