@@ -6,11 +6,12 @@ from .feature import Feature
 class VariantTable:
 
     # Always remember the *self* argument
-    def __init__(self, vcfFile, species, info_columns = None, sample_columns = None):
+    def __init__(self, vcfFile, species, info_columns = None, info_columns_prefixes = None, sample_columns = None):
 
         vcf = pysam.VariantFile(vcfFile)
 
         self.info_fields =  info_columns or []
+        self.info_field_prefixes = info_columns_prefixes or []
         self.sample_fields = sample_columns or []
         self.variants = []
         self.features = []   #Bed-like features
@@ -59,6 +60,12 @@ class VariantTable:
                     obj['DNA ALTERATION'] = nt_alt
                 else:
                     obj[h] = v
+
+            for h in self.info_field_prefixes:
+                v = ''
+                for field in variant.info:
+                    if field.startswith(h):
+                        obj[field] = render_values(variant.info[field])
 
             for h in self.sample_fields:
                 for sample, values in variant.samples.items():
