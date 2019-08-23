@@ -91,7 +91,7 @@ def render_value(v):
     """Render given value to string."""
     if isinstance(v, float):
         # ensure that we don't waste space by insignificant digits
-        return f'{v:vega tig}'
+        return f'{v:.2g}'
     return str(v)
 
 
