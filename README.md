@@ -47,6 +47,7 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * --template _html template file_
     * --output _output file name default="igvjs_viewer.html"_
     * --info-columns _space delimited list of VCF info field names to include in variant table_
+    * --info-columns-prefixes _space delimited list of prefixes of VCF info field names to include in variant table_
     * --sample-columns _space delimited list of VCF sample/format field names to include in variant table_
     * --flanking _genomic region to include either side of variant, default=1000_
     * --standalone _embed all javascript referenced via ```<script>``` tags in the page_
