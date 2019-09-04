@@ -118,35 +118,48 @@ def create_report(args):
 
             for i, line in enumerate(data):
 
-                if standalone and "<script" in line and line.find(".js") > 0:
-                    inline_script(line, o)
+                if standalone:
+                    if line.strip().startswith("<script") and ".js\"" in line:
+                        inline_script(line, o, "js")
+                        continue
+                    elif line.strip().startswith("<link") and line.strip().endswith("css\">"):
+                        inline_script(line, o, "css")
+                        continue
+                j = line.find('"@TABLE_JSON@"')
+                if j >= 0:
+                    line = line.replace('"@TABLE_JSON@"', table_json)
 
-                else:
-                    j = line.find('"@TABLE_JSON@"')
-                    if j >= 0:
-                        line = line.replace('"@TABLE_JSON@"', table_json)
+                j = line.find('"@SESSION_DICTIONARY@"')
+                if j >= 0:
+                    line = line.replace('"@SESSION_DICTIONARY@"', session_dict)
 
-                    j = line.find('"@SESSION_DICTIONARY@"')
-                    if j >= 0:
-                        line = line.replace('"@SESSION_DICTIONARY@"', session_dict)
-
-                    o.write(line)
+                o.write(line)
 
 
-def inline_script(line, o):
+def inline_script(line, o, source_type):
     #<script type="text/javascript" src="https://igv.org/web/test/dist/igv.min.js"></script>
-    s = line.find('src="')
+    if source_type == "js":
+        s = line.find('src="')
+        offset = 5
+    elif source_type == "css":
+        s = line.find('href="')
+        offset = 6
     if s > 0:
         e = line.find('">', s)
-        url = line[s+5:e]
-
+        url = line[s+offset:e]
         response = urlopen(url)
-        js = response.read().decode('utf-8')
+        content = response.read().decode('utf-8')
         response.close()
+        if source_type == "js":
+            o.write('<script type="text/javascript">\n')
+        else:
+            o.write('<style type="text/css">\n')
+        o.write(content)
+        if source_type == "js":
+            o.write('</script>\n')
+        else:
+            o.write('</style>\n')
 
-        o.write('<script type="text/javascript">\n')
-        o.write(js)
-        o.write('</script>\n')
 
 
 
