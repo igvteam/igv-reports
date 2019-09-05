@@ -141,26 +141,26 @@ def inline_script(line, o, source_type):
     if source_type == "js":
         s = line.find('src="')
         offset = 5
+        o.write('<script type="text/javascript">\n')
     elif source_type == "css":
         s = line.find('href="')
         offset = 6
+        o.write('<style type="text/css">\n')
+    else:
+        raise KeyError("Inline script must be either js- or css-file")
     if s > 0:
         e = line.find('">', s)
         url = line[s+offset:e]
         response = urlopen(url)
         content = response.read().decode('utf-8')
         response.close()
-        if source_type == "js":
-            o.write('<script type="text/javascript">\n')
-        else:
-            o.write('<style type="text/css">\n')
         o.write(content)
         if source_type == "js":
             o.write('</script>\n')
         else:
             o.write('</style>\n')
-
-
+    else:
+        raise ValueError("No file path in {l} for inline script.".format(l=line))
 
 
 def main():
