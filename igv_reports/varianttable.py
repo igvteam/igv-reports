@@ -6,7 +6,7 @@ from .feature import Feature
 class VariantTable:
 
     # Always remember the *self* argument
-    def __init__(self, vcfFile, species, info_columns = None, info_columns_prefixes = None, sample_columns = None):
+    def __init__(self, vcfFile, info_columns = None, info_columns_prefixes = None, sample_columns = None):
 
         vcf = pysam.VariantFile(vcfFile)
 
@@ -15,7 +15,6 @@ class VariantTable:
         self.sample_fields = sample_columns or []
         self.variants = []
         self.features = []   #Bed-like features
-        self.species = species
 
         for unique_id, var in enumerate(vcf.fetch()):
             self.variants.append((var, unique_id))
@@ -46,7 +45,7 @@ class VariantTable:
                 v = ''
                 if h in variant.info:
                     if h == 'ANN':
-                        genes, effects, impacts, transcript, aa_alt, nt_alt = decode_ann(variant, self.species)
+                        genes, effects, impacts, transcript, gene_id, aa_alt, nt_alt = decode_ann(variant)
                     elif h == 'COSMIC_ID':
                         v = render_id(v)
                     else:
@@ -56,6 +55,7 @@ class VariantTable:
                     obj['EFFECTS'] = effects
                     obj['IMPACT'] = impacts
                     obj['TRANSCRIPT'] = transcript
+                    obj['GENE_ID'] = gene_id
                     obj['PROTEIN ALTERATION'] = aa_alt
                     obj['DNA ALTERATION'] = nt_alt
                 else:
@@ -112,7 +112,7 @@ def render_ids(v):
     return ','.join(map(render_id, v.split(';')))
 
 
-def decode_ann(variant, species):
+def decode_ann(variant):
     """Decode the standardized ANN field to something human readable."""
     annotations = ([variant.info['ANN'].split('|'
                    )] if isinstance(variant.info['ANN'],
@@ -121,11 +121,12 @@ def decode_ann(variant, species):
     effects = []
     impacts = []
     transcripts = []
+    gene_ids = []
     aa_alts = []
     nt_alts = []
     for allele in variant.alts:
         for ann in annotations:
-            ann_allele, kind, impact, gene = ann[:4]
+            ann_allele, kind, impact, gene, gene_id = ann[:5]
             feature_id = ann[6]
             nt_mod, aa_mod = ann[9:11]
 
@@ -135,11 +136,11 @@ def decode_ann(variant, species):
             full = '|'.join(ann)
             # Keep the most severe effect.
             # Link out to Genecards and show the full record in a tooltip.
-            genes.append(f'<a href="https://www.ensembl.org/{species}/Gene/'
-                           f'Summary?db=core;t={gene}" target="_blank">{gene}</a>')
+            genes.append(gene)
+            gene_ids.append(gene_id)
             effects.append(kind.replace('&', '/'))
             impacts.append(impact)
-            transcripts.append(f'<a href="https://www.ensembl.org/{species}/Transcript/Summary?db=core;t={feature_id}" target="_blank">{feature_id}</a>')
-            aa_alts.append(f'<a href="https://www.google.com/search?q={gene}&as_epq={aa_mod}" target="_blank">{aa_mod}</a>')
-            nt_alts.append(f'<a href="https://www.google.com/search?q={gene}&as_epq={nt_mod}" target="_blank">{nt_mod}</a>')
-    return ','.join(genes), ','.join(effects), ','.join(impacts), ','.join(transcripts), ','.join(aa_alts), ','.join(nt_alts)
+            transcripts.append(feature_id)
+            aa_alts.append(aa_mod)
+            nt_alts.append(nt_mod)
+    return ','.join(genes), ','.join(effects), ','.join(impacts), ','.join(transcripts), ','.join(gene_ids), ','.join(aa_alts), ','.join(nt_alts)

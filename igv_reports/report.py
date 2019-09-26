@@ -14,7 +14,7 @@ def create_report(args):
     variants_file = args.sites
 
     if variants_file.endswith(".vcf") or variants_file.endswith (".vcf.gz"):
-        table = VariantTable(variants_file, args.species, args.info_columns, args.info_columns_prefixes, args.sample_columns)
+        table = VariantTable(variants_file, args.info_columns, args.info_columns_prefixes, args.sample_columns)
 
     elif variants_file.endswith(".bed") or variants_file.endswith(".bed.gz"):
         table = BedTable(variants_file)
@@ -118,36 +118,49 @@ def create_report(args):
 
             for i, line in enumerate(data):
 
-                if standalone and "<script" in line and line.find(".js") > 0:
-                    inline_script(line, o)
+                if standalone:
+                    if line.strip().startswith("<script") and ".js\"" in line:
+                        inline_script(line, o, "js")
+                        continue
+                    elif line.strip().startswith("<link") and line.strip().endswith("css\">"):
+                        inline_script(line, o, "css")
+                        continue
+                j = line.find('"@TABLE_JSON@"')
+                if j >= 0:
+                    line = line.replace('"@TABLE_JSON@"', table_json)
 
-                else:
-                    j = line.find('"@TABLE_JSON@"')
-                    if j >= 0:
-                        line = line.replace('"@TABLE_JSON@"', table_json)
+                j = line.find('"@SESSION_DICTIONARY@"')
+                if j >= 0:
+                    line = line.replace('"@SESSION_DICTIONARY@"', session_dict)
 
-                    j = line.find('"@SESSION_DICTIONARY@"')
-                    if j >= 0:
-                        line = line.replace('"@SESSION_DICTIONARY@"', session_dict)
-
-                    o.write(line)
+                o.write(line)
 
 
-def inline_script(line, o):
+def inline_script(line, o, source_type):
     #<script type="text/javascript" src="https://igv.org/web/test/dist/igv.min.js"></script>
-    s = line.find('src="')
+    if source_type == "js":
+        s = line.find('src="')
+        offset = 5
+        o.write('<script type="text/javascript">\n')
+    elif source_type == "css":
+        s = line.find('href="')
+        offset = 6
+        o.write('<style type="text/css">\n')
+    else:
+        raise KeyError("Inline script must be either js- or css-file")
     if s > 0:
         e = line.find('">', s)
-        url = line[s+5:e]
-
+        url = line[s+offset:e]
         response = urlopen(url)
-        js = response.read().decode('utf-8')
+        content = response.read().decode('utf-8')
         response.close()
-
-        o.write('<script type="text/javascript">\n')
-        o.write(js)
-        o.write('</script>\n')
-
+        o.write(content)
+        if source_type == "js":
+            o.write('</script>\n')
+        else:
+            o.write('</style>\n')
+    else:
+        raise ValueError("No file path in {l} for inline script.".format(l=line))
 
 
 def main():
@@ -161,7 +174,6 @@ def main():
     parser.add_argument("--info-columns", nargs="+", help="list of VCF info field names to include in variant table")
     parser.add_argument("--info-columns-prefixes", nargs="+", help="list of prefixes of VCF info field names to include in variant table")
     parser.add_argument("--sample-columns", nargs="+", help="list of VCF sample/format field names to include in variant table")
-    parser.add_argument("--species", help="Latin species name with underscore as used by ensembl.org", default='homo_sapiens')
     parser.add_argument("--flanking", help="genomic region to include either side of variant", default=1000)
     parser.add_argument('--standalone', help='Print more data', action='store_true')
     args = parser.parse_args()
