@@ -45,7 +45,7 @@ class VariantTable:
                 v = ''
                 if h in variant.info:
                     if h == 'ANN':
-                        genes, effects, impacts, transcript, aa_alt, nt_alt = decode_ann(variant)
+                        genes, effects, impacts, transcript, gene_id, aa_alt, nt_alt = decode_ann(variant)
                     elif h == 'COSMIC_ID':
                         v = render_id(v)
                     else:
@@ -55,6 +55,7 @@ class VariantTable:
                     obj['EFFECTS'] = effects
                     obj['IMPACT'] = impacts
                     obj['TRANSCRIPT'] = transcript
+                    obj['GENE_ID'] = gene_id
                     obj['PROTEIN ALTERATION'] = aa_alt
                     obj['DNA ALTERATION'] = nt_alt
                 else:
@@ -120,11 +121,12 @@ def decode_ann(variant):
     effects = []
     impacts = []
     transcripts = []
+    gene_ids = []
     aa_alts = []
     nt_alts = []
     for allele in variant.alts:
         for ann in annotations:
-            ann_allele, kind, impact, gene = ann[:4]
+            ann_allele, kind, impact, gene, gene_id = ann[:5]
             feature_id = ann[6]
             nt_mod, aa_mod = ann[9:11]
 
@@ -135,9 +137,10 @@ def decode_ann(variant):
             # Keep the most severe effect.
             # Link out to Genecards and show the full record in a tooltip.
             genes.append(gene)
+            gene_ids.append(gene_id)
             effects.append(kind.replace('&', '/'))
             impacts.append(impact)
             transcripts.append(feature_id)
             aa_alts.append(aa_mod)
             nt_alts.append(nt_mod)
-    return ','.join(genes), ','.join(effects), ','.join(impacts), ','.join(transcripts), ','.join(aa_alts), ','.join(nt_alts)
+    return ','.join(genes), ','.join(effects), ','.join(impacts), ','.join(transcripts), ','.join(gene_ids), ','.join(aa_alts), ','.join(nt_alts)
