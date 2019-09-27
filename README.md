@@ -32,8 +32,8 @@ conda install pysam
 
 ## Creating a report
 
-A report consists of a table of sites or regions and associated igv views for each sites.  Reports are created with 
-command line script ```create_report```.  Command line arguments are described below.
+A report consists of a table of sites or regions and an associated igv views for each site.  Reports are created with 
+the command line script ```create_report```.  Command line arguments are described below.
 Although _--tracks_ is optional, a typical report will include at least an alignment track
 (BAM or CRAM) file from which the variants were called.  
 
