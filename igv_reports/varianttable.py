@@ -92,7 +92,10 @@ def render_value(v):
     if isinstance(v, float):
         # ensure that we don't waste space by insignificant digits
         return f'{v:.2g}'
-    return str(v)
+    elif v.startswith('http://') or v.startswith('https://'):
+        return create_link(v)
+    else:
+        return str(v)
 
 
 def render_values(v):
@@ -144,3 +147,7 @@ def decode_ann(variant):
             aa_alts.append(aa_mod)
             nt_alts.append(nt_mod)
     return ','.join(genes), ','.join(effects), ','.join(impacts), ','.join(transcripts), ','.join(gene_ids), ','.join(aa_alts), ','.join(nt_alts)
+
+def create_link(url):
+    """Create an html link for the given url"""
+    return (f'<a href = "{url}" target="_blank">{url}</a>')
