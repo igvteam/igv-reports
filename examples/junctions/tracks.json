@@ -1,0 +1,26 @@
+[
+  {
+    "type": "spliceJunctions",
+    "format": "bed",
+    "url": "examples/junctions/splice_junctions.bed",
+    "displayMode": "COLLAPSED",
+    "minUniquelyMappedReads": 1,
+    "minTotalReads": 1,
+    "maxFractionMultiMappedReads": 1,
+    "minSplicedAlignmentOverhang": 0,
+    "thicknessBasedOn": "numUniqueReads",
+    "bounceHeightBasedOn": "random",
+    "colorBy": "isAnnotatedJunction",
+    "labelUniqueReadCount": true,
+    "labelMultiMappedReadCount": true,
+    "labelTotalReadCount": false,
+    "labelMotif": false,
+    "labelIsAnnotatedJunction": "[A]",
+    "hideAnnotatedJunctions": false,
+    "hideUnannotatedJunctions": false,
+    "hideMotifs": [
+      "GT/AT",
+      "non-canonical"
+    ]
+  }
+]

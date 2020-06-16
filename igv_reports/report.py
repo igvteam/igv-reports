@@ -33,8 +33,25 @@ def create_report(args):
                 "reader": reader
             })
 
+    trackconfigs = []
+    if args.track_config is not None:
+        for trackobj in args.track_config:
+            with open(trackobj) as f:
+                data = json.load(f)
+                for config in data:
+                    reader = utils.getreader(config["url"])
+                    trackconfigs.append({
+                        "config": config,
+                        "reader": reader
+                    })
+
+
 
     # loop through variants creating an igv.js session for each one
+    flanking = 0
+    if args.flanking is not None:
+        flanking = float(args.flanking)
+
     for tuple in table.features:
 
         feature = tuple[0]
@@ -43,8 +60,8 @@ def create_report(args):
         # Define a genomic region around the variant
         chr = feature.chr
         position = int(math.floor((feature.start + feature.end) / 2)) + 1   # center of region in 1-based coordinates
-        start = int (math.floor(feature.start - int(args.flanking) / 2))
-        end = int (math.ceil(feature.end + int(args.flanking) / 2))
+        start = int (math.floor(feature.start - flanking / 2))
+        end = int (math.ceil(feature.end + flanking / 2))
         region = {
             "chr": chr,
             "start": start,
@@ -78,11 +95,11 @@ def create_report(args):
 
             track = tr["track"]
             reader = tr["reader"]
-            trackObj = tracks.get_track_json_dict(track)
+            trackobj = tracks.get_track_json_dict(track)
             data = reader.slice(region)
-            trackObj["url"] = datauri.get_data_uri(data)
-            if(trackObj["type"] == "alignment"):
-                trackObj["height"] = 500
+            trackobj["url"] = datauri.get_data_uri(data)
+            if(trackobj["type"] == "alignment"):
+                trackobj["height"] = 500
 
                 # Sort TODO -- do this only for SNV
                 # if (trackObj["type"]) == "alignment":
@@ -91,7 +108,17 @@ def create_report(args):
                 #         "locus": chr + ":" + str(variant.pos - 1)
                 #     }
 
-            session_json["tracks"].append(trackObj)
+            session_json["tracks"].append(trackobj)
+
+        for tc in trackconfigs:
+            trackobj = tc["config"];
+            #if "name" not in trackobj:
+            #    trackobj["name"] = trackobj["url"]
+            trackobj["name"] = "TEST"
+            reader = tc["reader"]
+            data = reader.slice(region)
+            trackobj["url"] = datauri.get_data_uri(data)
+            session_json["tracks"].append(trackobj)
 
 
         # Build the session data URI
@@ -169,6 +196,7 @@ def main():
     parser.add_argument("fasta", help="reference fasta file, required")
     parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
     parser.add_argument("--tracks", nargs="+", help="list of track files")
+    parser.add_argument("--track_config", nargs="+", help="track json file")
     parser.add_argument("--template", help="html template file", default=None)
     parser.add_argument("--output", help="output file name", default="igvjs_viewer.html")
     parser.add_argument("--info-columns", nargs="+", help="list of VCF info field names to include in variant table")
