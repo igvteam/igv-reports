@@ -131,9 +131,8 @@ def create_report(args):
 
             for tc in trackconfigs:
                 trackobj = tc["config"];
-                #if "name" not in trackobj:
-                #    trackobj["name"] = trackobj["url"]
-                trackobj["name"] = "TEST"
+                if "name" not in trackobj:
+                    trackobj["name"] = trackobj["url"]
                 reader = tc["reader"]
                 data = reader.slice(region)
                 trackobj["url"] = datauri.get_data_uri(data)

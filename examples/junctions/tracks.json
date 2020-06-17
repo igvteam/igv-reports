@@ -1,5 +1,6 @@
 [
   {
+    "name": "junctions",
     "type": "spliceJunctions",
     "format": "bed",
     "url": "examples/junctions/introns.38.bed"
