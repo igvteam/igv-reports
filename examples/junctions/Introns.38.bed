@@ -1,4 +1,4 @@
 chr7	55019366	55155829	uniquely_mapped=74;multi_mapped=0;gene=EGFR;viewport=chr7:55013358-55207969	74	+
 chr7	55200414	55202516	uniquely_mapped=114;multi_mapped=0;gene=EGFR;viewport=chr7:55013358-55207969	114	+
 chr7	55200414	55205255	uniquely_mapped=114;multi_mapped=0;gene=EGFR;viewport=chr7:55013358-55207969	114	+
-chr7	116782098	116795654	uniquely_mapped=114;multi_mapped=0;gene=EGFR;viewport=chr7:55013358-55207969	114	+
+chr7	116782098	116795654	uniquely_mapped=114;multi_mapped=0;gene=MET;viewport=chr7:116668623-116805648	114	+

@@ -66,6 +66,7 @@ class JunctionBedTable:
             else:
                 sid = str(session_id)
                 session_dict[viewport] = sid
+                session_id = session_id + 1
             f.session_id = sid
 
     def to_JSON(self):
