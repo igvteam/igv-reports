@@ -42,7 +42,7 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * sites    _vcf or bed file of genomic sites_
     * fasta   _reference fasta file, must be indexed_
 * Optional
-    * --tracks _space-delimited list of track files, see below for supported formats.  Use either this option or _track-config_, not both._
+    * --tracks _space-delimited list of track files, see below for supported formats.  If both *tracks* and *track-config* are specified *tracks* will appear first._
     * --track-confg _file containing array of json configuration objects for igv.js tracks.  see the [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details.  This option allows customization of track parameters._
     * --ideogram _ideogram file in UCSC cytoIdeo format_
     * --template _html template file_

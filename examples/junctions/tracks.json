@@ -2,25 +2,15 @@
   {
     "type": "spliceJunctions",
     "format": "bed",
-    "url": "examples/junctions/splice_junctions.bed",
-    "displayMode": "COLLAPSED",
-    "minUniquelyMappedReads": 1,
-    "minTotalReads": 1,
-    "maxFractionMultiMappedReads": 1,
-    "minSplicedAlignmentOverhang": 0,
-    "thicknessBasedOn": "numUniqueReads",
-    "bounceHeightBasedOn": "random",
-    "colorBy": "isAnnotatedJunction",
-    "labelUniqueReadCount": true,
-    "labelMultiMappedReadCount": true,
-    "labelTotalReadCount": false,
-    "labelMotif": false,
-    "labelIsAnnotatedJunction": "[A]",
-    "hideAnnotatedJunctions": false,
-    "hideUnannotatedJunctions": false,
-    "hideMotifs": [
-      "GT/AT",
-      "non-canonical"
-    ]
+    "url": "examples/junctions/introns.38.bed"
+  },
+  {
+    "name": "Gencode v28 Basic",
+    "type": "annotation",
+    "format": "gtf",
+    "displayMode": "EXPANDED",
+    "height": 300,
+    "url": "https://s3.dualstack.us-east-1.amazonaws.com/igv.org.genomes/hg38/annotations/gencode.v28.basic.annotation.sorted.gtf.gz",
+    "visibilityWindow": 1000000
   }
 ]

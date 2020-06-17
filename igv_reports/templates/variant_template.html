@@ -59,20 +59,15 @@
 
         .lbl-toggle {
             display: block;
-
             font-weight: bold;
             font-family: monospace;
             font-size: 1.2rem;
             text-transform: uppercase;
             text-align: left;
-
             padding: 1rem;
-
             color: black;
             background: #dddddd;
-
             cursor: pointer;
-
             border-radius: 7px;
             transition: all 0.25s ease-out;
         }
@@ -84,14 +79,12 @@
         .lbl-toggle::before {
             content: ' ';
             display: inline-block;
-
             border-top: 5px solid transparent;
             border-bottom: 5px solid transparent;
             border-left: 5px solid currentColor;
             vertical-align: middle;
             margin-right: .7rem;
             transform: translateY(-2px);
-
             transition: transform .2s ease-out;
         }
 
@@ -185,9 +178,12 @@
         // Assume all json objects have the same keys
         var headers = Object.keys(tableJson[0]);
         for (var j = 1; j < headers.length; j++) {
-            var cell = document.createElement("th");
-            headerRow.appendChild(cell);
-            cell.innerHTML = headers[j];
+            var headerText = headers[j];
+            if(headerText !== "session_id") {
+                var cell = document.createElement("th");
+                headerRow.appendChild(cell);
+                cell.innerHTML = headers[j];
+            }
         }
 
         var tbody = document.createElement('tbody');
@@ -195,24 +191,25 @@
         for (var i = 0; i < tableJson.length; i++) {
 
             var json = tableJson[i];
-            var unique_id = json['unique_id']
+            var unique_id = json['unique_id'];
             var row = document.createElement("tr");
             row.id = "row_" + unique_id;
+            row.session_id = json['session_id'] || unique_id;
             tbody.appendChild(row);
 
             // First row selected by default
-            if (i === 0) row.classList.add("selected")
+            if (i === 0) row.classList.add("selected");
 
             row.onclick = function (event) {
-                var list = document.getElementById("variant_table").getElementsByTagName("tr")
+                var list = document.getElementById("variant_table").getElementsByTagName("tr");
                 for (var i = 0; i < list.length; i++) {
-                    list[i].classList.remove("selected")
+                    list[i].classList.remove("selected");
                 }
                 var rowID = event.target.parentElement.id;
-                var row = document.getElementById(rowID)
-                row.classList.add("selected")
-                var uniqueId = rowID.substring(4);
-                var session = sessionDictionary[uniqueId]
+                var row = document.getElementById(rowID);
+                row.classList.add("selected");
+                var session_id = event.target.parentElement.session_id //rowID.substring(4);
+                var session = sessionDictionary[session_id]
                 igv.browser.loadSession({
                     url: session
                 })
@@ -220,11 +217,13 @@
 
             for (j = 1; j < headers.length; j++) {
                 var key = headers[j];
-                var value = json[key];
-                cell = document.createElement("td");
-                cell.rowID = i;
-                row.appendChild(cell);
-                cell.innerHTML = value;
+                if(key !== "session_id") {
+                    var value = json[key];
+                    cell = document.createElement("td");
+                    cell.rowID = i;
+                    row.appendChild(cell);
+                    cell.innerHTML = value;
+                }
             }
         }
 
