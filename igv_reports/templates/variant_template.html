@@ -237,10 +237,10 @@
         // Assume all json objects have the same keys
         const headers = Object.keys(tableJson[0]);
         for (let headerText of headers) {
-            if (headerText !== "session_id" && headerText !== "feature_locus") {
+            if (headerText !== "session_id" && headerText !== "feature_locus" && headerText !== 'unique_id') {
                 const cell = document.createElement("th");
                 headerRow.appendChild(cell);
-                cell.innerHTML = headerText;
+                cell.innerHTML = prettify(headerText);
             }
         }
 
@@ -273,7 +273,7 @@
             }
 
             for (let key of headers) {
-                if (key !== "session_id" && key !== "feature_locus") {
+                if (key !== "session_id" && key !== "feature_locus" && key != 'unique_id') {
                     const value = json[key];
                     const cell = document.createElement("td");
                     cell.rowID = i;
@@ -299,6 +299,18 @@
 
         function getCellValue(tr, idx) {
             return tr.children[idx].innerText || tr.children[idx].textContent;
+        }
+
+        function prettify(string)
+        {
+            const words = string.split('_');
+            let pstring = "";
+            for(let i = 0; i < words.length; i++) {
+                const w = words[i];
+                if(i > 0) pstring += ' ';
+                pstring += w[0].toUpperCase() + w.slice(1)
+            }
+            return pstring;
         }
 
         function comparer(idx, asc) {
