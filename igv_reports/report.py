@@ -19,7 +19,7 @@ def create_report(args):
 
     elif variants_file.endswith(".bed") or variants_file.endswith(".bed.gz"):
         if args.type is not None and args.type == "junction":
-            table = JunctionBedTable(variants_file)
+            table = JunctionBedTable(variants_file, args.info_columns)
         else:
             table = BedTable(variants_file)
 
@@ -215,7 +215,7 @@ def main():
     parser.add_argument("--type", help="Report type.  Possible values are mutation and junctions.  Default is mutation")
     parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
     parser.add_argument("--tracks", nargs="+", help="list of track files")
-    parser.add_argument("--track_config", nargs="+", help="track json file")
+    parser.add_argument("--track-config", nargs="+", help="track json file")
     parser.add_argument("--template", help="html template file", default=None)
     parser.add_argument("--output", help="output file name", default="igvjs_viewer.html")
     parser.add_argument("--info-columns", nargs="+", help="list of VCF info field names to include in variant table")
