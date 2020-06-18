@@ -12,7 +12,8 @@
     <title>IGV Variant Inspector </title>
 
     <!-- igv -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/igv@2.5.5/dist/igv.min.js"></script>
+    <script type="text/javascript" src="https://igv.org/web/snapshot/dist/igv.min.js"></script>
+    <!--    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/igv@2.5.5/dist/igv.min.js"></script>-->
 
     <style type="text/css">
         body {
@@ -27,6 +28,7 @@
         tr {
             cursor: default;
         }
+
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
@@ -136,14 +138,20 @@
 
 <script type="text/javascript">
 
-    var tableJson = "@TABLE_JSON@"
+    //import igv from "https://cdn.jsdelivr.net/npm/igv@2.5.5/dist/igv.esm.js";
+    //import igv from "http://localhost/igv.js/js/index.js";
 
-    var sessionDictionary = "@SESSION_DICTIONARY@"
+    const tableJson = "@TABLE_JSON@"
+    const sessionDictionary = "@SESSION_DICTIONARY@"
+
+    let igvBrowser;
 
     document.addEventListener("DOMContentLoaded", function () {
-
-        initIGV();
-        initTable();
+        initIGV()
+            .then(function (browser) {
+                igvBrowser = browser;
+                initTable();
+            });
     });
 
 
@@ -158,68 +166,116 @@
                 showCenterGuide: true
             };
 
-        igv.createBrowser(igvDiv, options)
-            .then(function (b) {
-                igv.browser = b;
+        return igv.createBrowser(igvDiv, options)
+    }
+
+    function loadJson(json) {
+        const unique_id = json['unique_id'];
+        const session_id = json['session_id'] || unique_id;
+        const session = sessionDictionary[session_id]
+        const featureLocus = json.feature_locus ? parseLocus(json.feature_locus) : undefined;
+
+        igvBrowser.loadSession({
+            url: session
+        })
+            .then(function (ignore) {
+                if (featureLocus) {
+                    const tracks = igvBrowser.findTracks("type", "spliceJunctions");
+                    if (tracks && tracks.length > 0) {
+                        return tracks[0].getFeatures(featureLocus.chr, featureLocus.start, featureLocus.end);
+                    }
+                }
+            })
+            .then(function (features) {
+                if (features) {
+                    for (let f of features) {
+                        if (f.chr === featureLocus.chr && f.start === featureLocus.start && f.end === featureLocus.end) {
+                            f.color = "rgb(200,0,0)";
+                            break;
+                        }
+                    }
+                }
+            })
+            .then(function (ignore) {
+                if (featureLocus) {
+                    return igvBrowser.loadROI({
+                        features: [{
+                            chr: featureLocus.chr,
+                            start: featureLocus.start,
+                            end: featureLocus.end,
+                        }],
+                        color: "rgba(190, 190, 0, 0.25)"
+                    })
+                }
+            })
+            .catch(function (exception) {
+                console.error(exception);
             })
     }
 
+    function parseLocus(locus) {
+        const t = locus.split(":");
+        const t2 = t[1].split("-");
+        return {
+            chr: t[0],
+            start: parseInt(t2[0]),
+            end: parseInt(t2[1])
+        }
+    }
+
     function initTable() {
-        var table = document.createElement("table");
+        const table = document.createElement("table");
         table.id = "variant_table"
         table.style.width = "100%";
 
         document.getElementById("tableSelectorDiv").appendChild(table);
 
-        var thead = document.createElement('thead');
+        const thead = document.createElement('thead');
         table.appendChild(thead);
-        var headerRow = thead.insertRow(0);
+        const headerRow = thead.insertRow(0);
 
         // Assume all json objects have the same keys
-        var headers = Object.keys(tableJson[0]);
-        for (var j = 1; j < headers.length; j++) {
-            var headerText = headers[j];
-            if(headerText !== "session_id") {
-                var cell = document.createElement("th");
+        const headers = Object.keys(tableJson[0]);
+        for (let headerText of headers) {
+            if (headerText !== "session_id" && headerText !== "feature_locus") {
+                const cell = document.createElement("th");
                 headerRow.appendChild(cell);
-                cell.innerHTML = headers[j];
+                cell.innerHTML = headerText;
             }
         }
 
-        var tbody = document.createElement('tbody');
+        const tbody = document.createElement('tbody');
         table.appendChild(tbody);
-        for (var i = 0; i < tableJson.length; i++) {
-
-            var json = tableJson[i];
-            var unique_id = json['unique_id'];
-            var row = document.createElement("tr");
+        for (let i = 0; i < tableJson.length; i++) {
+            const json = tableJson[i];
+            const unique_id = json['unique_id'];
+            const row = document.createElement("tr");
             row.id = "row_" + unique_id;
             row.session_id = json['session_id'] || unique_id;
+            if (json.feature_locus) {
+                row.feature_locus = json.feature_locus;
+            }
             tbody.appendChild(row);
 
-            // First row selected by default
-            if (i === 0) row.classList.add("selected");
-
             row.onclick = function (event) {
-                var list = document.getElementById("variant_table").getElementsByTagName("tr");
-                for (var i = 0; i < list.length; i++) {
-                    list[i].classList.remove("selected");
+                const list = document.getElementById("variant_table").getElementsByTagName("tr");
+                for (let li of list) {
+                    li.classList.remove("selected");
                 }
-                var rowID = event.target.parentElement.id;
-                var row = document.getElementById(rowID);
                 row.classList.add("selected");
-                var session_id = event.target.parentElement.session_id //rowID.substring(4);
-                var session = sessionDictionary[session_id]
-                igv.browser.loadSession({
-                    url: session
-                })
+                loadJson(json)
             }
 
-            for (j = 1; j < headers.length; j++) {
-                var key = headers[j];
-                if(key !== "session_id") {
-                    var value = json[key];
-                    cell = document.createElement("td");
+            // First row selected by default
+            if (i === 0) {
+                row.classList.add("selected");
+                loadJson(tableJson[0])
+            }
+
+            for (let key of headers) {
+                if (key !== "session_id" && key !== "feature_locus") {
+                    const value = json[key];
+                    const cell = document.createElement("td");
                     cell.rowID = i;
                     row.appendChild(cell);
                     cell.innerHTML = value;

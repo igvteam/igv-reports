@@ -79,6 +79,7 @@ class JunctionBedTable:
             obj = {
                 "unique_id": unique_id,
                 "session_id": feature.session_id,
+                "feature_locus": feature.chr + ":" + str(feature.start) + "-" + str(feature.end),
                 "Chrom": feature.chr,
                 "Start": feature.start + 1,
                 "End": feature.end
@@ -91,6 +92,7 @@ class JunctionBedTable:
                     value = kv[1]
                     obj[key] = value
 
+            #record locus of feature
 
             jsonArray.append(obj)
 
