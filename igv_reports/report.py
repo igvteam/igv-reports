@@ -163,6 +163,9 @@ def create_report(args):
 
             for i, line in enumerate(data):
 
+                if args.title is not None and line.startswith("<!--title-->"):
+                    o.write("<h1>" + args.title + "</h1>")
+
                 if standalone:
                     if line.strip().startswith("<script") and ".js\"" in line:
                         inline_script(line, o, "js")
@@ -222,7 +225,8 @@ def main():
     parser.add_argument("--info-columns-prefixes", nargs="+", help="list of prefixes of VCF info field names to include in variant table")
     parser.add_argument("--sample-columns", nargs="+", help="list of VCF sample/format field names to include in variant table")
     parser.add_argument("--flanking", help="genomic region to include either side of variant", default=1000)
-    parser.add_argument('--standalone', help='Print more data', action='store_true')
+    parser.add_argument("--standalone", help='Print more data', action='store_true')
+    parser.add_argument("--title", help="optional title string")
     args = parser.parse_args()
     create_report(args)
 
