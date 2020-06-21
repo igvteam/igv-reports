@@ -83,6 +83,7 @@ class JunctionBedTable:
                 obj = {
                     "unique_id": unique_id,
                     "session_id": feature.session_id,
+                    "viewport": feature.viewport,
                     "feature_locus": feature.chr + ":" + str(feature.start) + "-" + str(feature.end),
                     "Chrom": feature.chr,
                     "Start": feature.start + 1,
