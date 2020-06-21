@@ -42,27 +42,34 @@ class VariantTable:
                 obj['ID'] = render_ids(variant.id)
 
             for h in self.info_fields:
-                v = ''
                 if h in variant.info:
                     if h == 'ANN':
                         genes, effects, impacts, transcript, gene_id, aa_alt, nt_alt = decode_ann(variant)
+                        obj['GENE'] = genes
+                        obj['EFFECTS'] = effects
+                        obj['IMPACT'] = impacts
+                        obj['TRANSCRIPT'] = transcript
+                        obj['GENE_ID'] = gene_id
+                        obj['PROTEIN ALTERATION'] = aa_alt
+                        obj['DNA ALTERATION'] = nt_alt
                     elif h == 'COSMIC_ID':
-                        v = render_id(v)
+                        cid = variant.info[h];
+                        if cid is not None:
+                            if isinstance(cid, str) :
+                                return render_id(cid)
+                            elif len(cid) == 1:
+                                obj[h] = render_id(cid[0])
+                            else:
+                                tmp = ''
+                                for c in cid:
+                                    tmp = tmp + render_id(c) + ','
+                                obj[h] = tmp
                     else:
-                        v = render_values(variant.info[h])
-                if h == 'ANN':
-                    obj['GENE'] = genes
-                    obj['EFFECTS'] = effects
-                    obj['IMPACT'] = impacts
-                    obj['TRANSCRIPT'] = transcript
-                    obj['GENE_ID'] = gene_id
-                    obj['PROTEIN ALTERATION'] = aa_alt
-                    obj['DNA ALTERATION'] = nt_alt
+                        obj[h] = render_values(variant.info[h])
                 else:
-                    obj[h] = v
+                    obj[h] = ''
 
             for h in self.info_field_prefixes:
-                v = ''
                 for field in variant.info:
                     if field.startswith(h):
                         obj[field] = render_values(variant.info[field])

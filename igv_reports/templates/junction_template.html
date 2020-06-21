@@ -1,0 +1,360 @@
+<html>
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>IGV Variant Inspector </title>
+
+    <!-- igv -->
+    <script type="text/javascript" src="https://igv.org/web/snapshot/dist/igv.min.js"></script>
+    <!--    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/igv@2.5.5/dist/igv.min.js"></script>-->
+
+    <style type="text/css">
+        body {
+            font-size: 80%;
+            font-family: 'Lucida Grande', Verdana, Arial, Sans-Serif;
+        }
+    </style>
+
+    <!-- selector table style -->
+    <style>
+
+        tr {
+            cursor: default;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: lightblue;
+        }
+
+        th {
+            background-color: lightskyblue;
+            color: white;
+            cursor: pointer;
+        }
+
+        .selected {
+            background-color: lightblue !important;
+            outline: solid thin darkblue !important;
+        }
+    </style>
+
+    <!-- accordian style,  ref: https://alligator.io/css/collapsible/ -->
+    <style type="text/css">
+        .wrap-collabsible {
+            margin-bottom: 1.2rem;
+        }
+
+        input[type='checkbox'] {
+            display: none;
+        }
+
+        .lbl-toggle {
+            display: block;
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            text-align: left;
+            padding: 1rem;
+            color: black;
+            background: #dddddd;
+            cursor: pointer;
+            border-radius: 7px;
+            transition: all 0.25s ease-out;
+        }
+
+        .lbl-toggle:hover {
+            color: blue;
+        }
+
+        .lbl-toggle::before {
+            content: ' ';
+            display: inline-block;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 5px solid currentColor;
+            vertical-align: middle;
+            margin-right: .7rem;
+            transform: translateY(-2px);
+            transition: transform .2s ease-out;
+        }
+
+        .toggle:checked + .lbl-toggle::before {
+            transform: rotate(90deg) translateX(-3px);
+        }
+
+        .collapsible-content {
+            max-height: 0px;
+            overflow: auto;
+            transition: max-height .25s ease-in-out;
+        }
+
+        .toggle:checked + .lbl-toggle + .collapsible-content {
+            max-height: 350px;
+        }
+
+        .toggle:checked + .lbl-toggle {
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .collapsible-content .content-inner {
+            background: rgba(250, 224, 66, .2);
+            border-bottom: 1px solid rgba(250, 224, 66, .45);
+            border-bottom-left-radius: 7px;
+            border-bottom-right-radius: 7px;
+            padding: .5rem 1rem;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<!--title-->
+
+<div id="tableContainer" class="wrap-collabsible">
+    <input id="collapsible" class="toggle" type="checkbox" checked>
+    <label for="collapsible" class="lbl-toggle">Variants</label>
+    <div class="collapsible-content">
+        <div id="tableSelectorDiv" style="overflow: auto"></div>
+    </div>
+</div>
+
+<div id="igvContainer">
+    <div id="igvDiv"></div>
+</div>
+
+
+<script type="text/javascript">
+
+    //import igv from "https://cdn.jsdelivr.net/npm/igv@2.5.5/dist/igv.esm.js";
+    //import igv from "http://localhost/igv.js/js/index.js";
+
+    const tableJson = "@TABLE_JSON@"
+    const sessionDictionary = "@SESSION_DICTIONARY@"
+
+
+    let igvBrowser;
+    let currentSessionId;
+    let currentSessionLocus;
+    let lastSelectedFeature;
+
+    document.addEventListener("DOMContentLoaded", function () {
+        initIGV()
+            .then(function (browser) {
+                igvBrowser = browser;
+                initTable();
+            });
+    });
+
+    function initIGV() {
+
+        var igvDiv;
+        igvDiv = document.getElementById("igvDiv");
+        var options =
+            {
+                sessionURL: sessionDictionary["1"],
+                showChromosomeWidget: false,
+                showCenterGuide: true
+            };
+
+        return igv.createBrowser(igvDiv, options)
+    }
+
+    function loadJson(json) {
+        const unique_id = json['unique_id'];
+        const session_id = json['session_id'] || unique_id;
+        const viewport = json['viewport']
+        const featureLocus = json.feature_locus ? parseLocus(json.feature_locus) : undefined;
+
+        loadSession(session_id, viewport || currentSessionLocus)
+            .then(function (ignore) {
+                currentSessionId = session_id;
+                if (featureLocus) {
+                    const tracks = igvBrowser.findTracks("type", "spliceJunctions");
+                    if (tracks && tracks.length > 0) {
+                        return tracks[0].getFeatures(featureLocus.chr, featureLocus.start, featureLocus.end);
+                    }
+                }
+            })
+            .then(function (features) {
+                if (features) {
+                    for (let f of features) {
+                        if (f.chr === featureLocus.chr && f.start === featureLocus.start && f.end === featureLocus.end) {
+                            f.color = "rgb(200,0,0)";
+                            lastSelectedFeature = f;
+                            break;
+                        }
+                    }
+                }
+            })
+            .then(function (ignore) {
+                if (featureLocus) {
+                    return igvBrowser.loadROI({
+                        features: [{
+                            chr: featureLocus.chr,
+                            start: featureLocus.start,
+                            end: featureLocus.end,
+                        }],
+                        color: "rgba(190, 190, 0, 0.25)"
+                    })
+                }
+            })
+            .catch(function (exception) {
+                console.error(exception);
+            })
+
+    }
+
+    function loadSession(session_id, viewport) {
+        if (currentSessionId === session_id) {
+            igvBrowser.clearROIs();
+            if(lastSelectedFeature) {
+                lastSelectedFeature.color = undefined;
+                lastSelectedFeature = undefined;
+            }
+            if(viewport) {
+                return igvBrowser.search(viewport);
+            }
+        } else {
+            const session = sessionDictionary[session_id]
+            return igvBrowser.loadSession({
+                url: session
+            })
+        }
+    }
+
+    function parseLocus(locus) {
+        const t = locus.split(":");
+        const t2 = t[1].split("-");
+        return {
+            chr: t[0],
+            start: parseInt(t2[0]),
+            end: parseInt(t2[1])
+        }
+    }
+
+    function initTable() {
+        const table = document.createElement("table");
+        table.id = "variant_table"
+        table.style.width = "100%";
+
+        document.getElementById("tableSelectorDiv").appendChild(table);
+
+        const thead = document.createElement('thead');
+        table.appendChild(thead);
+        const headerRow = thead.insertRow(0);
+
+        // Assume all json objects have the same keys
+        const headers = Object.keys(tableJson[0]);
+        for (let headerText of headers) {
+            if (headerText !== "session_id" && headerText !== "feature_locus" && headerText !== 'unique_id') {
+                const cell = document.createElement("th");
+                headerRow.appendChild(cell);
+                cell.innerHTML = prettify(headerText);
+            }
+        }
+
+        const tbody = document.createElement('tbody');
+        table.appendChild(tbody);
+        for (let i = 0; i < tableJson.length; i++) {
+            const json = tableJson[i];
+            const unique_id = json['unique_id'];
+            const row = document.createElement("tr");
+            row.id = "row_" + unique_id;
+            row.session_id = json['session_id'] || unique_id;
+            if (json.feature_locus) {
+                row.feature_locus = json.feature_locus;
+            }
+            tbody.appendChild(row);
+
+            row.onclick = function (event) {
+                const list = document.getElementById("variant_table").getElementsByTagName("tr");
+                for (let li of list) {
+                    li.classList.remove("selected");
+                }
+                row.classList.add("selected");
+                loadJson(json)
+            }
+
+            // First row selected by default
+            if (i === 0) {
+                row.classList.add("selected");
+                loadJson(tableJson[0])
+            }
+
+            for (let key of headers) {
+                if (key !== "session_id" && key !== "feature_locus" && key != 'unique_id') {
+                    const value = json[key];
+                    const cell = document.createElement("td");
+                    cell.rowID = i;
+                    row.appendChild(cell);
+                    cell.innerHTML = value;
+                }
+            }
+        }
+
+        // Add sorting.  Adapted from https://stackoverflow.com/questions/14267781/sorting-html-table-with-javascript/49041392
+        Array.prototype.slice.call(document.querySelectorAll('th')).forEach(function (th) {
+            th.addEventListener('click', function () {
+                //var table = th.parentNode
+                //while (table.tagName.toUpperCase() != 'TABLE') table = table.parentNode;
+                Array.prototype.slice.call(table.querySelectorAll('tr:nth-child(n+1)'), 1)
+                    .sort(comparer(Array.prototype.slice.call(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+                    .forEach(function (tr) {
+                        table.appendChild(tr)
+                    });
+            })
+        });
+
+
+        function getCellValue(tr, idx) {
+            return tr.children[idx].innerText || tr.children[idx].textContent;
+        }
+
+        function prettify(string) {
+            const words = string.split('_');
+            let pstring = "";
+            for (let i = 0; i < words.length; i++) {
+                const w = words[i];
+                if (i > 0) pstring += ' ';
+                pstring += w[0].toUpperCase() + w.slice(1)
+            }
+            return pstring;
+        }
+
+        function comparer(idx, asc) {
+            return function (a, b) {
+                return function (v1, v2) {
+                    // Special case for chromosome coloumn
+                    if (idx === 0 && v1.startsWith('chr') && v2.startsWith('chr')) {
+                        v1 = v1.substr(3);
+                        v2 = v2.substr(3);
+                    }
+                    var isNumber = v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2)
+                    return isNumber ? v1 - v2 : v1.toString().localeCompare(v2);
+                }(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+            }
+        }
+
+    }
+
+
+
+
+</script>
+
+
+</body>

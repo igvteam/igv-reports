@@ -1,0 +1,17 @@
+[
+  {
+    "name": "junctions",
+    "type": "spliceJunctions",
+    "format": "bed",
+    "url": "examples/junctions/introns.38.bed"
+  },
+  {
+    "name": "Gencode v28 Basic",
+    "type": "annotation",
+    "format": "gtf",
+    "displayMode": "EXPANDED",
+    "height": 300,
+    "url": "https://s3.dualstack.us-east-1.amazonaws.com/igv.org.genomes/hg38/annotations/gencode.v28.basic.annotation.sorted.gtf.gz",
+    "visibilityWindow": 1000000
+  }
+]
