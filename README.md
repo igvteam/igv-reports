@@ -1,6 +1,7 @@
 # igv-reports
 
-Python application to generate self-contained igv.js pages that can be opened within a browser with "file" protocol.   
+Python application to generate self-contained igv.js pages that can be opened within a browser with "file" protocol. 
+The generated html page contains all data neccessary for IGV as uuencoded blobs.  
 
 ## Installation
 
@@ -68,6 +69,12 @@ Data for the examples are available for [download](https://s3.amazonaws.com/igv.
 
 create_report examples/variants/variants.vcf.gz https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --tracks examples/variants/variants.vcf.gz examples/variants/recalibrated.bam examples/variants/refGene.sort.bed.gz --output igvjs_viewer.html
 
+```
+
+#### Createing a junction report from a splice-junction bed file
+
+```bash
+create_report examples/junctions/Introns.38.bed https://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --type junction --ideogram examples/junctions/cytoBandIdeo.txt --output junctions.html --track-config examples/junctions/tracks.json --info-columns TCGA GTEx variant_name --title "Sample A"
 ```
 
 #### Converting genomic files to data URIs for use in igv.js 
