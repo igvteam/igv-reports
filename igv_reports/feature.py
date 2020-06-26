@@ -159,11 +159,12 @@ def parse_bed(f):
     for line in f:
         if not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
             tokens = line.rstrip('\n').rstrip('\r').split('\t')
-            chr = tokens[0]
-            start = int(tokens[1])
-            end = int(tokens[2])
-            name = tokens[3] if len(tokens) > 3 else ''
-            features.append(Feature(chr, start, end, line, name))
+            if len(tokens) > 2:
+                chr = tokens[0]
+                start = int(tokens[1])
+                end = int(tokens[2])
+                name = tokens[3] if len(tokens) > 3 else ''
+                features.append(Feature(chr, start, end, line, name))
     return features
 
 def parse_gff(f):
