@@ -178,6 +178,7 @@
         const session_id = json['session_id'] || unique_id;
         const viewport = json['viewport']
         const featureLocus = json.feature_locus ? parseLocus(json.feature_locus) : undefined;
+        const viewportLocus = parseLocus(viewport);
 
         loadSession(session_id, viewport || currentSessionLocus)
             .then(function (ignore) {
@@ -185,7 +186,7 @@
                 if (featureLocus) {
                     const tracks = igvBrowser.findTracks("type", "spliceJunctions");
                     if (tracks && tracks.length > 0) {
-                        return tracks[0].getFeatures(featureLocus.chr, featureLocus.start, featureLocus.end);
+                        return tracks[0].getFeatures(viewportLocus.chr, viewportLocus.start, viewportLocus.end);
                     }
                 }
             })
@@ -195,7 +196,8 @@
                         if (f.chr === featureLocus.chr && f.start === featureLocus.start && f.end === featureLocus.end) {
                             f.color = "rgb(200,0,0)";
                             lastSelectedFeature = f;
-                            break;
+                        } else {
+                            f.color = "rgb(0,0,200)";
                         }
                     }
                 }
