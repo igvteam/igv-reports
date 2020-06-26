@@ -12,8 +12,7 @@
     <title>IGV Variant Inspector </title>
 
     <!-- igv -->
-<!--    <script type="text/javascript" src="https://igv.org/web/snapshot/dist/igv.min.js"></script>-->
-        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/igv@2.6.0/dist/igv.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/igv@2.6.1/dist/igv.min.js"></script>
 
     <style type="text/css">
         body {
@@ -139,17 +138,17 @@
 
 <script type="text/javascript">
 
-    //import igv from "https://cdn.jsdelivr.net/npm/igv@2.5.5/dist/igv.esm.js";
     //import igv from "http://localhost/igv.js/js/index.js";
+
+    const junctionSelectedColor = "rgb(200,0,0)";
+    const junctionColor = "rgb(0,0,200)";
+    const highlightColor = "rgba(190, 190, 0, 0.1)"
 
     const tableJson = "@TABLE_JSON@"
     const sessionDictionary = "@SESSION_DICTIONARY@"
 
-
     let igvBrowser;
     let currentSessionId;
-    let currentSessionLocus;
-    let lastSelectedFeature;
 
     document.addEventListener("DOMContentLoaded", function () {
         initIGV()
@@ -180,7 +179,7 @@
         const featureLocus = json.feature_locus ? parseLocus(json.feature_locus) : undefined;
         const viewportLocus = parseLocus(viewport);
 
-        loadSession(session_id, viewport || currentSessionLocus)
+        loadSession(session_id, viewport)
             .then(function (ignore) {
                 currentSessionId = session_id;
                 if (featureLocus) {
@@ -194,10 +193,9 @@
                 if (features) {
                     for (let f of features) {
                         if (f.chr === featureLocus.chr && f.start === featureLocus.start && f.end === featureLocus.end) {
-                            f.color = "rgb(200,0,0)";
-                            lastSelectedFeature = f;
+                            f.color = junctionSelectedColor;
                         } else {
-                            f.color = "rgb(0,0,200)";
+                            f.color = junctionColor;
                         }
                     }
                 }
@@ -210,7 +208,7 @@
                             start: featureLocus.start,
                             end: featureLocus.end,
                         }],
-                        color: "rgba(190, 190, 0, 0.25)"
+                        color: highlightColor
                     })
                 }
             })
@@ -223,11 +221,7 @@
     function loadSession(session_id, viewport) {
         if (currentSessionId === session_id) {
             igvBrowser.clearROIs();
-            if(lastSelectedFeature) {
-                lastSelectedFeature.color = undefined;
-                lastSelectedFeature = undefined;
-            }
-            if(viewport) {
+            if (viewport) {
                 return igvBrowser.search(viewport);
             }
         } else {
@@ -262,7 +256,11 @@
         // Assume all json objects have the same keys
         const headers = Object.keys(tableJson[0]);
         for (let headerText of headers) {
-            if (headerText !== "session_id" && headerText !== "feature_locus" && headerText !== 'unique_id') {
+            if (headerText !== "session_id" &&
+                headerText !== "feature_locus" &&
+                headerText !== 'unique_id' &&
+                headerText !== 'viewport'
+            ) {
                 const cell = document.createElement("th");
                 headerRow.appendChild(cell);
                 cell.innerHTML = prettify(headerText);
@@ -298,7 +296,7 @@
             }
 
             for (let key of headers) {
-                if (key !== "session_id" && key !== "feature_locus" && key != 'unique_id') {
+                if (key !== "session_id" && key !== "feature_locus" && key != 'unique_id' && key != 'viewport') {
                     const value = json[key];
                     const cell = document.createElement("td");
                     cell.rowID = i;
@@ -352,8 +350,6 @@
         }
 
     }
-
-
 
 
 </script>
