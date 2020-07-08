@@ -96,13 +96,18 @@ class VariantTable:
 
 def render_value(v):
     """Render given value to string."""
-    if isinstance(v, float):
+    if v is None:
+        return ""
+    elif isinstance(v, float):
         # ensure that we don't waste space by insignificant digits
         return f'{v:.2g}'
-    elif v.startswith('http://') or v.startswith('https://'):
-        return create_link(v)
-    else:
-        return str(v)
+    elif isinstance(v, str):
+        str_val = v.replace('"', '')
+        
+        if str_val.startswith('http://') or str_val.startswith('https://'):
+            return create_link(str_val)
+    
+    return str(v)
 
 
 def render_values(v):
