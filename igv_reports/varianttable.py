@@ -53,7 +53,7 @@ class VariantTable:
                         obj['PROTEIN ALTERATION'] = aa_alt
                         obj['DNA ALTERATION'] = nt_alt
                     elif h == 'COSMIC_ID':
-                        cid = variant.info[h];
+                        cid = variant.info[h]
                         if cid is not None:
                             if isinstance(cid, str) :
                                 return render_id(cid)
