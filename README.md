@@ -7,14 +7,14 @@ The generated html page contains all data neccessary for IGV as uuencoded blobs.
 
 #### Prerequisites
 
-igv-reports requires Python 3.6 or greater and pip.  
+igv-reports __requires Python 3.6__ or greater and __pip__.  
 
-As with all Python projects use of a virtual enviornment is recommended.
+As with all Python projects, use of a __virtual environment__ is recommended.
 Instructions for creating a virtual environment using ```conda``` follow.
 
-1. Install Anaconda from https://docs.anaconda.com/anaconda/
+__1.__ Install Anaconda from https://docs.anaconda.com/anaconda/
 
-2. Create a virtual environment
+__2.__ Create a virtual environment
 
 ```bash
 conda create -n myenv python=3.7.1
@@ -50,19 +50,19 @@ Although _--tracks_ is optional, a typical report will include at least an align
 
 **Arguments:**
 * Required
-    * sites    _vcf or bed file of genomic sites_
-    * fasta   _reference fasta file, must be indexed_
+    * __sites__    VCF or BED file of genomic sites.
+    * __fasta__   Reference fasta file; must be indexed.
 * Optional
-    * --tracks _space-delimited list of track files, see below for supported formats.  If both *tracks* and *track-config* are specified *tracks* will appear first._
-    * --track-confg _file containing array of json configuration objects for igv.js tracks.  see the [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details.  This option allows customization of track parameters._
-    * --ideogram _ideogram file in UCSC cytoIdeo format_
-    * --template _html template file_
-    * --output _output file name default="igvjs_viewer.html"_
-    * --info-columns _space delimited list of VCF info field names to include in variant table_
-    * --info-columns-prefixes _space delimited list of prefixes of VCF info field names to include in variant table_
-    * --sample-columns _space delimited list of VCF sample/format field names to include in variant table_
-    * --flanking _genomic region to include either side of variant, default=1000_
-    * --standalone _embed all javascript referenced via ```<script>``` tags in the page_
+    * __--tracks__ Space-delimited list of track files, see below for supported formats.  If both *tracks* and *track-config* are specified *tracks* will appear first.
+    * __--track-confg__ File containing array of json configuration objects for igv.js tracks.  See the [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details.  This option allows customization of track parameters.
+    * __--ideogram__ Ideogram file in UCSC cytoIdeo format.
+    * __--template__ HTML template file.
+    * __--output__ Output file name; default="igvjs_viewer.html".
+    * __--info-columns__ Space delimited list of VCF info field names to include in variant table.
+    * __--info-columns-prefixes__ Space delimited list of prefixes of VCF info field names to include in variant table.
+    * __--sample-columns__ Space delimited list of VCF sample/format field names to include in variant table.
+    * __--flanking__ Genomic region to include either side of variant; default=1000.
+    * __--standalone__ Embed all JavaScript referenced via ```<script>``` tags in the page.
 
 **Track file formats:**
 
