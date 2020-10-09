@@ -7,9 +7,20 @@ The generated html page contains all data neccessary for IGV as uuencoded blobs.
 
 #### Prerequisites
 
-igv-reports requires Python 3.6 or greater and pip.  As with all Python projects use of a virtual enviornment is recommended.
-Instructions for creating a virtual environment using _conda_ are [below](#creating-a-virtual-environment) 
+igv-reports requires Python 3.6 or greater and pip.  
 
+As with all Python projects use of a virtual enviornment is recommended.
+Instructions for creating a virtual environment using ```conda``` follow.
+
+1. Install Anaconda from https://docs.anaconda.com/anaconda/
+
+2. Create a virtual environment
+
+```bash
+conda create -n myenv python=3.7.1
+conda install -n myenv pip
+conda activate myenv
+```
 
 #### Installing igv-reports
 
@@ -30,10 +41,9 @@ conda config --add channels bioconda
 conda install pysam
 ```
 
-
 ## Creating a report
 
-A report consists of a table of sites or regions and an associated igv views for each site.  Reports are created with 
+A report consists of a table of sites or regions and an associated IGV views for each site.  Reports are created with 
 the command line script ```create_report```.  Command line arguments are described below.
 Although _--tracks_ is optional, a typical report will include at least an alignment track
 (BAM or CRAM) file from which the variants were called.  
@@ -79,7 +89,7 @@ create_report examples/junctions/Introns.38.bed https://s3.dualstack.us-east-1.a
 
 #### Converting genomic files to data URIs for use in igv.js 
 
-The script ```create_datauri`` converts the contents of a file to a data uri for use in igv.js.   The datauri will be
+The script ```create_datauri``` converts the contents of a file to a data uri for use in igv.js.   The datauri will be
 printed to stdout.  *NOTE* It is not neccessary to run this script explicitly to create a report, it is documented here
 for use with stand-alone igv.js.   
 
@@ -98,20 +108,4 @@ create_datauri examples/variants/variants.vcf.gz
 create_datauri \
 --region 8:127,738,322-127,738,508 \
 https://s3.amazonaws.com/1000genomes/data/HG00096/alignment/HG00096.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram 
-```
-
-
-## Creating a virtual environment
-
-Instructions for creating a virtual environment using ```conda``` follow.
-
-#### 1. Install Anaconda:  https://docs.anaconda.com/anaconda/
-
-#### 2. Create a virtual environment
-
-```bash
-conda create -n myenv python=3.7.1
-conda install -n myenv pip
-conda activate
-conda install pip
 ```
