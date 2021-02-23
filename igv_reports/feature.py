@@ -172,6 +172,9 @@ def parse_gff(f):
     for line in f:
         if not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
             tokens = line.rstrip('\n').rstrip('\r').split('\t')
+            # if we encounter a blank or malformed line (no start and end coords), skip it
+            if len(tokens)<5:
+                continue
             chr = tokens[0]
             start = int(tokens[3]) - 1
             end = int(tokens[4])

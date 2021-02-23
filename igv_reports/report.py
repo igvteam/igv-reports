@@ -76,6 +76,7 @@ def create_report(args):
             else:
                 chr = feature.chr
                 start = int (math.floor(feature.start - flanking / 2))
+                start = max(start,1) # bound start to 1
                 end = int (math.ceil(feature.end + flanking / 2))
                 region = {
                     "chr": chr,
