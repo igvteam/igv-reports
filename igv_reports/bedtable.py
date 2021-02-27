@@ -11,7 +11,7 @@ class BedTable:
         self.features = []
 
         featureList = parse(bed_file)
-        unique_id = 1
+        unique_id = 0
         for var in featureList:
             self.features.append((var, unique_id))
             unique_id += 1

@@ -94,15 +94,44 @@ class _NonIndexed:
 
                 def sortFunc(f):
                     return f.start
+
                 features = sorted(features, key=sortFunc)
 
-
         content = ''
-        for data in features:
-            content += data.text
-
+        for f in features:
+            content += f.text
         return content
 
+
+# This class is initialized with a list of "bed like" features, mocks an indexed file reader
+class MockReader:
+
+    def __init__(self, features):
+
+        self.tree = FeatureTree(features)
+
+    def slice(self, region=None):
+
+        reference = region["chr"]
+        start = region["start"]
+        end = region["end"]
+        feature_intervals = self.tree.query(reference, start, end)
+
+        features = []
+        if feature_intervals:
+            features = []
+            for i in feature_intervals:
+                features.append(i.data)
+
+            def sortFunc(f):
+                return f.start
+
+            features = sorted(features, key=sortFunc)
+
+        content = ''
+        for f in features:
+            content += f"{f.chr}\t{f.start}\t{f.end}\n"
+        return content
 
 
 class FeatureTree:
@@ -131,6 +160,7 @@ def get_data(filename, region=None):
     reader = FeatureReader(filename)
     return reader.slice(region)
 
+
 def parse(path, format=None):
     '''
     Parse a feature file and return an array of feature objects.  Supported formats are bed, gff, and gtf.
@@ -156,6 +186,7 @@ def parse(path, format=None):
         if f:
             f.close()
 
+
 def parse_bed(f):
     features = []
     for line in f:
@@ -169,13 +200,14 @@ def parse_bed(f):
                 features.append(Feature(chr, start, end, line, name))
     return features
 
+
 def parse_gff(f):
     features = []
     for line in f:
         if not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
             tokens = line.rstrip('\n').rstrip('\r').split('\t')
             # if we encounter a blank or malformed line (no start and end coords), skip it
-            if len(tokens)<5:
+            if len(tokens) < 5:
                 continue
             chr = tokens[0]
             start = int(tokens[3]) - 1
@@ -184,6 +216,7 @@ def parse_gff(f):
             features.append(Feature(chr, start, end, line, name))
 
     return features
+
 
 def parse_tab(f):
     rows = []
@@ -234,13 +267,13 @@ def infer_format(filename):
         else:
             return None
 
-def getstream(file):
 
+def getstream(file):
     # TODO -- gcs
 
     if file.startswith('http://') or file.startswith('https://'):
         response = requests.get(file)
-        status_code = response.status_code    #TODO Do something with this
+        status_code = response.status_code  # TODO Do something with this
 
         if file.endswith('.gz'):
             content = response.content

@@ -10,8 +10,11 @@ from igv_reports.bedtable import BedTable
 from igv_reports.bedtable import JunctionBedTable
 from igv_reports.generictable import GenericTable
 from igv_reports.regions import parse_region
+from igv_reports.feature import MockReader
 
 def create_report(args):
+
+    trackreaders = []
 
     # Read the variant data
     variants_file = args.sites
@@ -27,13 +30,22 @@ def create_report(args):
 
     elif variants_file.endswith(".maf") or variants_file.endswith(".maf.gz") or (args.sequence is not None and args.begin is not None and args.end is not None):
         table = GenericTable(variants_file, args.info_columns, args.sequence, args.begin, args.end, args.zero_based)
+        # A hack -- since these file formats are not supported by igv.js mock up a bed style track
+        flist = []
+        for tuple in table.features:
+            flist.append(tuple[0])
+        trackreaders.append({
+            "track": "variants.bed",
+            "reader": MockReader(flist)
+        })
+
 
     table_json = table.to_JSON()
 
     session_dict = {}
 
-    # Create file readers for tracks.  This is done outside the loop so initialization happens once
-    trackreaders = []
+    # Create file readers for tracks.  This is done outside the loucs loop so initialization happens once
+
     if args.tracks is not None:
         for track in args.tracks:
             reader = utils.getreader(track)

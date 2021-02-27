@@ -12,7 +12,7 @@
     <title>IGV Variant Inspector </title>
 
     <!-- igv -->
-    <script src="https://cdn.jsdelivr.net/npm/igv@2.7.4/dist/igv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/igv@2.7.5/dist/igv.min.js"></script>
 
     <style type="text/css">
         body {
@@ -143,31 +143,34 @@
 
 <script type="text/javascript">
 
-    var tableJson = "@TABLE_JSON@"
+    //import igv from "http://localhost:63342/igv.js/js/index.js";
 
+    var tableJson = "@TABLE_JSON@"
+    var igvBrowser;
     var sessionDictionary = "@SESSION_DICTIONARY@"
 
     document.addEventListener("DOMContentLoaded", function () {
-
         initIGV();
-        initTable();
     });
 
 
     function initIGV() {
 
         var igvDiv;
+
         igvDiv = document.getElementById("igvDiv");
         var options =
             {
-                sessionURL: sessionDictionary["1"],
+                sessionURL: sessionDictionary["0"],
                 showChromosomeWidget: false,
-                showCenterGuide: true
+                showCenterGuide: true,
+                search: false     // disable webservice search
             };
 
         igv.createBrowser(igvDiv, options)
             .then(function (b) {
-                igv.browser = b;
+                igvBrowser = b;
+                initTable();
             })
     }
 
@@ -213,7 +216,7 @@
                 row.classList.add("selected")
                 var uniqueId = rowID.substring(4);
                 var session = sessionDictionary[uniqueId]
-                igv.browser.loadSession({
+                igvBrowser.loadSession({
                     url: session
                 })
             }

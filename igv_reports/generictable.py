@@ -33,8 +33,8 @@ class GenericTable:
         self.rows = []
 
         rows = parse(file, 'tab')
-        unique_id = 1
-        start_offset = 1 if zero_based else 0
+        unique_id = 0
+        start_offset = 0 if zero_based else 1
         for row in rows:
 
             #first line is the header
@@ -53,7 +53,7 @@ class GenericTable:
 
         jsonArray = []
 
-        unique_id = 1
+        unique_id = 0
         for row in self.rows:
             obj = {
                 "unique_id": unique_id
