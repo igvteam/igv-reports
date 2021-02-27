@@ -50,7 +50,7 @@ Although _--tracks_ is optional, a typical report will include at least an align
 
 **Arguments:**
 * Required
-    * __sites__    VCF, BED, or generic tab delimited file of genomic sites.
+    * __sites__    VCF, BED, MAF, or generic tab delimited file of genomic variant sites.
     * __fasta__   Reference fasta file; must be indexed.
     
 * Required for generic tab delimited __sites__ file
@@ -104,7 +104,7 @@ create_report examples/variants/tcga_test.maf https://s3.amazonaws.com/igv.broad
 
 ```
 
-#### Creating a variant report from a TCGA MAF file
+#### Creating a variant report from a generic tab-delimited file
 
 ```bash
 
