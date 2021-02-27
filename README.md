@@ -54,12 +54,12 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * __fasta__   Reference fasta file; must be indexed.
     
 * Required for generic tab delimited __sites__ file
-    * __--begin INT.   Column of start chromosomal position for __sites__ file.  Used for generic tab delimited input.
-    * __--end INT.  Column of end chromosomal position for __sites__.  Used for generic tab delimited input.
-    * __--sequence INT.   Column of sequence (chromosome) name.
+    * __--begin__ INT.   Column of start chromosomal position for __sites__ file.  Used for generic tab delimited input.
+    * __--end__ INT.  Column of end chromosomal position for __sites__.  Used for generic tab delimited input.
+    * __--sequence__ INT.   Column of sequence (chromosome) name.
     
 * Optional for generic tab delimited __sites__ file
-    * __--zero-based  Specify that the position in the __sites__ file is 0-based (e.g. UCSC files) rather than 1-based.  Default is ```false```.
+    * __--zero-based__  Specify that the position in the __sites__ file is 0-based (e.g. UCSC files) rather than 1-based.  Default is ```false```.
 
 * Optional
     * __--tracks__ LIST.  Space-delimited list of track files, see below for supported formats.  If both *tracks* and *track-config* are specified *tracks* will appear first.
