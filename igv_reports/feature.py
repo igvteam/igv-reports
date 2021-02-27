@@ -148,6 +148,8 @@ def parse(path, format=None):
             return parse_bed(f)
         elif format == 'gff' or format == 'gtf':
             return parse_gff(f)
+        elif format == 'tab':
+            return parse_tab(f)
         else:
             raise Exception("Unknown file format: " + path)
     finally:
@@ -182,6 +184,16 @@ def parse_gff(f):
             features.append(Feature(chr, start, end, line, name))
 
     return features
+
+def parse_tab(f):
+    rows = []
+    for line in f:
+        if not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
+            tokens = line.rstrip('\n').rstrip('\r').split('\t')
+            if len(tokens) > 2:
+                rows.append(tokens)
+    return rows
+
 
 def infer_format(filename):
     '''

@@ -8,10 +8,12 @@ from igv_reports import fasta, ideogram, datauri, tracks, feature, bam, vcf, uti
 from igv_reports.varianttable import VariantTable
 from igv_reports.bedtable import BedTable
 from igv_reports.bedtable import JunctionBedTable
+from igv_reports.generictable import GenericTable
 from igv_reports.regions import parse_region
 
 def create_report(args):
 
+    # Read the variant data
     variants_file = args.sites
 
     if variants_file.endswith(".vcf") or variants_file.endswith (".vcf.gz"):
@@ -23,11 +25,14 @@ def create_report(args):
         else:
             table = BedTable(variants_file)
 
+    elif variants_file.endswith(".maf") or variants_file.endswith(".maf.gz") or (args.sequence is not None and args.begin is not None and args.end is not None):
+        table = GenericTable(variants_file, args.info_columns, args.sequence, args.begin, args.end, args.zero_based)
+
     table_json = table.to_JSON()
 
     session_dict = {}
 
-    # Create file readers for tracks.  This is done outside the loop so initialization happens onc
+    # Create file readers for tracks.  This is done outside the loop so initialization happens once
     trackreaders = []
     if args.tracks is not None:
         for track in args.tracks:
@@ -231,6 +236,10 @@ def main():
     parser.add_argument("--flanking", help="genomic region to include either side of variant", default=1000)
     parser.add_argument("--standalone", help='Print more data', action='store_true')
     parser.add_argument("--title", help="optional title string")
+    parser.add_argument("--sequence", help="Column of sequence (chromosome) name.  For tab-delimited sites file.", default=None)
+    parser.add_argument("--begin", help="Column of start position.  For tab-delimited sites file.", default=None)
+    parser.add_argument("--end", help="column of end position. For tab-delimited sites file.", default=None)
+    parser.add_argument("--zero_based", help="Specify that the position in the data file is 0-based (e.g. UCSC files) rather than 1-based.", default=None)
     args = parser.parse_args()
     create_report(args)
 

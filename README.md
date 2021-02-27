@@ -50,19 +50,34 @@ Although _--tracks_ is optional, a typical report will include at least an align
 
 **Arguments:**
 * Required
-    * __sites__    VCF or BED file of genomic sites.
+    * __sites__    VCF, BED, or generic tab delimited file of genomic sites.
     * __fasta__   Reference fasta file; must be indexed.
+    
+* Required for generic tab delimited __sites__ file
+    * __--begin INT.   Column of start chromosomal position for __sites__ file.  Used for generic tab delimited input.
+    * __--end INT.  Column of end chromosomal position for __sites__.  Used for generic tab delimited input.
+    * __--sequence INT.   Column of sequence (chromosome) name.
+    
+* Optional for generic tab delimited __sites__ file
+    * __--zero-based  Specify that the position in the __sites__ file is 0-based (e.g. UCSC files) rather than 1-based.  Default is ```false```.
+
 * Optional
-    * __--tracks__ Space-delimited list of track files, see below for supported formats.  If both *tracks* and *track-config* are specified *tracks* will appear first.
-    * __--track-confg__ File containing array of json configuration objects for igv.js tracks.  See the [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details.  This option allows customization of track parameters.
-    * __--ideogram__ Ideogram file in UCSC cytoIdeo format.
-    * __--template__ HTML template file.
-    * __--output__ Output file name; default="igvjs_viewer.html".
-    * __--info-columns__ Space delimited list of VCF info field names to include in variant table.
-    * __--info-columns-prefixes__ Space delimited list of prefixes of VCF info field names to include in variant table.
-    * __--sample-columns__ Space delimited list of VCF sample/format field names to include in variant table.
-    * __--flanking__ Genomic region to include either side of variant; default=1000.
+    * __--tracks__ LIST.  Space-delimited list of track files, see below for supported formats.  If both *tracks* and *track-config* are specified *tracks* will appear first.
+    * __--track-confg__  FILE.  File containing array of json configuration objects for igv.js tracks.  See the [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details.  This option allows customization of track parameters.
+    * __--ideogram__ FILE. Ideogram file in UCSC cytoIdeo format.
+    * __--template__ FILE. HTML template file.
+    * __--output__ FILE. Output file name; default="igvjs_viewer.html".
+    * __--info-columns__ LIST. Space delimited list of field names to includ in the variant table.  If __sites_ is a VCF file these are the  info field names.  If __sites__ is a tab delimited format these are column names.
+    * __--info-columns-prefixes__ LIST. Space delimited list of prefixes of VCF info field names to include in variant table.
+    * __--sample-columns__ LIST. Space delimited list of VCF sample/format field names to include in variant table.
+    * __--flanking__ INT. Genomic region to include either side of variant; default=1000.
     * __--standalone__ Embed all JavaScript referenced via ```<script>``` tags in the page.
+    
+**Tab delimited __sites__ file
+
+Variant sites can be defined from a [VCF](https://samtools.github.io/hts-specs/VCFv4.2.pdf),  
+UCSC [BED](https://genome.ucsc.edu/FAQ/FAQformat.html#format1), or a generic tab delimited file.   
+
 
 **Track file formats:**
 
@@ -81,7 +96,24 @@ create_report examples/variants/variants.vcf.gz https://s3.amazonaws.com/igv.bro
 
 ```
 
-#### Createing a junction report from a splice-junction bed file
+#### Creating a variant report from a TCGA MAF file
+
+```bash
+
+create_report examples/variants/tcga_test.maf https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns Chromosome Start_position End_position Variant_Classification Variant_Type Reference_Allele Tumor_Seq_Allele1 Tumor_Seq_Allele2 dbSNP_RS --tracks  examples/variants/refGene.sort.bed.gz --output igvjs_maf.html
+
+```
+
+#### Creating a variant report from a TCGA MAF file
+
+```bash
+
+create_report examples/variants/test.maflite.tsv https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --sequence 1 --begin 2 --end 3 --info-columns chr start end ref_allele alt_allele --tracks examples/variants/refGene.sort.bed.gz --output igvjs_tab.html
+
+```
+
+
+#### Creating a junction report from a splice-junction bed file
 
 ```bash
 create_report examples/junctions/Introns.38.bed https://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --type junction --ideogram examples/junctions/cytoBandIdeo.txt --output junctions.html --track-config examples/junctions/tracks.json --info-columns TCGA GTEx variant_name --title "Sample A"

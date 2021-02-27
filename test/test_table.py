@@ -1,6 +1,6 @@
 import unittest
 import pathlib
-from igv_reports import varianttable, bedtable
+from igv_reports import varianttable, bedtable, generictable
 
 class TableTest(unittest.TestCase):
 
@@ -28,6 +28,29 @@ class TableTest(unittest.TestCase):
         self.assertTrue(json)
 
 
+    def test_maftable(self):
+
+        maf_file = str((pathlib.Path(__file__).parent / "data/maf/tcga_test.maf").resolve())
+        table = generictable.GenericTable(maf_file)
+
+        json = table.to_JSON()
+        self.assertEqual(len(table.features), 17)
+        self.assertTrue(json)
+
+    def test_maflite(self):
+
+        maf_file = str((pathlib.Path(__file__).parent / "data/maf/test.maflite.tsv").resolve())
+
+        info_columns = "chr,start,end,ref_allele,alt_allele,tumor_barcode"
+        sequence = 1
+        start = 2
+        end = 3
+
+        table = generictable.GenericTable(maf_file, info_columns, sequence, start, end)
+
+        json = table.to_JSON()
+        self.assertEqual(29, len(table.features))
+        self.assertTrue(json)
 
 
 
