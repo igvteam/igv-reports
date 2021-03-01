@@ -128,25 +128,29 @@ def create_report(args):
                 "tracks": []
             }
 
+            track_order = 1
             for tr in trackreaders:
 
                 track = tr["track"]
                 reader = tr["reader"]
                 trackobj = tracks.get_track_json_dict(track)
                 data = reader.slice(region)
+                trackobj["order"] = track_order
                 trackobj["url"] = datauri.get_data_uri(data)
                 if(trackobj["type"] == "alignment"):
                     trackobj["height"] = 500
 
                     # Sort TODO -- do this only for SNV
-                    # if (trackObj["type"]) == "alignment":
-                    #     trackObj["sort"] = {
-                    #         "option": "NUCLEOTIDE",
-                    #         "locus": chr + ":" + str(variant.pos - 1)
-                    #     }
+                    if (trackobj["type"]) == "alignment" and feature.end - feature.start == 1:
+                        trackobj["sort"] = {
+                            "option": "NUCLEOTIDE",
+                            "locus": chr + ":" + str(feature.start)
+                        }
 
                 session_json["tracks"].append(trackobj)
+                track_order += 1
 
+            # Loop through user supplied track configs
             for tc in trackconfigs:
                 trackobj = tc["config"];
                 if "name" not in trackobj:
@@ -159,10 +163,8 @@ def create_report(args):
 
             # Build the session data URI
 
-            session_string = json.dumps(session_json);
-
+            session_string = json.dumps(session_json)
             session_uri = datauri.get_data_uri(session_string)
-
             session_dict[session_id] = session_uri
 
     session_dict = json.dumps(session_dict)
