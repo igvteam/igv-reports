@@ -87,11 +87,41 @@ class VariantTable:
 
             json_array.append(obj)
 
-        if not any(obj['ID'] for obj in json_array):
+        if not any('ID' in obj for obj in json_array):
             # Remove ID column if none of the records actually had an ID.
             for obj in json_array:
                 del obj['ID']
-        return json.dumps(json_array)
+
+        normalized_json = normalize_json(self.info_fields, json_array)
+        return json.dumps(normalized_json)
+
+
+def normalize_json(info_fields, json_array):
+
+    headers = ['unique_id', 'CHROM', 'POSITION', 'REF', 'ALT', 'ID']
+    if info_fields is not None:
+        for h in info_fields:
+            if h == 'ANN':
+                headers = headers + [ 'GENE', 'EFFECTS', 'IMPACT', 'TRANSCRIPT', 'GENE_ID', 'PROTEIN ALTERATION', 'DNA ALTERATION']
+            else:
+                headers.append(h)
+
+    rows = []
+    for json in json_array:
+        r = []
+        for h in headers:
+            if h in json:
+                r.append(json[h])
+            else:
+                r.append("")
+        rows.append(r)
+
+    return {
+        "headers": headers,
+        "rows": rows
+    }
+
+
 
 
 def render_value(v):

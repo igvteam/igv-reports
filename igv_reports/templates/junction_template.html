@@ -243,7 +243,9 @@
         }
     }
 
+
     function initTable() {
+
         const table = document.createElement("table");
         table.id = "variant_table"
         table.style.width = "100%";
@@ -254,56 +256,49 @@
         table.appendChild(thead);
         const headerRow = thead.insertRow(0);
 
-        // Assume all json objects have the same keys
-        const headers = Object.keys(tableJson[0]);
-        for (let headerText of headers) {
-            if (headerText !== "session_id" &&
-                headerText !== "feature_locus" &&
-                headerText !== 'unique_id' &&
-                headerText !== 'viewport'
-            ) {
-                const cell = document.createElement("th");
-                headerRow.appendChild(cell);
-                cell.innerHTML = prettify(headerText);
-            }
+        const headers = tableJson.headers;
+        for (let j = 1; j < headers.length; j++) {
+            var cell = document.createElement("th");
+            headerRow.appendChild(cell);
+            cell.innerHTML = headers[j];
         }
 
         const tbody = document.createElement('tbody');
         table.appendChild(tbody);
-        for (let i = 0; i < tableJson.length; i++) {
-            const json = tableJson[i];
-            const unique_id = json['unique_id'];
+        const tableRows = tableJson.rows;
+        for (let i = 0; i < tableRows.length; i++) {
+
+            const json = tableRows[i];
+            const unique_id = json[0]
             const row = document.createElement("tr");
             row.id = "row_" + unique_id;
-            row.session_id = json['session_id'] || unique_id;
-            if (json.feature_locus) {
-                row.feature_locus = json.feature_locus;
-            }
             tbody.appendChild(row);
 
-            row.onclick = function (event) {
-                const list = document.getElementById("variant_table").getElementsByTagName("tr");
-                for (let li of list) {
-                    li.classList.remove("selected");
-                }
-                row.classList.add("selected");
-                loadJson(json)
-            }
-
             // First row selected by default
-            if (i === 0) {
-                row.classList.add("selected");
-                loadJson(tableJson[0])
+            if (i === 0) row.classList.add("selected")
+
+            row.onclick = function (event) {
+                const list = document.getElementById("variant_table").getElementsByTagName("tr")
+                for (let i = 0; i < list.length; i++) {
+                    list[i].classList.remove("selected")
+                }
+                const rowID = event.target.parentElement.id;
+                const row = document.getElementById(rowID)
+                row.classList.add("selected")
+                const uniqueId = rowID.substring(4);
+                const session = sessionDictionary[uniqueId]
+                igvBrowser.loadSession({
+                    url: session
+                })
             }
 
-            for (let key of headers) {
-                if (key !== "session_id" && key !== "feature_locus" && key != 'unique_id' && key != 'viewport') {
-                    const value = json[key];
-                    const cell = document.createElement("td");
-                    cell.rowID = i;
-                    row.appendChild(cell);
-                    cell.innerHTML = value;
-                }
+            for (let j = 1; j < headers.length; j++) {
+
+                var value = json[j];
+                cell = document.createElement("td");
+                cell.rowID = i;
+                row.appendChild(cell);
+                cell.innerHTML = value;
             }
         }
 
@@ -325,17 +320,6 @@
             return tr.children[idx].innerText || tr.children[idx].textContent;
         }
 
-        function prettify(string) {
-            const words = string.split('_');
-            let pstring = "";
-            for (let i = 0; i < words.length; i++) {
-                const w = words[i];
-                if (i > 0) pstring += ' ';
-                pstring += w[0].toUpperCase() + w.slice(1)
-            }
-            return pstring;
-        }
-
         function comparer(idx, asc) {
             return function (a, b) {
                 return function (v1, v2) {
@@ -351,6 +335,7 @@
         }
 
     }
+
 
 
 </script>

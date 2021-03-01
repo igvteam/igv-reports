@@ -7,8 +7,7 @@ class GenericTable:
     # Always remember the *self* argument
     def __init__(self, file, info_columns = None, sequence = None, begin = None, end = None, zero_based=False):
 
-        self.column_names = None if info_columns is None else set(info_columns)
-
+        self.column_names = info_columns
         if sequence is not None and begin is not None and end is not None:
             seq_col = int(sequence) - 1
             start_col = int(begin) - 1
@@ -51,24 +50,36 @@ class GenericTable:
 
     def to_JSON(self):
 
-        jsonArray = []
+
+        obj = {
+            "headers": ["unique_id"],
+            "rows": []
+        }
+
+        if self.column_names is None:
+            indeces = range(0, len(self.header))
+        else:
+            indeces = []
+            for h in self.column_names:
+                try:
+                    idx = self.header.index(h)
+                    indeces.append(idx)
+                except:
+                    print(f"{h} Column h is not present")
+
+        for i in indeces:
+            obj["headers"].append(self.header[i])
 
         unique_id = 0
         for row in self.rows:
-            obj = {
-                "unique_id": unique_id
-            }
-            idx = 0
-            for h in self.header:
-                if self.column_names is None or h in self.column_names:
-                    value = row[idx] if idx < len(row) else ""
-                    obj[h] = value
-                idx = idx + 1
-
-            jsonArray.append(obj)
+            r = [unique_id]
+            for i in indeces:
+                value = row[i] if i < len(row) else ""
+                r.append(value)
+            obj["rows"].append(r)
             unique_id += 1
 
-        return json.dumps(jsonArray)
+        return json.dumps(obj)
 
     def determine_presets(self, filename):
 

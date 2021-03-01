@@ -18,22 +18,18 @@ class BedTable:
 
     def to_JSON(self):
 
-        jsonArray = [];
+        headers = ["unique_id", "Start", "End", "Name"]
+        rows = []
 
         for tuple in self.features:
             feature = tuple[0]
             unique_id = tuple[1]
-            obj = {
-                "unique_id": unique_id,
-                "Chrom": feature.chr,
-                "Start": feature.start + 1,
-                "End": feature.end,
-                "Name": feature.name
-            }
+            rows.append([unique_id, feature.chr, feature.start+1, feature.end, feature.name])
 
-            jsonArray.append(obj)
-
-        return json.dumps(jsonArray)
+        return json.dumps({
+            "headers": headers,
+            "rows": rows
+        })
 
 
 
@@ -72,7 +68,7 @@ class JunctionBedTable:
 
     def to_JSON(self):
 
-        jsonArray = [];
+        json_array = [];
 
         for tuple in self.features:
 
@@ -109,6 +105,34 @@ class JunctionBedTable:
                             obj[key] = ''
 
 
-                jsonArray.append(obj)
+                json_array.append(obj)
 
-        return json.dumps(jsonArray)
+        normalized = normalize_json(self.table_columns, json_array)
+        return json.dumps(normalized)
+
+
+def normalize_json(info_fields, json_array):
+
+    headers = ['unique_id', 'CHROM', 'POSITION', 'REF', 'ALT', 'ID']
+    if info_fields is not None:
+        for h in info_fields:
+            if h == 'ANN':
+                headers = headers + [ 'GENE', 'EFFECTS', 'IMPACT', 'TRANSCRIPT', 'GENE_ID', 'PROTEIN ALTERATION', 'DNA ALTERATION']
+            else:
+                headers.append(h)
+
+    rows = []
+    for json in json_array:
+        r = []
+        for h in headers:
+            if h in json:
+                r.append(json[h])
+            else:
+                r.append("")
+        rows.append(r)
+
+    return {
+        "headers": headers,
+        "rows": rows
+    }
+

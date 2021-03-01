@@ -175,31 +175,32 @@
     }
 
     function initTable() {
-        var table = document.createElement("table");
+
+        const table = document.createElement("table");
         table.id = "variant_table"
         table.style.width = "100%";
 
         document.getElementById("tableSelectorDiv").appendChild(table);
 
-        var thead = document.createElement('thead');
+        const thead = document.createElement('thead');
         table.appendChild(thead);
-        var headerRow = thead.insertRow(0);
+        const headerRow = thead.insertRow(0);
 
-        // Assume all json objects have the same keys
-        var headers = Object.keys(tableJson[0]);
-        for (var j = 1; j < headers.length; j++) {
+        const headers = tableJson.headers;
+        for (let j = 1; j < headers.length; j++) {
             var cell = document.createElement("th");
             headerRow.appendChild(cell);
             cell.innerHTML = headers[j];
         }
 
-        var tbody = document.createElement('tbody');
+        const tbody = document.createElement('tbody');
         table.appendChild(tbody);
-        for (var i = 0; i < tableJson.length; i++) {
+        const tableRows = tableJson.rows;
+        for (let i = 0; i < tableRows.length; i++) {
 
-            var json = tableJson[i];
-            var unique_id = json['unique_id']
-            var row = document.createElement("tr");
+            const json = tableRows[i];
+            const unique_id = json[0]
+            const row = document.createElement("tr");
             row.id = "row_" + unique_id;
             tbody.appendChild(row);
 
@@ -207,23 +208,23 @@
             if (i === 0) row.classList.add("selected")
 
             row.onclick = function (event) {
-                var list = document.getElementById("variant_table").getElementsByTagName("tr")
-                for (var i = 0; i < list.length; i++) {
+                const list = document.getElementById("variant_table").getElementsByTagName("tr")
+                for (let i = 0; i < list.length; i++) {
                     list[i].classList.remove("selected")
                 }
-                var rowID = event.target.parentElement.id;
-                var row = document.getElementById(rowID)
+                const rowID = event.target.parentElement.id;
+                const row = document.getElementById(rowID)
                 row.classList.add("selected")
-                var uniqueId = rowID.substring(4);
-                var session = sessionDictionary[uniqueId]
+                const uniqueId = rowID.substring(4);
+                const session = sessionDictionary[uniqueId]
                 igvBrowser.loadSession({
                     url: session
                 })
             }
 
-            for (j = 1; j < headers.length; j++) {
-                var key = headers[j];
-                var value = json[key];
+            for (let j = 1; j < headers.length; j++) {
+
+                var value = json[j];
                 cell = document.createElement("td");
                 cell.rowID = i;
                 row.appendChild(cell);
