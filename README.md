@@ -63,7 +63,7 @@ Although _--tracks_ is optional, a typical report will include at least an align
 
 * Optional
     * __--tracks__ LIST.  Space-delimited list of track files, see below for supported formats.  If both *tracks* and *track-config* are specified *tracks* will appear first by default.
-    * __--track-confg__  FILE.  File containing array of json configuration objects for igv.js tracks.  See the [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details.  This option allows customization of track parameters.
+    * __--track-config__  FILE.  File containing array of json configuration objects for igv.js tracks.  See the [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details.  This option allows customization of track parameters.  When using this option, the track ```url``` and ```indexURL``` properties should be set to the paths to the respective files.
     * __--ideogram__ FILE. Ideogram file in UCSC cytoIdeo format.
     * __--template__ FILE. HTML template file.
     * __--output__ FILE. Output file name; default="igvjs_viewer.html".
@@ -96,6 +96,13 @@ Data for the examples are available for [download](https://s3.amazonaws.com/igv.
 create_report examples/variants/variants.vcf.gz https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --tracks examples/variants/variants.vcf.gz examples/variants/recalibrated.bam examples/variants/refGene.sort.bed.gz --output igvjs_viewer.html
 
 ```
+
+#### Creating a variant report from a "track-config" json file
+
+```
+create_report examples/variants/variants.vcf.gz https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --track-config examples/variants/trackConfigs.json --output igvjs_viewer.html
+```
+
 
 #### Creating a variant report from a TCGA MAF file
 

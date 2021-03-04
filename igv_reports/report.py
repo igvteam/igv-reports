@@ -128,15 +128,33 @@ def create_report(args):
                 "tracks": []
             }
 
-            track_order = 1
-            for tr in trackreaders:
 
+            track_objects = []
+            for tr in trackreaders:
                 track = tr["track"]
                 reader = tr["reader"]
                 trackobj = tracks.get_track_json_dict(track)
                 data = reader.slice(region)
-                trackobj["order"] = track_order
                 trackobj["url"] = datauri.get_data_uri(data)
+                track_objects.append(trackobj)
+
+            # Loop through user supplied track configs
+            for tc in trackconfigs:
+                trackobj = tc["config"];
+                default_trackobj = tracks.get_track_json_dict(trackobj["url"]);
+                if "type"  not in trackobj:
+                    trackobj["type"] = default_trackobj["type"]
+                if "format" not in trackobj:
+                    trackobj["format"] = default_trackobj["format"]
+                if "name" not in trackobj:
+                    trackobj["name"] = default_trackobj["url"]
+                reader = tc["reader"]
+                data = reader.slice(region)
+                trackobj["url"] = datauri.get_data_uri(data)
+                track_objects.append(trackobj)
+
+            track_order = 1
+            for trackobj in track_objects:
                 if(trackobj["type"] == "alignment"):
                     trackobj["height"] = 500
                     is_snv = feature.end - feature.start == 1
@@ -147,23 +165,15 @@ def create_report(args):
                             "chr": chr,
                             "position": str(feature.start + 1),
                             "direction": "ASC"
-                        }
-
+                     }
+                if "order" not in trackobj:
+                    trackobj["order"] = track_order
                 session_json["tracks"].append(trackobj)
                 track_order += 1
 
-            # Loop through user supplied track configs
-            for tc in trackconfigs:
-                trackobj = tc["config"];
-                if "name" not in trackobj:
-                    trackobj["name"] = trackobj["url"]
-                reader = tc["reader"]
-                data = reader.slice(region)
-                trackobj["url"] = datauri.get_data_uri(data)
-                session_json["tracks"].append(trackobj)
 
 
-            # Build the session data URI
+    # Build the session data URI
 
             session_string = json.dumps(session_json)
             session_uri = datauri.get_data_uri(session_string)

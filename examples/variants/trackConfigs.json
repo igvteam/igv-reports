@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Variants",
+    "url": "examples/variants/variants.vcf.gz"
+  },
+  {
+    "name": "Alignments",
+    "url": "examples/variants/recalibrated.bam",
+    "samplingDepth": 500,
+    "color": "rgb(0,150,150)"
+  },
+  {
+    "name": "Genes",
+    "url": "examples/variants/refGene.sort.bed.gz"
+  }
+]
