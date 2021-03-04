@@ -1,0 +1,25 @@
+##fileformat=VCFv4.2
+##source=Sniffles
+##fileDate=20170117
+##ALT=<ID=DEL,Description="Deletion">
+##ALT=<ID=DUP,Description="Duplication">
+##ALT=<ID=INV,Description="Inversion">
+##ALT=<ID=INVDUP,Description="InvertedDUP with unknown boundaries">
+##ALT=<ID=TRA,Description="Translocation">
+##ALT=<ID=INS,Description="Insertion">
+##INFO=<ID=CHR2,Number=1,Type=String,Description="Chromosome for END coordinate in case of a translocation">
+##INFO=<ID=END,Number=1,Type=Integer,Description="End position of the structural variant">
+##INFO=<ID=MAPQ,Number=1,Type=Integer,Description="Median mapping quality of paired-ends">
+##INFO=<ID=RE,Number=1,Type=Integer,Description="read support">
+##INFO=<ID=IMPRECISE,Number=0,Type=Flag,Description="Imprecise structural variation">
+##INFO=<ID=PRECISE,Number=0,Type=Flag,Description="Precise structural variation">
+##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Length of the SV">
+##INFO=<ID=SVMETHOD,Number=1,Type=String,Description="Type of approach used to detect SV">
+##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of structural variant">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=DR,Number=1,Type=Integer,Description="# high-quality reference reads">
+##FORMAT=<ID=DV,Number=1,Type=Integer,Description="# high-quality variant reads">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	/seq/schatz/fritz/sv-paper/real/Pac_skbr3/mapped/reads_lr_skbr3.fa.ngmlr-0.2.1_mapped.bam
+chr1	724444	0	N	<DUP>	.	PASS	PRECISE;SVMETHOD=Snifflesv1.0.2;CHR2=1;END=224201774;STD_quant_start=101.755098;STD_quant_stop=198.570391;Kurtosis_quant_start=0.906446;Kurtosis_quant_stop=-0.435804;SVTYPE=DUP;SUPTYPE=SR;SVLEN=223477330;STRANDS=-+;STRANDS2=12,4,12,4;RE=16	GT:DR:DV	./.:.:16
+chr1	756262	1	N	<INS>	.	PASS	PRECISE;SVMETHOD=Snifflesv1.0.2;CHR2=1;END=756273;STD_quant_start=16.114176;STD_quant_stop=19.891372;Kurtosis_quant_start=0.676360;Kurtosis_quant_stop=14.055080;SVTYPE=INS;SUPTYPE=AL;SVLEN=249;STRANDS=+-;STRANDS2=14,21,14,21;RE=25	GT:DR:DV	./.:.:25
+chr1	757829	2	N	<DEL>	.	PASS	PRECISE;SVMETHOD=Snifflesv1.0.2;CHR2=1;END=757864;STD_quant_start=5.258047;STD_quant_stop=4.550372;Kurtosis_quant_start=0.254792;Kurtosis_quant_stop=0.253225;SVTYPE=DEL;SUPTYPE=AL;SVLEN=35;STRANDS=+-;STRANDS2=16,19,16,19;RE=35	GT:DR:DV	./.:.:35
