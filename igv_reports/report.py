@@ -139,12 +139,14 @@ def create_report(args):
                 trackobj["url"] = datauri.get_data_uri(data)
                 if(trackobj["type"] == "alignment"):
                     trackobj["height"] = 500
-
-                    # Sort TODO -- do this only for SNV
-                    if (trackobj["type"]) == "alignment" and feature.end - feature.start == 1:
+                    is_snv = feature.end - feature.start == 1
+                    if (trackobj["type"]) == "alignment" and (args.sort is not None or is_snv) and (args.sort != 'NONE'):
+                        sort_option = 'BASE' if args.sort is None else args.sort.upper()
                         trackobj["sort"] = {
-                            "option": "NUCLEOTIDE",
-                            "locus": chr + ":" + str(feature.start)
+                            "option": sort_option,
+                            "chr": chr,
+                            "position": str(feature.start + 1),
+                            "direction": "ASC"
                         }
 
                 session_json["tracks"].append(trackobj)
@@ -242,6 +244,7 @@ def main():
     parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
     parser.add_argument("--tracks", nargs="+", help="list of track files")
     parser.add_argument("--track-config", nargs="+", help="track json file")
+    parser.add_argument("--sort", help="initial sort option for alignment tracks.   Supported values include  BASE, STRAND, INSERT_SIZE, and MATE_CHR. Default value is BASE for single nucleotide variants, no sorting otherwise.  See the igv.js documentation for more information. ")
     parser.add_argument("--template", help="html template file", default=None)
     parser.add_argument("--output", help="output file name", default="igvjs_viewer.html")
     parser.add_argument("--info-columns", nargs="+", help="list of VCF info field names to include in variant table")

@@ -62,7 +62,7 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * __--zero-based__  Specify that the position in the __sites__ file is 0-based (e.g. UCSC files) rather than 1-based.  Default is ```false```.
 
 * Optional
-    * __--tracks__ LIST.  Space-delimited list of track files, see below for supported formats.  If both *tracks* and *track-config* are specified *tracks* will appear first.
+    * __--tracks__ LIST.  Space-delimited list of track files, see below for supported formats.  If both *tracks* and *track-config* are specified *tracks* will appear first by default.
     * __--track-confg__  FILE.  File containing array of json configuration objects for igv.js tracks.  See the [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details.  This option allows customization of track parameters.
     * __--ideogram__ FILE. Ideogram file in UCSC cytoIdeo format.
     * __--template__ FILE. HTML template file.
@@ -72,6 +72,7 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * __--sample-columns__ LIST. Space delimited list of VCF sample/format field names to include in variant table.
     * __--flanking__ INT. Genomic region to include either side of variant; default=1000.
     * __--standalone__ Embed all JavaScript referenced via ```<script>``` tags in the page.
+    * __--sort__ Applies to alignment racks only.  If specified alignments are initally sorted by the specified option. Supported values include  ```BASE, STRAND, INSERT_SIZE, MATE_CHR, and NONE```. Default value is ```BASE``` for single nucleotide variants, ```NONE``` (no sorting) otherwise.  See the igv.js documentation for more information.  
     
 **Tab delimited __sites__ file
 
