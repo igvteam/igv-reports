@@ -1,5 +1,5 @@
 import json
-
+import html
 from .feature import parse
 
 
@@ -24,7 +24,7 @@ class BedTable:
         for tuple in self.features:
             feature = tuple[0]
             unique_id = tuple[1]
-            rows.append([unique_id, feature.chr, feature.start+1, feature.end, feature.name])
+            rows.append([unique_id, feature.chr, feature.start+1, feature.end, html.escape(feature.name)])
 
         return json.dumps({
             "headers": headers,

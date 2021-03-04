@@ -50,7 +50,7 @@ Although _--tracks_ is optional, a typical report will include at least an align
 
 **Arguments:**
 * Required
-    * __sites__    VCF, BED, MAF, or generic tab delimited file of genomic variant sites.
+    * __sites__    VCF (tabix indexed vcf.gz file), BED, MAF, or generic tab delimited file of genomic variant sites.
     * __fasta__   Reference fasta file; must be indexed.
     
 * Required for generic tab delimited __sites__ file
@@ -93,14 +93,14 @@ Data for the examples are available for [download](https://s3.amazonaws.com/igv.
 
 ```bash
 
-create_report examples/variants/variants.vcf.gz https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --tracks examples/variants/variants.vcf.gz examples/variants/recalibrated.bam examples/variants/refGene.sort.bed.gz --output igvjs_viewer.html
+create_report examples/variants/variants.vcf.gz https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --tracks examples/variants/variants.vcf.gz examples/variants/recalibrated.bam examples/variants/refGene.sort.bed.gz --output example1.html
 
 ```
 
 #### Creating a variant report from a "track-config" json file
 
 ```
-create_report examples/variants/variants.vcf.gz https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --track-config examples/variants/trackConfigs.json --output igvjs_viewer.html
+create_report examples/variants/variants.vcf.gz https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --track-config examples/variants/trackConfigs.json --output example_config.html
 ```
 
 
@@ -108,7 +108,7 @@ create_report examples/variants/variants.vcf.gz https://s3.amazonaws.com/igv.bro
 
 ```bash
 
-create_report examples/variants/tcga_test.maf https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns Chromosome Start_position End_position Variant_Classification Variant_Type Reference_Allele Tumor_Seq_Allele1 Tumor_Seq_Allele2 dbSNP_RS --tracks  examples/variants/refGene.sort.bed.gz --output igvjs_maf.html
+create_report examples/variants/tcga_test.maf https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns Chromosome Start_position End_position Variant_Classification Variant_Type Reference_Allele Tumor_Seq_Allele1 Tumor_Seq_Allele2 dbSNP_RS --tracks  examples/variants/refGene.sort.bed.gz --output example_maf.html
 
 ```
 
@@ -116,7 +116,7 @@ create_report examples/variants/tcga_test.maf https://s3.amazonaws.com/igv.broad
 
 ```bash
 
-create_report examples/variants/test.maflite.tsv https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --sequence 1 --begin 2 --end 3 --info-columns chr start end ref_allele alt_allele --tracks examples/variants/refGene.sort.bed.gz --output igvjs_tab.html
+create_report examples/variants/test.maflite.tsv https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --sequence 1 --begin 2 --end 3 --info-columns chr start end ref_allele alt_allele --tracks examples/variants/refGene.sort.bed.gz --output example_tab.html
 
 ```
 

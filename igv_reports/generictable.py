@@ -1,5 +1,6 @@
 import json
 import sys
+import html
 from .feature import parse
 
 class GenericTable:
@@ -68,14 +69,14 @@ class GenericTable:
                     print(f"{h} Column h is not present")
 
         for i in indeces:
-            obj["headers"].append(self.header[i])
+            obj["headers"].append(html.escape(self.header[i]))
 
         unique_id = 0
         for row in self.rows:
             r = [unique_id]
             for i in indeces:
                 value = row[i] if i < len(row) else ""
-                r.append(value)
+                r.append(html.escape(value))
             obj["rows"].append(r)
             unique_id += 1
 

@@ -1,7 +1,8 @@
-import io
 import json
 import pysam
+import html
 from .feature import Feature
+
 
 class VariantTable:
 
@@ -29,12 +30,18 @@ class VariantTable:
         json_array = [];
 
         for variant, unique_id in self.variants:
+
+            escaped_alts = []
+            for alt in variant.alts:
+                escaped_alts.append(html.escape(alt))
+
+
             obj = {
                 'unique_id': unique_id,
                 'CHROM': variant.chrom,
                 'POSITION': variant.pos,
-                'REF': variant.ref,
-                'ALT': ','.join(variant.alts),
+                'REF': html.escape(variant.ref),
+                'ALT': ','.join(escaped_alts),
                 'ID': ''
             }
 
@@ -136,8 +143,9 @@ def render_value(v):
         
         if str_val.startswith('http://') or str_val.startswith('https://'):
             return create_link(str_val)
+
     
-    return str(v)
+    return html.escape(str(v))
 
 
 def render_values(v):
