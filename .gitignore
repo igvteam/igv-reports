@@ -108,3 +108,7 @@ venv.bak/
 .idea/
 /venv2/
 /Trinity_Junctions/
+/sarscov_genomes/sample.vcf.gz
+/sarscov_genomes/sample.vcf.gz.tbi
+/sarscov_genomes/sarscov2.fa
+/sarscov_genomes/sarscov2.fa.fai
