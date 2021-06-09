@@ -121,7 +121,7 @@ def create_report(args):
                 initial_locus = feature.viewport
             else:
                 position = int(math.floor((feature.start + feature.end) / 2)) + 1   # center of region in 1-based coordinates
-                initial_locus = chr + ":" + str(position - 20) + "-" + str(position + 20)
+                initial_locus = chr + ":" + str(position)
             session_json = {
                 "locus": initial_locus,
                 "reference": fastaJson,
