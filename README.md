@@ -80,6 +80,8 @@ Variant sites can be defined from a [VCF](https://samtools.github.io/hts-specs/V
 UCSC [BED](https://genome.ucsc.edu/FAQ/FAQformat.html#format1), or a generic tab delimited file.   
 
 
+Note: VCF files must be tabix indexed, and must end with a ".gz" extension.  The ".bgz" extension is not supported.
+
 **Track file formats:**
 
 Currently supported track file formats are BAM, CRAM, VCF, BED, GFF3, and GTF.  FASTA. BAM, CRAM, and VCF  files must 
@@ -149,3 +151,7 @@ create_datauri \
 --region 8:127,738,322-127,738,508 \
 https://s3.amazonaws.com/1000genomes/data/HG00096/alignment/HG00096.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram 
 ```
+
+
+
+## [_Release Notes_](https://github.com/igvteam/igv-reports/releases)
