@@ -48,7 +48,7 @@ def create_report(args):
 
     if args.tracks is not None:
         for track in args.tracks:
-            reader = utils.getreader(track)
+            reader = utils.getreader(track, None, args.fasta)
             trackreaders.append({
                 "track": track,
                 "reader": reader
