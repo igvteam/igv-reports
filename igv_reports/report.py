@@ -139,6 +139,7 @@ def create_report(args):
                 track_objects.append(trackobj)
 
             # Loop through user supplied track configs
+            # "cram" input format is converted to "bam" for output track configs
             for tc in trackconfigs:
                 trackobj = tc["config"];
                 default_trackobj = tracks.get_track_json_dict(trackobj["url"]);
@@ -146,6 +147,8 @@ def create_report(args):
                     trackobj["type"] = default_trackobj["type"]
                 if "format" not in trackobj:
                     trackobj["format"] = default_trackobj["format"]
+                if trackobj["format"] == "cram":
+                    trackobj["format"] = "bam"
                 if "name" not in trackobj:
                     trackobj["name"] = default_trackobj["url"]
                 reader = tc["reader"]

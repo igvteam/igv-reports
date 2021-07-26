@@ -244,7 +244,7 @@ def infer_format(filename):
     if filename.endswith(".bam"):
         return "bam"
     if filename.endswith(".cram"):
-        return "bam"
+        return "cram"
     elif filename.endswith(".vcf"):
         return "vcf"
     elif filename.endswith(".bed"):

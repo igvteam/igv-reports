@@ -4,6 +4,9 @@ def get_track_json_dict(filename):
 
     name = get_name(filename)
     format = feature.infer_format(filename)
+    # Note:  CRAM files are output in BAM format
+    if format == 'cram':
+        format = 'bam'
     type = get_track_type(format)
     return {
         "name": name,
