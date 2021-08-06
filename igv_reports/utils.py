@@ -8,7 +8,7 @@ def getreader(path, filetype=None, fasta=None):
         filetype = filetype.lower()
 
     if filetype == "bam" :
-        return bam.BamReader(path)
+        return bam.BamReader(path, fasta)
 
     elif filetype == "cram":
         return bam.BamReader(path, fasta)

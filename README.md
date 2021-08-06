@@ -144,7 +144,7 @@ create_datauri examples/variants/variants.vcf.gz
 
 ```
 
-**Convert a slice of a remote cram file to a datauri.**
+**Convert a slice of a remote cram file to a cram datauri.**
 
 ```bash
 create_datauri \
