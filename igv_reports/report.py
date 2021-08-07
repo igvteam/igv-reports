@@ -189,7 +189,7 @@ def create_report(args):
         if 'junction' == args.type:
             template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/junction_template.html'
         else:
-            template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/variant_template.html'
+            template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/variant_template-2.html'
 
     output_file = args.output
 
