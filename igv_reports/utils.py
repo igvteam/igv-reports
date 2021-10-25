@@ -16,6 +16,9 @@ def getreader(path, filetype=None, fasta=None):
     elif filetype == "vcf":
         return vcf.VcfReader(path)
 
+    elif filetype == "bcf":
+        return vcf.VcfReader(path)
+
     else:
         return feature.FeatureReader(path)
 

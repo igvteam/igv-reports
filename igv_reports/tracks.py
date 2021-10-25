@@ -4,9 +4,12 @@ def get_track_json_dict(filename):
 
     name = get_name(filename)
     format = feature.infer_format(filename)
-    # Note:  CRAM files are output in BAM format
+    # Note: CRAM files are output in BAM format
     if format == 'cram':
         format = 'bam'
+    # Note: BCF files are output in VCF format
+    if format == 'bcf':
+        format = 'vcf'
     type = get_track_type(format)
     return {
         "name": name,
@@ -44,6 +47,7 @@ def get_track_type(format):
         "gtf": "annotation",
         "bed": "annotation",
         "refgene": "annotation",
+        "bcf": "variant",
         "vcf": "variant"
     }
     return dict[format]

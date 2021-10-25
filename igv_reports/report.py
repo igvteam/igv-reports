@@ -19,7 +19,7 @@ def create_report(args):
     # Read the variant data
     variants_file = args.sites
 
-    if variants_file.endswith(".vcf") or variants_file.endswith (".vcf.gz"):
+    if variants_file.endswith(".bcf") or variants_file.endswith(".vcf") or variants_file.endswith (".vcf.gz"):
         table = VariantTable(variants_file, args.info_columns, args.info_columns_prefixes, args.sample_columns)
 
     elif variants_file.endswith(".bed") or variants_file.endswith(".bed.gz"):
