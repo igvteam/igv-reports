@@ -1,7 +1,8 @@
 # igv-reports
 
-Python application to generate self-contained igv.js pages that can be opened within a browser with "file" protocol. 
-The generated html page contains all data neccessary for IGV as uuencoded blobs.  
+A Python application to generate self-contained HTML reports that consist of a table of genomic sites or regions and associated IGV views for each site.
+The generated HTML page contains all data neccessary for IGV as uuencoded blobs. It can be opened within a web browser with the "file" protocol; no internet connection is required. 
+
 
 ## Installation
 
