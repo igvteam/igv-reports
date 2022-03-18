@@ -11,6 +11,8 @@
   },
   {
     "name": "Genes",
-    "url": "examples/variants/refGene.sort.bed.gz"
+    "type": "",
+    "url": "examples/variants/refGene.sort.bed.gz",
+    "indexURL": "examples/variants/refgene.sort.bed.gz.tbi"
   }
 ]

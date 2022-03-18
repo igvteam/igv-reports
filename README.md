@@ -18,9 +18,8 @@ __1.__ Install Anaconda from https://docs.anaconda.com/anaconda/
 __2.__ Create a virtual environment
 
 ```bash
-conda create -n myenv python=3.7.1
-conda install -n myenv pip
-conda activate myenv
+conda create -n igvreports python=3.7.1
+conda activate igvreports
 ```
 
 #### Installing igv-reports
@@ -96,14 +95,14 @@ Data for the examples are available for [download](https://s3.amazonaws.com/igv.
 
 ```bash
 
-create_report examples/variants/variants.vcf.gz https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --tracks examples/variants/variants.vcf.gz examples/variants/recalibrated.bam examples/variants/refGene.sort.bed.gz --output example1.html
+create_report examples/variants/variants.vcf.gz http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --tracks examples/variants/variants.vcf.gz examples/variants/recalibrated.bam examples/variants/refGene.sort.bed.gz --output example1.html
 
 ```
 
 #### Creating a variant report from a "track-config" json file
 
 ```
-create_report examples/variants/variants.vcf.gz https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --track-config examples/variants/trackConfigs.json --output example_config.html
+create_report examples/variants/variants.vcf.gz http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --track-config examples/variants/trackConfigs.json --output example_config.html
 ```
 
 
@@ -111,7 +110,7 @@ create_report examples/variants/variants.vcf.gz https://s3.amazonaws.com/igv.bro
 
 ```bash
 
-create_report examples/variants/tcga_test.maf https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns Chromosome Start_position End_position Variant_Classification Variant_Type Reference_Allele Tumor_Seq_Allele1 Tumor_Seq_Allele2 dbSNP_RS --tracks  examples/variants/refGene.sort.bed.gz --output example_maf.html
+create_report examples/variants/tcga_test.maf http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns Chromosome Start_position End_position Variant_Classification Variant_Type Reference_Allele Tumor_Seq_Allele1 Tumor_Seq_Allele2 dbSNP_RS --tracks  examples/variants/refGene.sort.bed.gz --output example_maf.html
 
 ```
 
@@ -119,7 +118,7 @@ create_report examples/variants/tcga_test.maf https://s3.amazonaws.com/igv.broad
 
 ```bash
 
-create_report examples/variants/test.maflite.tsv https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --sequence 1 --begin 2 --end 3 --info-columns chr start end ref_allele alt_allele --tracks examples/variants/refGene.sort.bed.gz --output example_tab.html
+create_report examples/variants/test.maflite.tsv http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --sequence 1 --begin 2 --end 3 --info-columns chr start end ref_allele alt_allele --tracks examples/variants/refGene.sort.bed.gz --output example_tab.html
 
 ```
 
@@ -127,7 +126,7 @@ create_report examples/variants/test.maflite.tsv https://s3.amazonaws.com/igv.br
 #### Creating a junction report from a splice-junction bed file
 
 ```bash
-create_report examples/junctions/Introns.38.bed https://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --type junction --ideogram examples/junctions/cytoBandIdeo.txt --output junctions.html --track-config examples/junctions/tracks.json --info-columns TCGA GTEx variant_name --title "Sample A"
+create_report examples/junctions/Introns.38.bed http://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --type junction --ideogram examples/junctions/cytoBandIdeo.txt --output junctions.html --track-config examples/junctions/tracks.json --info-columns TCGA GTEx variant_name --title "Sample A"
 ```
 
 #### Converting genomic files to data URIs for use in igv.js 
@@ -150,7 +149,7 @@ create_datauri examples/variants/variants.vcf.gz
 ```bash
 create_datauri \
 --region 8:127,738,322-127,738,508 \
-https://s3.amazonaws.com/1000genomes/data/HG00096/alignment/HG00096.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram 
+http://s3.amazonaws.com/1000genomes/data/HG00096/alignment/HG00096.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram 
 ```
 
 
