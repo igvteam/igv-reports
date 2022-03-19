@@ -138,205 +138,204 @@
 
 <script type="text/javascript">
 
-    //import igv from "http://localhost/igv.js/js/index.js";
+    window.addEventListener('DOMContentLoaded', (event) => {
+        const junctionSelectedColor = "rgb(200,0,0)";
+        const junctionColor = "rgb(0,0,200)";
+        const highlightColor = "rgba(190, 190, 0, 0.1)"
 
-    const junctionSelectedColor = "rgb(200,0,0)";
-    const junctionColor = "rgb(0,0,200)";
-    const highlightColor = "rgba(190, 190, 0, 0.1)"
+        const tableJson = "@TABLE_JSON@"
+        const sessionDictionary = "@SESSION_DICTIONARY@"
 
-    const tableJson = "@TABLE_JSON@"
-    const sessionDictionary = "@SESSION_DICTIONARY@"
+        let igvBrowser;
+        let currentSessionId;
 
-    let igvBrowser;
-    let currentSessionId;
+        document.addEventListener("DOMContentLoaded", function () {
+            initIGV()
+                .then(function (browser) {
+                    igvBrowser = browser;
+                    initTable();
+                });
+        });
 
-    document.addEventListener("DOMContentLoaded", function () {
-        initIGV()
-            .then(function (browser) {
-                igvBrowser = browser;
-                initTable();
-            });
-    });
+        function initIGV() {
 
-    function initIGV() {
+            var igvDiv;
+            igvDiv = document.getElementById("igvDiv");
+            var options =
+                {
+                    sessionURL: sessionDictionary["1"],
+                    showChromosomeWidget: false,
+                    showCenterGuide: true,
+                    search: false    // Disable search webservice
+                };
 
-        var igvDiv;
-        igvDiv = document.getElementById("igvDiv");
-        var options =
-            {
-                sessionURL: sessionDictionary["1"],
-                showChromosomeWidget: false,
-                showCenterGuide: true,
-                search: false    // Disable search webservice
-            };
+            return igv.createBrowser(igvDiv, options)
+        }
 
-        return igv.createBrowser(igvDiv, options)
-    }
+        function loadJson(json) {
+            const unique_id = json['unique_id'];
+            const session_id = json['session_id'] || unique_id;
+            const viewport = json['viewport']
+            const featureLocus = json.feature_locus ? parseLocus(json.feature_locus) : undefined;
+            const viewportLocus = parseLocus(viewport);
 
-    function loadJson(json) {
-        const unique_id = json['unique_id'];
-        const session_id = json['session_id'] || unique_id;
-        const viewport = json['viewport']
-        const featureLocus = json.feature_locus ? parseLocus(json.feature_locus) : undefined;
-        const viewportLocus = parseLocus(viewport);
-
-        loadSession(session_id, viewport)
-            .then(function (ignore) {
-                currentSessionId = session_id;
-                if (featureLocus) {
-                    const tracks = igvBrowser.findTracks("type", "spliceJunctions");
-                    if (tracks && tracks.length > 0) {
-                        return tracks[0].getFeatures(viewportLocus.chr, viewportLocus.start, viewportLocus.end);
-                    }
-                }
-            })
-            .then(function (features) {
-                if (features) {
-                    for (let f of features) {
-                        if (f.chr === featureLocus.chr && f.start === featureLocus.start && f.end === featureLocus.end) {
-                            f.color = junctionSelectedColor;
-                        } else {
-                            f.color = junctionColor;
+            loadSession(session_id, viewport)
+                .then(function (ignore) {
+                    currentSessionId = session_id;
+                    if (featureLocus) {
+                        const tracks = igvBrowser.findTracks("type", "spliceJunctions");
+                        if (tracks && tracks.length > 0) {
+                            return tracks[0].getFeatures(viewportLocus.chr, viewportLocus.start, viewportLocus.end);
                         }
                     }
-                }
-            })
-            .then(function (ignore) {
-                if (featureLocus) {
-                    return igvBrowser.loadROI({
-                        features: [{
-                            chr: featureLocus.chr,
-                            start: featureLocus.start,
-                            end: featureLocus.end,
-                        }],
-                        color: highlightColor
-                    })
-                }
-            })
-            .catch(function (exception) {
-                console.error(exception);
-            })
+                })
+                .then(function (features) {
+                    if (features) {
+                        for (let f of features) {
+                            if (f.chr === featureLocus.chr && f.start === featureLocus.start && f.end === featureLocus.end) {
+                                f.color = junctionSelectedColor;
+                            } else {
+                                f.color = junctionColor;
+                            }
+                        }
+                    }
+                })
+                .then(function (ignore) {
+                    if (featureLocus) {
+                        return igvBrowser.loadROI({
+                            features: [{
+                                chr: featureLocus.chr,
+                                start: featureLocus.start,
+                                end: featureLocus.end,
+                            }],
+                            color: highlightColor
+                        })
+                    }
+                })
+                .catch(function (exception) {
+                    console.error(exception);
+                })
 
-    }
-
-    function loadSession(session_id, viewport) {
-        if (currentSessionId === session_id) {
-            igvBrowser.clearROIs();
-            if (viewport) {
-                return igvBrowser.search(viewport);
-            }
-        } else {
-            const session = sessionDictionary[session_id]
-            return igvBrowser.loadSession({
-                url: session
-            })
-        }
-    }
-
-    function parseLocus(locus) {
-        const t = locus.split(":");
-        const t2 = t[1].split("-");
-        return {
-            chr: t[0],
-            start: parseInt(t2[0]),
-            end: parseInt(t2[1])
-        }
-    }
-
-
-    function initTable() {
-
-        const table = document.createElement("table");
-        table.id = "variant_table"
-        table.style.width = "100%";
-
-        document.getElementById("tableSelectorDiv").appendChild(table);
-
-        const thead = document.createElement('thead');
-        table.appendChild(thead);
-        const headerRow = thead.insertRow(0);
-
-        const headers = tableJson.headers;
-        for (let j = 1; j < headers.length; j++) {
-            var cell = document.createElement("th");
-            headerRow.appendChild(cell);
-            cell.innerHTML = headers[j];
         }
 
-        const tbody = document.createElement('tbody');
-        table.appendChild(tbody);
-        const tableRows = tableJson.rows;
-        for (let i = 0; i < tableRows.length; i++) {
-
-            const json = tableRows[i];
-            const unique_id = json[0]
-            const row = document.createElement("tr");
-            row.id = "row_" + unique_id;
-            tbody.appendChild(row);
-
-            // First row selected by default
-            if (i === 0) row.classList.add("selected")
-
-            row.onclick = function (event) {
-                const list = document.getElementById("variant_table").getElementsByTagName("tr")
-                for (let i = 0; i < list.length; i++) {
-                    list[i].classList.remove("selected")
+        function loadSession(session_id, viewport) {
+            if (currentSessionId === session_id) {
+                igvBrowser.clearROIs();
+                if (viewport) {
+                    return igvBrowser.search(viewport);
                 }
-                const rowID = event.target.parentElement.id;
-                const row = document.getElementById(rowID)
-                row.classList.add("selected")
-                const uniqueId = rowID.substring(4);
-                const session = sessionDictionary[uniqueId]
-                igvBrowser.loadSession({
+            } else {
+                const session = sessionDictionary[session_id]
+                return igvBrowser.loadSession({
                     url: session
                 })
             }
+        }
 
+        function parseLocus(locus) {
+            const t = locus.split(":");
+            const t2 = t[1].split("-");
+            return {
+                chr: t[0],
+                start: parseInt(t2[0]),
+                end: parseInt(t2[1])
+            }
+        }
+
+
+        function initTable() {
+
+            const table = document.createElement("table");
+            table.id = "variant_table"
+            table.style.width = "100%";
+
+            document.getElementById("tableSelectorDiv").appendChild(table);
+
+            const thead = document.createElement('thead');
+            table.appendChild(thead);
+            const headerRow = thead.insertRow(0);
+
+            const headers = tableJson.headers;
             for (let j = 1; j < headers.length; j++) {
-
-                var value = json[j];
-                cell = document.createElement("td");
-                cell.rowID = i;
-                row.appendChild(cell);
-                cell.innerHTML = value;
+                var cell = document.createElement("th");
+                headerRow.appendChild(cell);
+                cell.innerHTML = headers[j];
             }
-        }
 
-        // Add sorting.  Adapted from https://stackoverflow.com/questions/14267781/sorting-html-table-with-javascript/49041392
-        Array.prototype.slice.call(document.querySelectorAll('th')).forEach(function (th) {
-            th.addEventListener('click', function () {
-                //var table = th.parentNode
-                //while (table.tagName.toUpperCase() != 'TABLE') table = table.parentNode;
-                Array.prototype.slice.call(table.querySelectorAll('tr:nth-child(n+1)'), 1)
-                    .sort(comparer(Array.prototype.slice.call(th.parentNode.children).indexOf(th), this.asc = !this.asc))
-                    .forEach(function (tr) {
-                        table.appendChild(tr)
-                    });
-            })
-        });
+            const tbody = document.createElement('tbody');
+            table.appendChild(tbody);
+            const tableRows = tableJson.rows;
+            for (let i = 0; i < tableRows.length; i++) {
 
+                const json = tableRows[i];
+                const unique_id = json[0]
+                const row = document.createElement("tr");
+                row.id = "row_" + unique_id;
+                tbody.appendChild(row);
 
-        function getCellValue(tr, idx) {
-            return tr.children[idx].innerText || tr.children[idx].textContent;
-        }
+                // First row selected by default
+                if (i === 0) row.classList.add("selected")
 
-        function comparer(idx, asc) {
-            return function (a, b) {
-                return function (v1, v2) {
-                    // Special case for chromosome coloumn
-                    if (idx === 0 && v1.startsWith('chr') && v2.startsWith('chr')) {
-                        v1 = v1.substr(3);
-                        v2 = v2.substr(3);
+                row.onclick = function (event) {
+                    const list = document.getElementById("variant_table").getElementsByTagName("tr")
+                    for (let i = 0; i < list.length; i++) {
+                        list[i].classList.remove("selected")
                     }
-                    var isNumber = v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2)
-                    return isNumber ? v1 - v2 : v1.toString().localeCompare(v2);
-                }(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+                    const rowID = event.target.parentElement.id;
+                    const row = document.getElementById(rowID)
+                    row.classList.add("selected")
+                    const uniqueId = rowID.substring(4);
+                    const session = sessionDictionary[uniqueId]
+                    igvBrowser.loadSession({
+                        url: session
+                    })
+                }
+
+                for (let j = 1; j < headers.length; j++) {
+
+                    var value = json[j];
+                    cell = document.createElement("td");
+                    cell.rowID = i;
+                    row.appendChild(cell);
+                    cell.innerHTML = value;
+                }
             }
+
+            // Add sorting.  Adapted from https://stackoverflow.com/questions/14267781/sorting-html-table-with-javascript/49041392
+            Array.prototype.slice.call(document.querySelectorAll('th')).forEach(function (th) {
+                th.addEventListener('click', function () {
+                    //var table = th.parentNode
+                    //while (table.tagName.toUpperCase() != 'TABLE') table = table.parentNode;
+                    Array.prototype.slice.call(table.querySelectorAll('tr:nth-child(n+1)'), 1)
+                        .sort(comparer(Array.prototype.slice.call(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+                        .forEach(function (tr) {
+                            table.appendChild(tr)
+                        });
+                })
+            });
+
+
+            function getCellValue(tr, idx) {
+                return tr.children[idx].innerText || tr.children[idx].textContent;
+            }
+
+            function comparer(idx, asc) {
+                return function (a, b) {
+                    return function (v1, v2) {
+                        // Special case for chromosome coloumn
+                        if (idx === 0 && v1.startsWith('chr') && v2.startsWith('chr')) {
+                            v1 = v1.substr(3);
+                            v2 = v2.substr(3);
+                        }
+                        var isNumber = v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2)
+                        return isNumber ? v1 - v2 : v1.toString().localeCompare(v2);
+                    }(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+                }
+            }
+
         }
 
-    }
-
-
+    })
 
 </script>
 
