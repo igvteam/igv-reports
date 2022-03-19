@@ -151,6 +151,8 @@ def create_report(args):
                     trackobj["format"] = "bam"
                 if "name" not in trackobj:
                     trackobj["name"] = default_trackobj["url"]
+                if "indexURL" in trackobj:
+                    del trackobj["indexURL"]
                 reader = tc["reader"]
                 data = reader.slice(region)
                 trackobj["url"] = datauri.get_data_uri(data)
