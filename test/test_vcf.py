@@ -11,6 +11,14 @@ class VcfTest(unittest.TestCase):
         data = vcf.get_data(path)
         self.assertIsNotNone(data)
 
+        path = str((pathlib.Path(__file__).parent / "data/minigenome/variants.vcf.gz").resolve())
+        data = vcf.get_data(path)
+        self.assertIsNotNone(data)
+
+        path = str((pathlib.Path(__file__).parent / "data/minigenome/variants.bcf").resolve())
+        data = vcf.get_data(path)
+        self.assertIsNotNone(data)
+
 
     def test_getvariants_remote(self):
 
