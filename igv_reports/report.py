@@ -75,8 +75,10 @@ def create_report(args):
     if args.flanking is not None:
         flanking = float(args.flanking)
 
+    i = 0
     for tuple in table.features:
-        print(tuple)
+        i += 1
+        print(f"Working on variant {i}/{len(table.features)}")
 
         feature = tuple[0]
         unique_id = tuple[1]

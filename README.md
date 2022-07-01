@@ -67,18 +67,19 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * __--ideogram__ FILE. Ideogram file in UCSC cytoIdeo format.
     * __--template__ FILE. HTML template file.
     * __--output__ FILE. Output file name; default="igvjs_viewer.html".
-    * __--info-columns__ LIST. Space delimited list of field names to includ in the variant table.  If __sites_ is a VCF file these are the  info field names.  If __sites__ is a tab delimited format these are column names.
+    * __--info-columns__ LIST. Space delimited list of field names to include in the variant table.  If __sites_ is a VCF file these are the info field names.  If __sites__ is a tab delimited format these are column names.
     * __--info-columns-prefixes__ LIST. Space delimited list of prefixes of VCF info field names to include in variant table.
     * __--sample-columns__ LIST. Space delimited list of VCF sample/format field names to include in variant table.
     * __--flanking__ INT. Genomic region to include either side of variant; default=1000.
     * __--standalone__ Embed all JavaScript referenced via ```<script>``` tags in the page.
-    * __--sort__ Applies to alignment racks only.  If specified alignments are initally sorted by the specified option. Supported values include  ```BASE, STRAND, INSERT_SIZE, MATE_CHR, and NONE```. Default value is ```BASE``` for single nucleotide variants, ```NONE``` (no sorting) otherwise.  See the igv.js documentation for more information.  
+    * __--sort__ Applies to alignment tracks only.  If specified alignments are initally sorted by the specified option. Supported values include  ```BASE, STRAND, INSERT_SIZE, MATE_CHR, and NONE```. Default value is ```BASE``` for single nucleotide variants, ```NONE``` (no sorting) otherwise.  See the igv.js documentation for more information.
+    * __--split__  Specify that the BED file has two locations and that the screen is to be split into two windows showing both locations at the same time.
     
-**Tab delimited __sites__ file
+**Tab delimited __sites__ file**
 
 Variant sites can be defined from a [VCF](https://samtools.github.io/hts-specs/VCFv4.2.pdf),  
 UCSC [BED](https://genome.ucsc.edu/FAQ/FAQformat.html#format1), or a generic tab delimited file.   
-
+Now also supported: BEDPE formats for structural variants
 
 Note: VCF files must be tabix indexed, and must end with a ".gz" extension.  The ".bgz" extension is not supported.
 
@@ -91,7 +92,7 @@ be indexed.  Tabix is supported for other file types and it is recommended that 
 
 Data for the examples are available for [download](https://s3.amazonaws.com/igv.org.test/reports/examples.zip).
 
-#### Creating a variant report from a VCF file:  
+#### Creating a variant report from a VCF file: \([Link to example output](examples/results/example1.html)\)
 
 ```bash
 
@@ -99,9 +100,9 @@ create_report examples/variants/variants.vcf.gz http://s3.amazonaws.com/igv.broa
 
 ```
 
-#### Creating a variant report from a "track-config" json file
+#### Creating a variant report from a "track-config" json file:
 
-```
+``` bash
 create_report examples/variants/variants.vcf.gz http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --track-config examples/variants/trackConfigs.json --output example_config.html
 ```
 
@@ -121,7 +122,13 @@ create_report examples/variants/tcga_test.maf http://s3.amazonaws.com/igv.broadi
 create_report examples/variants/test.maflite.tsv http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --sequence 1 --begin 2 --end 3 --info-columns chr start end ref_allele alt_allele --tracks examples/variants/refGene.sort.bed.gz --output example_tab.html
 
 ```
+#### Creating a variant report from a bed file with two locations (BEDPE format)
 
+```bash
+
+create_report examples/variants/variants.pe.bed http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --split --tracks examples/variants/variants.vcf.gz examples/variants/recalibrated.bam examples/variants/refGene.sort.bed.gz --output example_bedpe.html
+
+```
 
 #### Creating a junction report from a splice-junction bed file
 
