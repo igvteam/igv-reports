@@ -100,14 +100,14 @@ create_report examples/variants/variants.vcf.gz http://s3.amazonaws.com/igv.broa
 
 ```
 
-#### Creating a variant report from a "track-config" json file:
+#### Creating a variant report from a "track-config" json file: \([Link to example output](examples/results/example_config.html)\)
 
 ``` bash
 create_report examples/variants/variants.vcf.gz http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --track-config examples/variants/trackConfigs.json --output example_config.html
 ```
 
 
-#### Creating a variant report from a TCGA MAF file
+#### Creating a variant report from a TCGA MAF file: \([Link to example output](examples/results/example_maf.html)\)
 
 ```bash
 
@@ -115,14 +115,14 @@ create_report examples/variants/tcga_test.maf http://s3.amazonaws.com/igv.broadi
 
 ```
 
-#### Creating a variant report from a generic tab-delimited file
+#### Creating a variant report from a generic tab-delimited file: \([Link to example output](examples/results/example_tab.html)\)
 
 ```bash
 
 create_report examples/variants/test.maflite.tsv http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --sequence 1 --begin 2 --end 3 --info-columns chr start end ref_allele alt_allele --tracks examples/variants/refGene.sort.bed.gz --output example_tab.html
 
 ```
-#### Creating a variant report from a bed file with two locations (BEDPE format)
+#### Creating a variant report from a bed file with two locations (BEDPE format): \([Link to example output](examples/results/example_bedpe.html)\)
 
 ```bash
 
@@ -130,10 +130,10 @@ create_report examples/variants/variants.pe.bed http://s3.amazonaws.com/igv.broa
 
 ```
 
-#### Creating a junction report from a splice-junction bed file
+#### Creating a junction report from a splice-junction bed file: \([Link to example output](examples/results/example_junctions.html)\)
 
 ```bash
-create_report examples/junctions/Introns.38.bed http://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --type junction --ideogram examples/junctions/cytoBandIdeo.txt --output junctions.html --track-config examples/junctions/tracks.json --info-columns TCGA GTEx variant_name --title "Sample A"
+create_report examples/junctions/Introns.38.bed http://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --type junction --ideogram examples/junctions/cytoBandIdeo.txt --output example_junctions.html --track-config examples/junctions/tracks.json --info-columns TCGA GTEx variant_name --title "Sample A"
 ```
 
 #### Converting genomic files to data URIs for use in igv.js 
