@@ -64,4 +64,21 @@ class FeatureFileTest(unittest.TestCase):
         features = parse_bed(io.StringIO(content))
         self.assertEqual(len(features), 3)
 
+    def test_non_gzipped_query_bedpe(self):
+
+        region = {
+            "chr": "chr5",
+            "start": 470000,
+            "end": 480000
+        }
+        region2 = {
+            "chr": "chr_5",
+            "start": 180000000,
+            "end": 190000000
+        }
+        bedpe = str((pathlib.Path(__file__).parent / "data/variants.pe.bed").resolve())
+        feature_file = FeatureReader(bedpe)
+        content = feature_file.slice(region, region2=region2, split_bool=True)
+        features = parse_bed(io.StringIO(content))
+        self.assertEqual(len(content.strip().split("\n")), 2)
 

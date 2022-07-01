@@ -32,4 +32,20 @@ class FastaTest(unittest.TestCase):
                                "end": 200})
         self.assertTrue(data)
 
+    def test_remote_chrom(self):
+
+        data = fasta.get_data("https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa",
+                              {"chr": "chr5",
+                               "start": 474979,
+                               "end": 474998})
+        self.assertEqual("ATCAGGCGGCAGAAGGTGCC", data)
+
+    def test_remote_alt_chrom(self):
+
+        data = fasta.get_data("https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa",
+                              {"chr": "chr_5",
+                               "start": 474979,
+                               "end": 474998})
+        self.assertEqual("ATCAGGCGGCAGAAGGTGCC", data)
+
 

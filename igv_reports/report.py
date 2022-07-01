@@ -11,6 +11,8 @@ from igv_reports.bedtable import JunctionBedTable
 from igv_reports.generictable import GenericTable
 from igv_reports.regions import parse_region
 from igv_reports.feature import MockReader
+from base64 import b64decode
+import gzip
 
 def create_report(args):
 
@@ -26,7 +28,7 @@ def create_report(args):
         if args.type is not None and args.type == "junction":
             table = JunctionBedTable(variants_file, args.info_columns)
         else:
-            table = BedTable(variants_file)
+            table = BedTable(variants_file, args.split)
 
     elif variants_file.endswith(".maf") or variants_file.endswith(".maf.gz") or (args.sequence is not None and args.begin is not None and args.end is not None):
         table = GenericTable(variants_file, args.info_columns, args.sequence, args.begin, args.end, args.zero_based)
@@ -74,6 +76,7 @@ def create_report(args):
         flanking = float(args.flanking)
 
     for tuple in table.features:
+        print(tuple)
 
         feature = tuple[0]
         unique_id = tuple[1]
@@ -100,10 +103,33 @@ def create_report(args):
                     "start": start,
                     "end": end
                 }
+                if args.split:
+                    # This is integral. In order to have two positions from
+                    # the same chromosome in the split view, we would need 
+                    # to have the reference to include the entire range 
+                    # between the two two positions. This can be Ns outside
+                    # of the flanking region but this still adds up a lot 
+                    # of junk that we don't care about. An easy solution is 
+                    # to have an alternate reference - where chromosomes are 
+                    # denoted by chr_A instead of chrA.
+
+                    chr2 = utils.encode_chrom(feature.chr2)
+                    start2 = int (math.floor(feature.start2 - flanking / 2))
+                    start2 = max(start2,1) # bound start to 1
+                    end2 = int (math.ceil(feature.end2 + flanking / 2))
+                    region2 = {
+                        "chr": chr2,
+                        "start": start2,
+                        "end": end2
+                    }
 
             # Fasta
             data = fasta.get_data(args.fasta, region)
-            fa = '>' + chr + ':' + str(start) + '-' + str(end) + '\n' + data
+            if not args.split:
+                fa = '>' + chr + ':' + str(start) + '-' + str(end) + '\n' + data
+            else:
+                data2 = fasta.get_data(args.fasta, region2)
+                fa = '>' + chr + ':' + str(start) + '-' + str(end) + '\n' + data + '\n' + '>' + chr2 + ':' + str(start2) + '-' + str(end2) + '\n' + data2
             fasta_uri = datauri.get_data_uri(fa)
             fastaJson = {
                 "fastaURL": fasta_uri,
@@ -111,7 +137,10 @@ def create_report(args):
 
             # Ideogram
             if(args.ideogram):
-                ideo_string = ideogram.get_data(args.ideogram, region)
+                if not args.split:
+                    ideo_string = ideogram.get_data(args.ideogram, region)
+                else:
+                    ideo_string = ideogram.get_data(args.ideogram, region) + ideogram.get_data(args.ideogram, region2)
                 ideo_uri = datauri.get_data_uri(ideo_string)
                 fastaJson["cytobandURL"] = ideo_uri
 
@@ -120,8 +149,13 @@ def create_report(args):
             if(hasattr(feature, "viewport")):
                 initial_locus = feature.viewport
             else:
-                position = int(math.floor((feature.start + feature.end) / 2)) + 1   # center of region in 1-based coordinates
-                initial_locus = chr + ":" + str(position)
+                if not args.split:
+                    position = int(math.floor((feature.start + feature.end) / 2)) + 1   # center of region in 1-based coordinates
+                    initial_locus = chr + ":" + str(position)
+                else:
+                    position = int(math.floor((feature.start + feature.end) / 2)) + 1   # center of region in 1-based coordinates
+                    position2 = int(math.floor((feature.start2 + feature.end2) / 2)) + 1   # center of region in 1-based coordinates
+                    initial_locus = chr + ":" + str(position) + " " + chr2 + ":" + str(position2)
             session_json = {
                 "locus": initial_locus,
                 "reference": fastaJson,
@@ -134,7 +168,10 @@ def create_report(args):
                 track = tr["track"]
                 reader = tr["reader"]
                 trackobj = tracks.get_track_json_dict(track)
-                data = reader.slice(region)
+                if not args.split:
+                    data = reader.slice(region)
+                else:
+                    data = reader.slice(region, region2=region2, split_bool=args.split)
                 trackobj["url"] = datauri.get_data_uri(data)
                 track_objects.append(trackobj)
 
@@ -272,6 +309,7 @@ def main():
     parser.add_argument("--begin", help="Column of start position.  For tab-delimited sites file.", default=None)
     parser.add_argument("--end", help="column of end position. For tab-delimited sites file.", default=None)
     parser.add_argument("--zero_based", help="Specify that the position in the data file is 0-based (e.g. UCSC files) rather than 1-based.", default=None)
+    parser.add_argument("--split", help="Specify whether multi locus view is needed by the input data.", action="store_true")
     args = parser.parse_args()
     create_report(args)
 

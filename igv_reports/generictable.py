@@ -66,7 +66,7 @@ class GenericTable:
                     idx = self.header.index(h)
                     indeces.append(idx)
                 except:
-                    print(f"{h} Column h is not present")
+                    print(f"Column {h} is not present")
 
         for i in indeces:
             obj["headers"].append(html.escape(self.header[i]))

@@ -22,3 +22,12 @@ def getreader(path, filetype=None, fasta=None):
     else:
         return feature.FeatureReader(path)
 
+
+def encode_chrom(data):
+
+    return data.replace("chr", "chr_")
+
+
+def decode_chrom(data):
+
+    return data.replace("chr_", "chr")
