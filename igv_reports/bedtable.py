@@ -149,4 +149,3 @@ def normalize_json(info_fields, json_array):
         "headers": headers,
         "rows": rows
     }
-

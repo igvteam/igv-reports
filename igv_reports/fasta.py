@@ -1,6 +1,5 @@
 from . import regions
 import pysam
-from igv_reports import utils
 
 def get_data(fasta_file,region=None):
 
@@ -15,7 +14,7 @@ def get_data(fasta_file,region=None):
         if isinstance(region,str):
             region = regions.parse_region(region)
 
-        chr = utils.decode_chrom(region["chr"])
+        chr = region["chr"]
         start = region["start"] - 1
         end = region["end"]
 
@@ -26,4 +25,3 @@ def get_data(fasta_file,region=None):
         fasta.close()
 
         return slice_seq
-

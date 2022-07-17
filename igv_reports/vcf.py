@@ -1,5 +1,4 @@
 import pysam
-from igv_reports import utils
 
 def get_data(path, region = None):
 
@@ -33,7 +32,7 @@ class VcfReader:
         if not split_bool:
             return fileString
         else:
-            records2 = vcf.fetch(utils.decode_chrom(region2['chr']), region2['start'], region2['end'])
+            records2 = vcf.fetch(region2['chr'], region2['start'], region2['end'])
             for rec in records2:
-                fileString += (utils.encode_chrom(str(rec)))
+                fileString += (str(rec))
             return fileString

@@ -1,4 +1,4 @@
-from igv_reports import utils
+
 
 def get_data(cyto_file, region):
 
@@ -10,10 +10,9 @@ def get_data(cyto_file, region):
 
             tokens = line.split('\t')
 
-            if chr == None or tokens[0] == utils.decode_chrom(chr):
-                if chr != None and "_" in chr:
-                    result += utils.encode_chrom(line)
-                else:
-                    result += line
+            if chr == None or tokens[0] == chr:
+
+                result += line
 
     return result
+    

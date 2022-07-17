@@ -72,7 +72,7 @@ class FeatureFileTest(unittest.TestCase):
             "end": 480000
         }
         region2 = {
-            "chr": "chr_5",
+            "chr": "chr5",
             "start": 180000000,
             "end": 190000000
         }

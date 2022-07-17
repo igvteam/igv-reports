@@ -10,9 +10,3 @@ class IdeogramTest(unittest.TestCase):
         extracted = ideogram.get_data(data_path, {"chr": "chr1"})
         self.assertTrue(extracted.startswith('chr1'))
 
-    def test_extract_chr_alt(self):
-
-        data_path = str((pathlib.Path(__file__).parent / 'data/cytoBandIdeo.txt').resolve())
-        extracted = ideogram.get_data(data_path, {"chr": "chr_1"})
-        self.assertTrue(extracted.startswith('chr_1'))
-

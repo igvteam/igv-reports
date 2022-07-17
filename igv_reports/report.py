@@ -11,8 +11,6 @@ from igv_reports.bedtable import JunctionBedTable
 from igv_reports.generictable import GenericTable
 from igv_reports.regions import parse_region
 from igv_reports.feature import MockReader
-from base64 import b64decode
-import gzip
 
 def create_report(args):
 
@@ -106,16 +104,7 @@ def create_report(args):
                     "end": end
                 }
                 if args.split:
-                    # This is integral. In order to have two positions from
-                    # the same chromosome in the split view, we would need 
-                    # to have the reference to include the entire range 
-                    # between the two two positions. This can be Ns outside
-                    # of the flanking region but this still adds up a lot 
-                    # of junk that we don't care about. An easy solution is 
-                    # to have an alternate reference - where chromosomes are 
-                    # denoted by chr_A instead of chrA.
-
-                    chr2 = utils.encode_chrom(feature.chr2)
+                    chr2 = feature.chr2
                     start2 = int (math.floor(feature.start2 - flanking / 2))
                     start2 = max(start2,1) # bound start to 1
                     end2 = int (math.ceil(feature.end2 + flanking / 2))

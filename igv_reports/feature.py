@@ -3,7 +3,6 @@ import io
 import pysam
 import requests
 from intervaltree import IntervalTree
-from igv_reports import utils
 
 
 class Feature:
@@ -62,13 +61,13 @@ class _Tabix:
             return data
         else:
             if region2:
-                range_string = utils.decode_chrom(region2['chr']) + ":" + str(region2['start']) + "-" + str(region2['end'])
+                range_string = region2['chr'] + ":" + str(region2['start']) + "-" + str(region2['end'])
                 it = tb.fetch(range_string)
             else:
                 it = tb.fetch()
 
             for row in it:
-                data += utils.encode_chrom(row) + '\n'
+                data += row + '\n'
 
             return data
 
@@ -132,7 +131,7 @@ class _NonIndexed:
                     features = parse(self.file)
                     self.tree = FeatureTree(features)
 
-                reference = utils.decode_chrom(region2["chr"])
+                reference = region2["chr"]
                 start = region2["start"]
                 end = region2["end"]
                 feature_intervals = self.tree.query(reference, start, end)
@@ -144,7 +143,7 @@ class _NonIndexed:
                 features = sorted(features, key=sortFunc)
                 content = ''
                 for f in features:
-                    content += utils.encode_chrom(f.text)
+                    content += f.text
                 return content
 
 
@@ -177,7 +176,7 @@ class MockReader:
                 content += f"{f.chr}\t{f.start}\t{f.end}\n"
             return content
         else:
-            reference = utils.decode_chrom(region2["chr"])
+            reference = region2["chr"]
             start = region2["start"]
             end = region2["end"]
             feature_intervals = self.tree.query(reference, start, end)
@@ -189,7 +188,7 @@ class MockReader:
 
             features = sorted(features, key=sortFunc)
             for f in features:
-                chr = utils.encode_chrom(f.chr)
+                chr = f.chr
                 content += f"{chr}\t{f.start}\t{f.end}\n"
             return content
 
