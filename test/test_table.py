@@ -41,7 +41,7 @@ class TableTest(unittest.TestCase):
 
         maf_file = str((pathlib.Path(__file__).parent / "data/maf/test.maflite.tsv").resolve())
 
-        info_columns = "chr,start,end,ref_allele,alt_allele,tumor_barcode"
+        info_columns = ["chr", "start", "end", "ref_allele", "alt_allele", "tumor_barcode"]
         sequence = 1
         start = 2
         end = 3

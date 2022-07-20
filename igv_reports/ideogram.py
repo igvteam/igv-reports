@@ -15,3 +15,4 @@ def get_data(cyto_file, region):
                 result += line
 
     return result
+    

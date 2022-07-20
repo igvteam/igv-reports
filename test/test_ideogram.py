@@ -10,5 +10,3 @@ class IdeogramTest(unittest.TestCase):
         extracted = ideogram.get_data(data_path, {"chr": "chr1"})
         self.assertTrue(extracted.startswith('chr1'))
 
-
-

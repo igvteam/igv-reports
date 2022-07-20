@@ -25,4 +25,3 @@ def get_data(fasta_file,region=None):
         fasta.close()
 
         return slice_seq
-

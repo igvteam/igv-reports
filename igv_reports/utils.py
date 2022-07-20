@@ -21,4 +21,3 @@ def getreader(path, filetype=None, fasta=None):
 
     else:
         return feature.FeatureReader(path)
-
