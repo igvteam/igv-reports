@@ -85,12 +85,13 @@ class JunctionBedTable:
                 self.features.append((f, unique_id))
                 unique_id += 1
                 viewport = f.viewport
-                if viewport in session_dict:
-                    sid = session_dict[viewport]
-                else:
-                    sid = str(session_id)
-                    session_dict[viewport] = sid
-                    session_id = session_id + 1
+                # if viewport in session_dict:
+                #     sid = session_dict[viewport]
+                # else:
+                sid = str(session_id)
+                session_dict[viewport] = sid
+                session_id = session_id + 1
+
                 f.session_id = sid
 
     def to_JSON(self):
