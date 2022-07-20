@@ -11,8 +11,7 @@
     "format": "gtf",
     "displayMode": "EXPANDED",
     "height": 300,
-    "url": "https://s3.dualstack.us-east-1.amazonaws.com/igv.org.genomes/hg38/annotations/gencode.v28.basic.annotation.sorted.gtf.gz",
-    "visibilityWindow": 1000000
+    "url": "examples/junctions/gencode.v28.basic.annotation.gtf"
   },
   {
     "name": "Alignments",
