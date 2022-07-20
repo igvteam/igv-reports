@@ -324,7 +324,7 @@ def getstream(file):
         else:
             text = response.text
         f = io.StringIO(text)
-        return text
+        return f
 
     elif file.endswith('.gz'):
         f = gzip.open(file, mode='rt')
