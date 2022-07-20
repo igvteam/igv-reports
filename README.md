@@ -73,8 +73,8 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * __--flanking__ INT. Genomic region to include either side of variant; default=1000.
     * __--standalone__ Embed all JavaScript referenced via ```<script>``` tags in the page.
     * __--sort__ Applies to alignment tracks only.  If specified alignments are initally sorted by the specified option. Supported values include  ```BASE, STRAND, INSERT_SIZE, MATE_CHR, and NONE```. Default value is ```BASE``` for single nucleotide variants, ```NONE``` (no sorting) otherwise.  See the igv.js documentation for more information.
-    * __--split__  Specify that the BED file has two locations and that the screen is to be split into two windows showing both locations at the same time.
-    
+    * __--idlink__ URL tempate for information link for VCF ID values.  The token $$ will be substituted with the ID value.  Example: ```--idlink 'https://www.ncbi.nlm.nih.gov/snp/?term=$$'```
+     
 **Tab delimited __sites__ file**
 
 Variant sites can be defined from a [VCF](https://samtools.github.io/hts-specs/VCFv4.2.pdf),  
@@ -90,20 +90,22 @@ be indexed.  Tabix is supported for other file types and it is recommended that 
 
 ## Examples
 
-Data for the examples are available for [download](https://s3.amazonaws.com/igv.org.test/reports/examples.zip).
+Data for the examples are available in the github repository [https://github.com/igvteam/igv-reports](https://github.com/igvteam/igv-reports).  The repository can be
+downloaded as a zip archive here [https://github.com/igvteam/igv-reports/archive/refs/tags/v1.0.5.zip](https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip).
+It is assumed that the examples are run from the root directory of the repository.
 
 #### Creating a variant report from a VCF file: \([Link to example output](examples/results/example1.html)\)
 
 ```bash
 
-create_report examples/variants/variants.vcf.gz http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --tracks examples/variants/variants.vcf.gz examples/variants/recalibrated.bam examples/variants/refGene.sort.bed.gz --output example1.html
+create_report examples/variants/variants.vcf.gz http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo_hg38.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --tracks examples/variants/variants.vcf.gz examples/variants/recalibrated.bam examples/variants/refGene.sort.bed.gz --output example1.html
 
 ```
 
 #### Creating a variant report from a "track-config" json file: \([Link to example output](examples/results/example_config.html)\)
 
 ``` bash
-create_report examples/variants/variants.vcf.gz http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --track-config examples/variants/trackConfigs.json --output example_config.html
+create_report examples/variants/variants.vcf.gz http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo_hg38.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --track-config examples/variants/trackConfigs.json --output example_config.html
 ```
 
 
@@ -111,7 +113,7 @@ create_report examples/variants/variants.vcf.gz http://s3.amazonaws.com/igv.broa
 
 ```bash
 
-create_report examples/variants/tcga_test.maf http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --info-columns Chromosome Start_position End_position Variant_Classification Variant_Type Reference_Allele Tumor_Seq_Allele1 Tumor_Seq_Allele2 dbSNP_RS --tracks  examples/variants/refGene.sort.bed.gz --output example_maf.html
+create_report examples/variants/tcga_test.maf http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo_hg19.txt --flanking 1000 --info-columns Chromosome Start_position End_position Variant_Classification Variant_Type Reference_Allele Tumor_Seq_Allele1 Tumor_Seq_Allele2 dbSNP_RS --tracks  examples/variants/refGene.sort.bed.gz --output example_maf.html
 
 ```
 
@@ -119,22 +121,31 @@ create_report examples/variants/tcga_test.maf http://s3.amazonaws.com/igv.broadi
 
 ```bash
 
-create_report examples/variants/test.maflite.tsv http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --sequence 1 --begin 2 --end 3 --info-columns chr start end ref_allele alt_allele --tracks examples/variants/refGene.sort.bed.gz --output example_tab.html
+create_report examples/variants/test.maflite.tsv http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo_hg19.txt --flanking 1000 --sequence 1 --begin 2 --end 3 --info-columns chr start end ref_allele alt_allele --tracks examples/variants/refGene.sort.bed.gz --output example_tab.html
 
 ```
 #### Creating a variant report from a bed file with two locations (BEDPE format): \([Link to example output](examples/results/example_bedpe.html)\)
 
 ```bash
 
-create_report examples/variants/variants.bedpe http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --tracks examples/variants/variants.vcf.gz examples/variants/recalibrated.bam examples/variants/refGene.sort.bed.gz --output example_bedpe.html
+create_report examples/variants/variants.bedpe http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo_hg38.txt --flanking 1000 --tracks examples/variants/variants.vcf.gz examples/variants/recalibrated.bam examples/variants/refGene.sort.bed.gz --output example_bedpe.html
+
+```
+
+#### Creating a variant report from a vcf file with custom ID link urls: \([Link to example output](examples/results/example_idlink.html)\)
+
+```bash
+
+create_report examples/variants/1kg_phase3_sites.vcf.gz http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo_hg19.txt --flanking 1000 --tracks examples/variants/1kg_phase3_sites.vcf.gz examples/variants/NA12878_lowcoverage.bam examples/variants/refGene.sort.bed.gz --idlink 'https://www.ncbi.nlm.nih.gov/snp/?term=$$' --output example_idlink.html
 
 ```
 
 #### Creating a junction report from a splice-junction bed file: \([Link to example output](examples/results/example_junctions.html)\)
 
 ```bash
-create_report examples/junctions/Introns.38.bed http://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --type junction --ideogram examples/junctions/cytoBandIdeo.txt --output example_junctions.html --track-config examples/junctions/tracks.json --info-columns TCGA GTEx variant_name --title "Sample A"
+create_report examples/junctions/Introns.38.bed http://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --type junction --ideogram examples/junctions/cytoBandIdeo_hg38.txt --output example_junctions.html --track-config examples/junctions/tracks.json --info-columns TCGA GTEx variant_name --title "Sample A"
 ```
+
 
 #### Converting genomic files to data URIs for use in igv.js 
 

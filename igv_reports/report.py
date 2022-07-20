@@ -21,7 +21,7 @@ def create_report(args):
     variants_file = args.sites
 
     if variants_file.endswith(".bcf") or variants_file.endswith(".vcf") or variants_file.endswith (".vcf.gz"):
-        table = VariantTable(variants_file, args.info_columns, args.info_columns_prefixes, args.sample_columns)
+        table = VariantTable(variants_file, args.info_columns, args.info_columns_prefixes, args.sample_columns, args.idlink)
 
     elif variants_file.endswith(".bed") or variants_file.endswith(".bed.gz"):
         if args.type is not None and args.type == "junction":
@@ -309,6 +309,7 @@ def main():
     parser.add_argument("--begin", help="Column of start position.  For tab-delimited sites file.", default=None)
     parser.add_argument("--end", help="column of end position. For tab-delimited sites file.", default=None)
     parser.add_argument("--zero_based", help="Specify that the position in the data file is 0-based (e.g. UCSC files) rather than 1-based.", default=None)
+    parser.add_argument("--idlink", type = str, help="url link template for the VCF ID column")
     args = parser.parse_args()
     create_report(args)
 
