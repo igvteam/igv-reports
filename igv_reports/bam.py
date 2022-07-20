@@ -1,4 +1,3 @@
-import os
 import pysam
 
 
@@ -26,7 +25,7 @@ class BamReader:
         self.fasta = fasta
 
     # add sam flag for unit tests
-    def slice(self, region=None, reference=None, region2=None, split_bool=False, sam=False):
+    def slice(self, region=None, region2=None,  sam=False):
         if sam:
             args = ["-h", self.filename]
         else:

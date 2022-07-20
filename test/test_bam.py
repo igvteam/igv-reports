@@ -8,7 +8,6 @@ class BAMTest(unittest.TestCase):
 
     def test_bam(self):
 
-
         region = {
             "chr": "minigenome",
             "start": 4000,
@@ -56,8 +55,9 @@ class BAMTest(unittest.TestCase):
 
         bam_file_path = str((pathlib.Path(__file__).parent / "data/recalibrated.bam").resolve())
         reader = bam.BamReader(bam_file_path);
-        data = reader.slice(region, region2=region2, split_bool=True, sam=True)
-        self.assertEqual(len(data.strip().split("\n")), 116)
+        data = reader.slice(region, region2=region2, sam=True)
+        print(data)
+        self.assertEqual(len(data.strip().split("\n")), 121)
 
 
     def test_multiple_bam_regions_same_chrom(self):
@@ -74,6 +74,6 @@ class BAMTest(unittest.TestCase):
 
         bam_file_path = str((pathlib.Path(__file__).parent / "data/recalibrated.bam").resolve())
         reader = bam.BamReader(bam_file_path);
-        data = reader.slice(region, region2=region2, split_bool=True, sam=True)
-        self.assertEqual(len(data.strip().split("\n")), 93)
+        data = reader.slice(region, region2=region2, sam=True)
+        self.assertEqual(len(data.strip().split("\n")), 98)
 

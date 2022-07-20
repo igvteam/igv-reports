@@ -7,7 +7,7 @@ from intervaltree import IntervalTree
 
 class Feature:
 
-    def __init__(self, chr, start, end, text, name='', chr2='', start2=0, end2=0):
+    def __init__(self, chr, start, end, text, name='', chr2=None, start2=None, end2=None):
         self.chr = chr
         self.start = start
         self.end = end
@@ -35,8 +35,8 @@ class FeatureReader:
         else:
             self.reader = _NonIndexed(path)
 
-    def slice(self, region=None, region2=None, split_bool=False):
-        return self.reader.slice(region, region2, split_bool)
+    def slice(self, region=None, region2=None):
+        return self.reader.slice(region, region2)
 
 
 class _Tabix:
@@ -44,7 +44,7 @@ class _Tabix:
     def __init__(self, tabix):
         self.file = tabix
 
-    def slice(self, region=None, region2=None, split_bool=False):
+    def slice(self, region=None, region2 = None):
 
         tb = self.file
         if region:
@@ -57,20 +57,7 @@ class _Tabix:
         for row in it:
             data += row + '\n'
 
-        if not split_bool:
-            return data
-        else:
-            if region2:
-                range_string = region2['chr'] + ":" + str(region2['start']) + "-" + str(region2['end'])
-                it = tb.fetch(range_string)
-            else:
-                it = tb.fetch()
-
-            for row in it:
-                data += row + '\n'
-
-            return data
-
+        return data
 
 
 ## Implement a pysam/tabix style inteface for non-indexed files
@@ -81,7 +68,7 @@ class _NonIndexed:
         self.file = file
         self.tree = None
 
-    def slice(self, region=None, region2=None, split_bool=False):
+    def slice(self, region=None, region2=None):
 
         if region == None:
             f = None
@@ -93,12 +80,11 @@ class _NonIndexed:
                     f.close()
 
         else:
+
+            # If first time through read the entire file and create a queyable feature tree.
             if not self.tree:
                 features = parse(self.file)
                 self.tree = FeatureTree(features)
-
-            def sortFunc(f):
-                    return f.start
 
             reference = region["chr"]
             start = region["start"]
@@ -110,27 +96,8 @@ class _NonIndexed:
                 for i in feature_intervals:
                     features.append(i.data)
 
-        if not split_bool:
-            features = sorted(features, key=sortFunc)
-            content = ''
-            for f in features:
-                content += f.text
-            return content
-        else:
-            if region2 == None:
-                f = None
-                try:
-                    f = getstream(self.file)
-                    return f.read()
-                finally:
-                    if f:
-                        f.close()
-
-            else:
-                if not self.tree:
-                    features = parse(self.file)
-                    self.tree = FeatureTree(features)
-
+            # Add features for second region, if specified.
+            if region2 != None:
                 reference = region2["chr"]
                 start = region2["start"]
                 end = region2["end"]
@@ -140,45 +107,29 @@ class _NonIndexed:
                     for i in feature_intervals:
                         features.append(i.data)
 
-                features = sorted(features, key=sortFunc)
-                content = ''
-                for f in features:
-                    content += f.text
-                return content
+        content = ''
+        for f in features:
+            content += f.text
+        return content
+
 
 
 # This class is initialized with a list of "bed like" features, mocks an indexed file reader
 class MockReader:
 
     def __init__(self, features):
-
+        self.features = features
         self.tree = FeatureTree(features)
 
-    def slice(self, region=None, region2=None, split_bool=False):
+    def slice(self, region=None, region2=None):
 
-        reference = region["chr"]
-        start = region["start"]
-        end = region["end"]
-        feature_intervals = self.tree.query(reference, start, end)
+        if region == None:
+            return self.features
 
-        def sortFunc(f):
-            return f.start
-
-        features = []
-        if feature_intervals:
-            for i in feature_intervals:
-                features.append(i.data)
-
-        if not split_bool:
-            features = sorted(features, key=sortFunc)
-            content = ''
-            for f in features:
-                content += f"{f.chr}\t{f.start}\t{f.end}\n"
-            return content
         else:
-            reference = region2["chr"]
-            start = region2["start"]
-            end = region2["end"]
+            reference = region["chr"]
+            start = region["start"]
+            end = region["end"]
             feature_intervals = self.tree.query(reference, start, end)
 
             features = []
@@ -186,7 +137,18 @@ class MockReader:
                 for i in feature_intervals:
                     features.append(i.data)
 
-            features = sorted(features, key=sortFunc)
+            if region2 != None:
+                reference = region2["chr"]
+                start = region2["start"]
+                end = region2["end"]
+                feature_intervals = self.tree.query(reference, start, end)
+
+                if feature_intervals:
+                    for i in feature_intervals:
+                        features.append(i.data)
+
+
+            content = ''
             for f in features:
                 chr = f.chr
                 content += f"{chr}\t{f.start}\t{f.end}\n"
@@ -221,7 +183,7 @@ def get_data(filename, region=None):
     return reader.slice(region)
 
 
-def parse(path, format=None, split_bool=False):
+def parse(path, format=None):
     '''
     Parse a feature file and return an array of feature objects.  Supported formats are bed, gff, and gtf.
     :param path: Path to feature file, which can be local or url
@@ -236,11 +198,13 @@ def parse(path, format=None, split_bool=False):
         if not format:
             format = infer_format(path)
         if format == 'bed':
-            return parse_bed(f, split_bool)
+            return parse_bed(f)
         elif format == 'gff' or format == 'gtf':
             return parse_gff(f)
         elif format == 'tab':
             return parse_tab(f)
+        elif format == 'bedpe':
+            return parse_bedpe(f)
         else:
             raise Exception("Unknown file format: " + path)
     finally:
@@ -248,27 +212,33 @@ def parse(path, format=None, split_bool=False):
             f.close()
 
 
-def parse_bed(f, split_bool=False):
+def parse_bed(f):
     features = []
     for line in f:
         if not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
             tokens = line.rstrip('\n').rstrip('\r').split('\t')
-            if len(tokens) > 2:
-                if not split_bool:
-                    chr = tokens[0]
-                    start = int(tokens[1])
-                    end = int(tokens[2])
-                    name = tokens[3] if len(tokens) > 3 else ''
-                    features.append(Feature(chr, start, end, line, name))
-                else:
-                    chr = tokens[0]
-                    start = int(tokens[1])
-                    end = int(tokens[2])
-                    chr2 = tokens[3]
-                    start2 = int(tokens[4])
-                    end2 = int(tokens[5])
-                    name = tokens[6] if len(tokens) > 6 else ''
-                    features.append(Feature(chr, start, end, line, name, chr2, start2, end2))
+            if len(tokens) >= 3:
+                chr = tokens[0]
+                start = int(tokens[1])
+                end = int(tokens[2])
+                name = tokens[3] if len(tokens) > 3 else ''
+                features.append(Feature(chr, start, end, line, name))
+    return features
+
+def parse_bedpe(f):
+    features = []
+    for line in f:
+        if not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
+            tokens = line.rstrip('\n').rstrip('\r').split('\t')
+            if len(tokens) >= 6:
+                chr = tokens[0]
+                start = int(tokens[1])
+                end = int(tokens[2])
+                chr2 = tokens[3]
+                start2 = int(tokens[4])
+                end2 = int(tokens[5])
+                name = tokens[6] if len(tokens) > 6 else ''
+                features.append(Feature(chr, start, end, line, name, chr2, start2, end2))
     return features
 
 
@@ -320,6 +290,8 @@ def infer_format(filename):
         return "vcf"
     elif filename.endswith(".bed"):
         return "bed"
+    elif filename.endswith(".bedpe"):
+        return "bedpe"
     elif filename.endswith(".gff") or filename.endswith(".gff3"):
         return "gff"
     elif filename.endswith(".gtf"):

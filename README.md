@@ -79,7 +79,7 @@ Although _--tracks_ is optional, a typical report will include at least an align
 
 Variant sites can be defined from a [VCF](https://samtools.github.io/hts-specs/VCFv4.2.pdf),  
 UCSC [BED](https://genome.ucsc.edu/FAQ/FAQformat.html#format1), or a generic tab delimited file.   
-Now also supported: BEDPE formats for structural variants
+**Now also supported: BEDPE format for structural variants**
 
 Note: VCF files must be tabix indexed, and must end with a ".gz" extension.  The ".bgz" extension is not supported.
 
@@ -126,7 +126,7 @@ create_report examples/variants/test.maflite.tsv http://s3.amazonaws.com/igv.bro
 
 ```bash
 
-create_report examples/variants/variants.pe.bed http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --split --tracks examples/variants/variants.vcf.gz examples/variants/recalibrated.bam examples/variants/refGene.sort.bed.gz --output example_bedpe.html
+create_report examples/variants/variants.bedpe http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo.txt --flanking 1000 --tracks examples/variants/variants.vcf.gz examples/variants/recalibrated.bam examples/variants/refGene.sort.bed.gz --output example_bedpe.html
 
 ```
 

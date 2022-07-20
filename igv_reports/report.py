@@ -7,6 +7,7 @@ from urllib.request import urlopen
 from igv_reports import fasta, ideogram, datauri, tracks, feature, bam, vcf, utils
 from igv_reports.varianttable import VariantTable
 from igv_reports.bedtable import BedTable
+from igv_reports.bedtable import BedpeTable
 from igv_reports.bedtable import JunctionBedTable
 from igv_reports.generictable import GenericTable
 from igv_reports.regions import parse_region
@@ -26,7 +27,10 @@ def create_report(args):
         if args.type is not None and args.type == "junction":
             table = JunctionBedTable(variants_file, args.info_columns)
         else:
-            table = BedTable(variants_file, args.split)
+            table = BedTable(variants_file)
+
+    elif variants_file.endswith(".bedpe") or variants_file.endswith(".bedpe.gz"):
+        table = BedpeTable(variants_file)
 
     elif variants_file.endswith(".maf") or variants_file.endswith(".maf.gz") or (args.sequence is not None and args.begin is not None and args.end is not None):
         table = GenericTable(variants_file, args.info_columns, args.sequence, args.begin, args.end, args.zero_based)
@@ -44,8 +48,7 @@ def create_report(args):
 
     session_dict = {}
 
-    # Create file readers for tracks.  This is done outside the loucs loop so initialization happens once
-
+    # Create file readers for tracks.  This is done outside the locus loop so initialization happens once
     if args.tracks is not None:
         for track in args.tracks:
             reader = utils.getreader(track, None, args.fasta)
@@ -54,6 +57,7 @@ def create_report(args):
                 "reader": reader
             })
 
+    # Track configuration initialization
     trackconfigs = []
     if args.track_config is not None:
         for trackobj in args.track_config:
@@ -67,8 +71,7 @@ def create_report(args):
                     })
 
 
-
-    # loop through variants creating an igv.js session for each one
+    # loop through regions defined from variant, annotation, or bedpe files,  creating an igv.js session for each one
     flanking = 0
     if args.flanking is not None:
         flanking = float(args.flanking)
@@ -87,6 +90,9 @@ def create_report(args):
 
         if session_id not in session_dict:
 
+            # Placeholder variable for possible second region (bedpe files)
+            region2 = None
+
             # Define a genomic region around the variant
             if hasattr(feature, "viewport"):
                 region = parse_region(feature.viewport)
@@ -103,7 +109,9 @@ def create_report(args):
                     "start": start,
                     "end": end
                 }
-                if args.split:
+
+                # If feature has a second locus (bedpe file) create the region here.
+                if hasattr(feature, 'chr2') and feature.chr2 is not None:
                     chr2 = feature.chr2
                     start2 = int (math.floor(feature.start2 - flanking / 2))
                     start2 = max(start2,1) # bound start to 1
@@ -114,13 +122,16 @@ def create_report(args):
                         "end": end2
                     }
 
+
+
             # Fasta
             data = fasta.get_data(args.fasta, region)
-            if not args.split:
-                fa = '>' + chr + ':' + str(start) + '-' + str(end) + '\n' + data
-            else:
+            fa = '>' + chr + ':' + str(start) + '-' + str(end) + '\n' + data
+
+            if region2 is not None:
                 data2 = fasta.get_data(args.fasta, region2)
-                fa = '>' + chr + ':' + str(start) + '-' + str(end) + '\n' + data + '\n' + '>' + chr2 + ':' + str(start2) + '-' + str(end2) + '\n' + data2
+                fa += '\n' + '>' + chr2 + ':' + str(start2) + '-' + str(end2) + '\n' + data2
+
             fasta_uri = datauri.get_data_uri(fa)
             fastaJson = {
                 "fastaURL": fasta_uri,
@@ -128,7 +139,7 @@ def create_report(args):
 
             # Ideogram
             if(args.ideogram):
-                if not args.split:
+                if region2 is None:
                     ideo_string = ideogram.get_data(args.ideogram, region)
                 else:
                     ideo_string = ideogram.get_data(args.ideogram, region) + ideogram.get_data(args.ideogram, region2)
@@ -140,7 +151,7 @@ def create_report(args):
             if(hasattr(feature, "viewport")):
                 initial_locus = feature.viewport
             else:
-                if not args.split:
+                if region2 is None:
                     position = int(math.floor((feature.start + feature.end) / 2)) + 1   # center of region in 1-based coordinates
                     initial_locus = chr + ":" + str(position)
                 else:
@@ -159,10 +170,8 @@ def create_report(args):
                 track = tr["track"]
                 reader = tr["reader"]
                 trackobj = tracks.get_track_json_dict(track)
-                if not args.split:
-                    data = reader.slice(region)
-                else:
-                    data = reader.slice(region, region2=region2, split_bool=args.split)
+
+                data = reader.slice(region, region2)
                 trackobj["url"] = datauri.get_data_uri(data)
                 track_objects.append(trackobj)
 
@@ -300,7 +309,6 @@ def main():
     parser.add_argument("--begin", help="Column of start position.  For tab-delimited sites file.", default=None)
     parser.add_argument("--end", help="column of end position. For tab-delimited sites file.", default=None)
     parser.add_argument("--zero_based", help="Specify that the position in the data file is 0-based (e.g. UCSC files) rather than 1-based.", default=None)
-    parser.add_argument("--split", help="Specify whether multi locus view is needed by the input data.", action="store_true")
     args = parser.parse_args()
     create_report(args)
 

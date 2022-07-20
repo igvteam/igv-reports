@@ -76,9 +76,9 @@ class FeatureFileTest(unittest.TestCase):
             "start": 180000000,
             "end": 190000000
         }
-        bedpe = str((pathlib.Path(__file__).parent / "data/variants.pe.bed").resolve())
+        bedpe = str((pathlib.Path(__file__).parent / "data/variants.bedpe").resolve())
         feature_file = FeatureReader(bedpe)
-        content = feature_file.slice(region, region2=region2, split_bool=True)
+        content = feature_file.slice(region, region2=region2)
         features = parse_bed(io.StringIO(content))
         self.assertEqual(len(content.strip().split("\n")), 2)
 

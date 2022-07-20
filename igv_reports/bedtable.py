@@ -6,11 +6,11 @@ from .feature import parse
 class BedTable:
 
     # Always remember the *self* argument
-    def __init__(self, bed_file, split_bool=False):
+    def __init__(self, bed_file):
 
         self.features = []
 
-        featureList = parse(bed_file, split_bool=split_bool)
+        featureList = parse(bed_file)
         unique_id = 0
         for var in featureList:
             self.features.append((var, unique_id))
@@ -18,33 +18,46 @@ class BedTable:
 
     def to_JSON(self):
 
-        # Test whether data is single locus or multi locus without accessing
-        # the split_bool variable. to_JSON() is a generic function present
-        # in multiple classes and we do not want to change their definitions.
-        # Since features should already have chr2/start2/end2, we can look
-        # them up and see if we have two locations.
-        if (self.features[0][0]).chr2 == '' and (self.features[0][0]).start2 == 0:
-            headers = ["unique_id", "Chrom", "Start", "End", "Name"]
-            rows = []
+        headers = ["unique_id", "Chrom", "Start", "End", "Name"]
+        rows = []
 
-            for tuple in self.features:
-                feature = tuple[0]
-                unique_id = tuple[1]
-                rows.append([unique_id, feature.chr, feature.start+1, feature.end, html.escape(feature.name)])
-        else:
-            headers = ["unique_id", "Chrom_A", "Start_A", "End_A", "Chrom_B", "Start_B", "End_B", "Name"]
-            rows = []
-
-            for tuple in self.features:
-                feature = tuple[0]
-                unique_id = tuple[1]
-                rows.append([unique_id, feature.chr, feature.start+1, feature.end, feature.chr2, feature.start2+1, feature.end2, html.escape(feature.name)])
+        for tuple in self.features:
+            feature = tuple[0]
+            unique_id = tuple[1]
+            rows.append([unique_id, feature.chr, feature.start+1, feature.end, html.escape(feature.name)])
 
         return json.dumps({
             "headers": headers,
             "rows": rows
         })
 
+class BedpeTable:
+
+    # Always remember the *self* argument
+    def __init__(self, bedpe_file):
+
+        self.features = []
+
+        featureList = parse(bedpe_file)
+        unique_id = 0
+        for var in featureList:
+            self.features.append((var, unique_id))
+            unique_id += 1
+
+    def to_JSON(self):
+
+        headers = ["unique_id", "Chrom_A", "Start_A", "End_A", "Chrom_B", "Start_B", "End_B", "Name"]
+        rows = []
+
+        for tuple in self.features:
+            feature = tuple[0]
+            unique_id = tuple[1]
+            rows.append([unique_id, feature.chr, feature.start+1, feature.end, feature.chr2, feature.start2+1, feature.end2, html.escape(feature.name)])
+
+        return json.dumps({
+            "headers": headers,
+            "rows": rows
+        })
 
 
 class JunctionBedTable:
