@@ -83,6 +83,8 @@ def create_report(args):
 
         feature = tuple[0]
         unique_id = tuple[1]
+
+        # If a variant feature (=> row in the table) has an explicit session id use it, otherwise use the row id (i.e. unique_id)
         if hasattr(feature, "session_id"):
             session_id = feature.session_id
         else:

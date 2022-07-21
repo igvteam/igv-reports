@@ -20,7 +20,7 @@
     "alignmentRowHeight": 6,
     "url": "examples/junctions/alignments.b38.sorted.bam",
     "indexURL": "examples/junctions/alignments.b38.sorted.bam.bai",
-    "visibilityWindow": "1000000",
+    "visibilityWindow": 1000000,
     "order": 10
   }
 ]
