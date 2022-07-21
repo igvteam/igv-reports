@@ -6,12 +6,12 @@
     "url": "examples/junctions/introns.38.bed"
   },
   {
-    "name": "Gencode v28 Basic",
+    "name": "NCBI RefSeq",
+    "format": "refgene",
     "type": "annotation",
-    "format": "gtf",
     "displayMode": "EXPANDED",
     "height": 300,
-    "url": "examples/junctions/gencode.v28.basic.annotation.gtf"
+    "url": "examples/junctions/ncbiRefSeq.txt"
   },
   {
     "name": "Alignments",

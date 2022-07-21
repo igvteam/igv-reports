@@ -205,6 +205,8 @@ def parse(path, format=None):
             return parse_tab(f)
         elif format == 'bedpe':
             return parse_bedpe(f)
+        elif format == 'refgene':
+            return parse_refgene(f)
         else:
             raise Exception("Unknown file format: " + path)
     finally:
@@ -222,6 +224,19 @@ def parse_bed(f):
                 start = int(tokens[1])
                 end = int(tokens[2])
                 name = tokens[3] if len(tokens) > 3 else ''
+                features.append(Feature(chr, start, end, line, name))
+    return features
+
+def parse_refgene(f):
+    features = []
+    for line in f:
+        if not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
+            tokens = line.rstrip('\n').rstrip('\r').split('\t')
+            if len(tokens) >= 3:
+                chr = tokens[2]
+                start = int(tokens[4])
+                end = int(tokens[5])
+                name = tokens[12] if len(tokens) > 12 else ''
                 features.append(Feature(chr, start, end, line, name))
     return features
 
