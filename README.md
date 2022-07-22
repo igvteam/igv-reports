@@ -50,7 +50,7 @@ Although _--tracks_ is optional, a typical report will include at least an align
 
 **Arguments:**
 * Required
-    * __sites__    VCF (tabix indexed vcf.gz file), BED, MAF, or generic tab delimited file of genomic variant sites.
+    * __sites__   VCF, BED, MAF, or generic tab delimited file of genomic variant sites.  Tabix indexed files are supported and strongly recommended for large files.  The tabix index is not specified, but inferred by convention (adding ".tbi" to the end of the bgzipped variant file).
     * __fasta__   Reference fasta file; must be indexed.
     
 * Required for generic tab delimited __sites__ file
@@ -124,11 +124,11 @@ create_report examples/variants/tcga_test.maf http://s3.amazonaws.com/igv.broadi
 create_report examples/variants/test.maflite.tsv http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo_hg19.txt --flanking 1000 --sequence 1 --begin 2 --end 3 --info-columns chr start end ref_allele alt_allele --tracks examples/variants/refGene.sort.bed.gz --output example_tab.html
 
 ```
-#### Creating a variant report from a bed file with two locations (BEDPE format): \([Link to example output](examples/results/example_bedpe.html)\)
+#### Creating a variant report from a bedpe file with two locations (BEDPE format): \([Link to example output](examples/results/example_bedpe.html)\)
 
 ```bash
 
-create_report examples/variants/variants.bedpe http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram examples/variants/cytoBandIdeo_hg38.txt --flanking 1000 --tracks examples/variants/variants.vcf.gz examples/variants/recalibrated.bam examples/variants/refGene.sort.bed.gz --output example_bedpe.html
+create_report examples/variants/SKBR3_Sniffles_tra.bedpe http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta --ideogram examples/variants/cytoBandIdeo_hg19.txt --flanking 1000 --tracks examples/variants/SKBR3.ill.bam examples/variants/refGene.sort.bed.gz --output example_bedpe.html
 
 ```
 
