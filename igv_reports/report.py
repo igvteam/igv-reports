@@ -149,17 +149,14 @@ def create_report(args):
                 fastaJson["cytobandURL"] = ideo_uri
 
 
-            # Initial locus, +/- 20 bases
+            # Initial locus
             if(hasattr(feature, "viewport")):
                 initial_locus = feature.viewport
             else:
-                if region2 is None:
-                    position = int(math.floor((feature.start + feature.end) / 2)) + 1   # center of region in 1-based coordinates
-                    initial_locus = chr + ":" + str(position)
-                else:
-                    position = int(math.floor((feature.start + feature.end) / 2)) + 1   # center of region in 1-based coordinates
-                    position2 = int(math.floor((feature.start2 + feature.end2) / 2)) + 1   # center of region in 1-based coordinates
-                    initial_locus = chr + ":" + str(position) + " " + chr2 + ":" + str(position2)
+                initial_locus = locus_string(feature.chr, feature.start, feature.end)
+                if region2 is not None:
+                    initial_locus += f' {locus_string(feature.chr2, feature.start2, feature.end2)}'
+
             session_json = {
                 "locus": initial_locus,
                 "reference": fastaJson,
@@ -288,6 +285,12 @@ def inline_script(line, o, source_type):
             o.write('</style>\n')
     else:
         raise ValueError("No file path in {l} for inline script.".format(l=line))
+
+def locus_string(chr, start, end):
+    if (end - start) == 1:
+        return f'{chr}:{start + 1}'
+    else:
+        return f'{chr}:{start + 1}-{end}'
 
 
 def main():
