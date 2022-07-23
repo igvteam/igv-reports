@@ -1,9 +1,7 @@
-import gzip
-import io
 import pysam
-import requests
-from featureTree import FeatureTree
-
+from igv_reports.featureTree import FeatureTree
+from igv_reports.chralias import get_alias
+from igv_reports.stream import getstream
 
 class Feature:
 
@@ -17,39 +15,38 @@ class Feature:
         self.text = text
         self.name = name
 
+'''
+Return an appropriate reader for the given path
+'''
+def get_featurereader(path):
 
-class FeatureReader:
+    if path.endswith(".gz"):
+        # Might be a tabix file
+        try:
+            return TabixFeatureReader(pysam.TabixFile(path))
+        except:
+            return FeatureReader(path)
 
-    def __init__(self, path):
-
-        tabix = None
-        if path.endswith(".gz"):
-            # Might be a tabix file
-            try:
-                tabix = pysam.TabixFile(path)
-            except:
-                tabix = None
-
-        if tabix:
-            self.reader = _Tabix(tabix)
-        else:
-            self.reader = _NonIndexed(path)
-
-    def slice(self, region=None, region2=None):
-        return self.reader.slice(region, region2)
+    else:
+        return FeatureReader(path)
 
 
-class _Tabix:
+'''
+Tabix indexed file reader
+'''
+
+class TabixFeatureReader:
 
     def __init__(self, tabix):
         self.file = tabix
+        self.aliastable = {}
 
-    def slice(self, region=None, region2 = None):
+    def slice(self, region=None, region2=None):
 
         tb = self.file
-        if region:
-            range_string = region['chr'] + ":" + str(region['start']) + "-" + str(region['end'])
-            it = tb.fetch(range_string)
+        if region is not None:
+            chr = self.get_chrname(region["chr"])
+            it = self._fetch(chr, region["start"], region["end"])
         else:
             it = tb.fetch()
 
@@ -57,16 +54,55 @@ class _Tabix:
         for row in it:
             data += row + '\n'
 
+        if region2 is not None:
+            chr = self.get_chrname(region2["chr"])
+            it = self._fetch(chr, region2["start"], region2["end"])
+            for row in it:
+                data += row + '\n'
+
         return data
 
+    def _fetch(self, chr, start, end):
 
-## Implement a pysam/tabix style inteface for non-indexed files
-class _NonIndexed:
+        if chr is None:
+            return []
+
+        tb = self.file
+        try:
+            range_string = f'{chr}:{start}-{end}'
+            return tb.fetch(range_string)
+
+        except ValueError:
+            # Possible chr alias error (e.g. 1 vs chr1)
+            try:
+                alias = get_alias(chr)
+                range_string = f'{alias}:{start}-{end}'
+                value = tb.fetch(range_string)
+                self.aliastable[chr] = alias
+                return value
+            except ValueError:
+                self.aliastable[chr] = None
+                print(f'WARNING: No data with sequence name {chr} found in file {self.file.filename}')
+                return []
+
+    def get_chrname(self, c):
+        if c in self.aliastable:
+            return self.aliastable[c]
+        else:
+            return c
+
+
+'''
+Non-indexed file reader.  Emulates a tabix style query interface
+'''
+
+class FeatureReader:
 
     def __init__(self, file):
 
         self.file = file
         self.tree = None
+        self.aliastable = {}
 
     def slice(self, region=None, region2=None):
 
@@ -84,25 +120,26 @@ class _NonIndexed:
             # If first time through read the entire file and create a queyable feature tree.
             if not self.tree:
                 features = parse(self.file)
+                for f in features:
+                    if f.chr not in self.aliastable:
+                        self.aliastable[get_alias(f.chr)] = f.chr
                 self.tree = FeatureTree(features)
 
-            reference = region["chr"]
+            features = []
+
+            reference = self.get_chrname(region["chr"])
             start = region["start"]
             end = region["end"]
             feature_intervals = self.tree.query(reference, start, end)
-
-            features = []
             if feature_intervals:
                 for i in feature_intervals:
                     features.append(i.data)
 
-            # Add features for second region, if specified.
-            if region2 != None:
-                reference = region2["chr"]
+            if region2 is not None:
+                reference = self.get_chrname(region2["chr"])
                 start = region2["start"]
                 end = region2["end"]
                 feature_intervals = self.tree.query(reference, start, end)
-
                 if feature_intervals:
                     for i in feature_intervals:
                         features.append(i.data)
@@ -112,14 +149,26 @@ class _NonIndexed:
             content += f.text
         return content
 
+    def get_chrname(self, c):
+        if c in self.aliastable:
+            return self.aliastable[c]
+        else:
+            return c
 
 
-# This class is initialized with a list of "bed like" features, mocks an indexed file reader
+'''
+A "mock reader" initialized with a list of bed features
+'''
+
 class MockReader:
 
     def __init__(self, features):
         self.features = features
         self.tree = FeatureTree(features)
+        self.aliastable = {}
+        for f in features:
+            if f.chr not in self.aliastable:
+                self.aliastable[get_alias(f.chr)] = f.chr
 
     def slice(self, region=None, region2=None):
 
@@ -127,18 +176,20 @@ class MockReader:
             return self.features
 
         else:
-            reference = region["chr"]
+
+            features = []
+
+            reference = self.get_chrname(region["chr"])
             start = region["start"]
             end = region["end"]
             feature_intervals = self.tree.query(reference, start, end)
 
-            features = []
             if feature_intervals:
                 for i in feature_intervals:
                     features.append(i.data)
 
-            if region2 != None:
-                reference = region2["chr"]
+            if region2 is not None:
+                reference = self.get_chrname(region2["chr"])
                 start = region2["start"]
                 end = region2["end"]
                 feature_intervals = self.tree.query(reference, start, end)
@@ -147,19 +198,17 @@ class MockReader:
                     for i in feature_intervals:
                         features.append(i.data)
 
-
             content = ''
             for f in features:
                 chr = f.chr
                 content += f"{chr}\t{f.start}\t{f.end}\n"
             return content
 
-
-
-def get_data(filename, region=None):
-    reader = FeatureReader(filename)
-    return reader.slice(region)
-
+    def get_chrname(self, c):
+        if c in self.aliastable:
+            return self.aliastable[c]
+        else:
+            return c
 
 def parse(path, format=None):
     '''
@@ -177,7 +226,7 @@ def parse(path, format=None):
             format = infer_format(path)
         if format == 'bed':
             return parse_bed(f)
-        elif format == 'gff' or format == 'gtf':
+        elif format == 'gff'  or format == 'gff3' or format == 'gtf':
             return parse_gff(f)
         elif format == 'tab':
             return parse_tab(f)
@@ -205,6 +254,7 @@ def parse_bed(f):
                 features.append(Feature(chr, start, end, line, name))
     return features
 
+
 def parse_refgene(f):
     features = []
     for line in f:
@@ -217,6 +267,7 @@ def parse_refgene(f):
                 name = tokens[12] if len(tokens) > 12 else ''
                 features.append(Feature(chr, start, end, line, name))
     return features
+
 
 def parse_bedpe(f):
     features = []
@@ -302,27 +353,3 @@ def infer_format(filename):
             return filename[idx + 1:]
         else:
             return None
-
-
-def getstream(file):
-    # TODO -- gcs
-
-    if file.startswith('http://') or file.startswith('https://'):
-        response = requests.get(file)
-        status_code = response.status_code  # TODO Do something with this
-
-        if file.endswith('.gz'):
-            content = response.content
-            text = gzip.decompress(content).decode('utf-8')
-        else:
-            text = response.text
-        f = io.StringIO(text)
-        return f
-
-    elif file.endswith('.gz'):
-        f = gzip.open(file, mode='rt')
-
-    else:
-        f = open(file, encoding='UTF-8')
-
-    return f

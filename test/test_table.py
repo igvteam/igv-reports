@@ -14,9 +14,16 @@ class TableTest(unittest.TestCase):
 
         bed_file = str((pathlib.Path(__file__).parent / "data/minigenome/variants.bed").resolve())
         table = bedtable.BedTable(bed_file)
-
         json = table.to_JSON()
         self.assertEqual(len(table.features), 4)
+        self.assertTrue(json)
+
+    def test_bedpetable(self):
+
+        bed_file = str((pathlib.Path(__file__).parent / "data/variants.bedpe").resolve())
+        table = bedtable.BedpeTable(bed_file)
+        json = table.to_JSON()
+        self.assertEqual(len(table.features), 9)
         self.assertTrue(json)
 
     def test_gfftable(self):

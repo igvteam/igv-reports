@@ -1,7 +1,7 @@
 import unittest
 import pathlib
 
-from igv_reports import bam
+from igv_reports.bam import BamReader
 
 class BAMTest(unittest.TestCase):
 
@@ -15,15 +15,18 @@ class BAMTest(unittest.TestCase):
         }
 
         bam_file_path = str((pathlib.Path(__file__).parent / "data/minigenome/alignments.bam").resolve())
-        data = bam.get_data(bam_file_path, region)
-        self.assertTrue(data)
+        bamreader = BamReader(bam_file_path)
+        data = bamreader.slice(region, sam=True)
+        self.assertEqual(count_alignments(data), 923)
+
 
 
     def test_bam_noregion(self):
 
         bam_file_path = str((pathlib.Path(__file__).parent / "data/minigenome/alignments.bam").resolve())
-        data = bam.get_data(bam_file_path)
-        self.assertTrue(data)
+        bamreader = BamReader(bam_file_path)
+        data = bamreader.slice(region=None, sam=True)
+        self.assertEqual(count_alignments(data), 10212)
 
 
     def test_cram(self):
@@ -36,9 +39,9 @@ class BAMTest(unittest.TestCase):
         bam_file_path = str((pathlib.Path(__file__).parent / "data/minigenome/alignments.cram").resolve())
         ref_file_path = str((pathlib.Path(__file__).parent / "data/minigenome/minigenome.fa").resolve())
 
-        reader = bam.BamReader(bam_file_path, ref_file_path);
-        data = reader.slice(region)
-        self.assertTrue(data)
+        reader = BamReader(bam_file_path, ref_file_path);
+        data = reader.slice(region, sam=True)
+        self.assertEqual(count_alignments(data), 923)
 
 
     def test_multiple_bam_regions_diff_chrom(self):
@@ -54,10 +57,9 @@ class BAMTest(unittest.TestCase):
         }
 
         bam_file_path = str((pathlib.Path(__file__).parent / "data/recalibrated.bam").resolve())
-        reader = bam.BamReader(bam_file_path);
+        reader = BamReader(bam_file_path);
         data = reader.slice(region, region2=region2, sam=True)
-        print(data)
-        self.assertEqual(len(data.strip().split("\n")), 121)
+        self.assertEqual(count_alignments(data), 81)
 
 
     def test_multiple_bam_regions_same_chrom(self):
@@ -73,7 +75,33 @@ class BAMTest(unittest.TestCase):
         }
 
         bam_file_path = str((pathlib.Path(__file__).parent / "data/recalibrated.bam").resolve())
-        reader = bam.BamReader(bam_file_path);
+        reader = BamReader(bam_file_path);
         data = reader.slice(region, region2=region2, sam=True)
-        self.assertEqual(len(data.strip().split("\n")), 98)
+        self.assertEqual(count_alignments(data), 58)
 
+    def test_chralias(self):
+        region = {
+            "chr": "5",
+            "start": 474989,
+            "end": 474989
+        }
+        region2 = {
+            "chr": "5",
+            "start": 181224474,
+            "end": 181224474
+        }
+
+        bam_file_path = str((pathlib.Path(__file__).parent / "data/recalibrated.bam").resolve())
+        reader = BamReader(bam_file_path);
+        data = reader.slice(region, region2, sam=True)
+        self.assertEqual(count_alignments(data), 58)
+
+
+def count_alignments(data):
+
+    lines = data.split('\n')
+    count = 0
+    for line in lines:
+        if len(line) > 0 and not line.startswith("@"):
+            count += 1
+    return count

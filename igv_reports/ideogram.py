@@ -1,18 +1,43 @@
+from igv_reports.chralias import get_alias
+
+class IdeogramReader:
+
+    def __init__(self, file):
+
+        self.aliastable = {}
+        self.ideogram_map = {}
+
+        lastchr = None
+        result = ''
+        with open(file) as f:
+            for line in f:
+                tokens = line.split('\t')
+                chr = tokens[0]
+
+                if not chr == lastchr:
+
+                    if lastchr is not None:
+                        self.ideogram_map[lastchr] = result
+                        self.aliastable[get_alias(lastchr)] = lastchr
+
+                    lastchr = chr
+                    result = ''
+                else:
+                    result += line
+        # final chr
+        if lastchr is not None:
+            self.ideogram_map[lastchr] = result
+            self.aliastable[get_alias(lastchr)] = lastchr
 
 
-def get_data(cyto_file, region):
+    def get_data(self, chr):
 
-    result = ''
-    chr = region['chr'] if region else None
-    with open(cyto_file) as f:
+        if chr in self.aliastable:
+            chrname = self.aliastable[chr]
+        else:
+            chrname = chr
 
-        for line in f:
-
-            tokens = line.split('\t')
-
-            if chr == None or tokens[0] == chr:
-
-                result += line
-
-    return result
-    
+        if chrname in self.ideogram_map:
+            return self.ideogram_map[chrname]
+        else:
+            return ''

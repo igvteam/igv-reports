@@ -21,3 +21,6 @@ class FeatureTree:
             return set()
         else:
             return tree[start:end]
+
+    def getchrs(self):
+        return self.featureMap.keys()

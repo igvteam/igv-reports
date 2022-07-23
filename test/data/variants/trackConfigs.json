@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Variants",
+    "url": "test/data/variants/variants.vcf.gz"
+  },
+  {
+    "name": "Alignments",
+    "url": "test/data/variants/recalibrated.bam",
+    "samplingDepth": 500,
+    "color": "rgb(0,150,150)"
+  },
+  {
+    "name": "Genes",
+    "type": "",
+    "url": "test/data/hg38/refGene.txt.gz",
+    "indexURL": "test/data/hg38/refGene.txt.gz.tbi"
+  }
+]
