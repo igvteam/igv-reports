@@ -51,9 +51,9 @@ Although _--tracks_ is optional, a typical report will include at least an align
 **Arguments:**
 * Required
     * __sites__   VCF, BED, MAF, BEDPE, or generic tab delimited file of genomic variant sites.  Tabix indexed files are supported and strongly recommended for large files.
-    * __fasta__   Required IF --genome is not specified.  Reference fasta file; must be indexed.
+    * __fasta__   Reference fasta file; must be indexed.  This argument should be ommited if --genome is used, otherwise it is required.  
     
-* Required for generic tab delimited __sites__ file
+* The arguments _begin_, _end_, and _sequence_ are required for a generic tab delimited __sites__ file.
     * __--begin__ INT.   Column of start chromosomal position for __sites__ file.  Used for generic tab delimited input.
     * __--end__ INT.  Column of end chromosomal position for __sites__.  Used for generic tab delimited input.
     * __--sequence__ INT.   Column of sequence (chromosome) name.
@@ -62,13 +62,13 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * __--zero-based__  Specify that the position in the __sites__ file is 0-based (e.g. UCSC files) rather than 1-based.  Default is ```false```.
 
 * Optional
-    * __--genome__ An igv.js genome identifier (e.g. hg38).  If supplied fasta, ideogram, and the default annotation track for the specified genome will be used.
+    * __--genome__ **_New_** An igv.js genome identifier (e.g. hg38).  If supplied fasta, ideogram, and the default annotation track for the specified genome will be used.
     * __--tracks__ LIST.  Space-delimited list of track files, see below for supported formats.  If both *tracks* and *track-config* are specified *tracks* will appear first by default.
     * __--track-config__  FILE.  File containing array of json configuration objects for igv.js tracks.  See the [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details.  This option allows customization of track parameters.  When using this option, the track ```url``` and ```indexURL``` properties should be set to the paths of the respective files.
     * __--ideogram__ FILE. Ideogram file in UCSC cytoIdeo format.
     * __--template__ FILE. HTML template file.
     * __--output__ FILE. Output file name; default="igvjs_viewer.html".
-    * __--info-columns__ LIST. Space delimited list of field names to include in the variant table.  If __sites_ is a VCF file these are the info field names.  If __sites__ is a tab delimited format these are column names.
+    * __--info-columns__ LIST. Space delimited list of field names to include in the variant table.  If __sites__ is a VCF file these are the info field names.  If __sites__ is a tab delimited format these are column names.
     * __--info-columns-prefixes__ LIST. Space delimited list of prefixes of VCF info field names to include in variant table.
     * __--sample-columns__ LIST. Space delimited list of VCF sample/format field names to include in variant table.
     * __--flanking__ INT. Genomic region to include either side of variant; default=1000.
@@ -164,14 +164,12 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
 --output examples/example_tab.html
 
 ```
-#### Create a structural variant report from a bedpe file with two locations (BEDPE format): \([Link to example output](examples/example_bedpe.html)\)
+#### NEW (version 1.5.0) - Create a structural variant report from a bedpe file with two locations (BEDPE format): \([Link to example output](examples/example_bedpe.html)\)
 
 ```bash
 
 create_report \
-test/data/variants/SKBR3_Sniffles_tra.bedpe \
-https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
---ideogram test/data/hg19/cytoBandIdeo.txt \
+--genome hg19 \
 --flanking 1000 \
 --tracks test/data/variants/SKBR3_Sniffles_variants_tra.vcf test/data/variants/SKBR3.ill.bam https://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz \
 --output examples/example_bedpe.html
