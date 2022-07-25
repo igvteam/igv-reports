@@ -84,7 +84,7 @@ be indexed.  Tabix is supported for other file types and it is recommended that 
 ## Examples
 
 Data for the examples are available in the github repository [https://github.com/igvteam/igv-reports](https://github.com/igvteam/igv-reports).  The repository can be
-downloaded as a zip archive here [https://github.com/igvteam/igv-reports/archive/refs/tags/v1.0.5.zip](https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip).
+downloaded as a zip archive here [https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip](https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip).
 It is assumed that the examples are run from the root directory of the repository.  Output html is written to the [examples directory](examples)
 
 #### Create a variant report from a VCF file: \([Link to example output](examples/example_vcf.html)\)
