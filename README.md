@@ -91,7 +91,13 @@ It is assumed that the examples are run from the root directory of the repositor
 
 ```bash
 
-create_report test/data/variants/variants.vcf.gz http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa --ideogram test/data/hg38/cytoBandIdeo.txt --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam test/data/hg38/refGene.txt.gz --output examples/example_vcf.html
+create_report test/data/variants/variants.vcf.gz \
+http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
+--ideogram test/data/hg38/cytoBandIdeo.txt \
+--flanking 1000 \
+--info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
+--tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam test/data/hg38/refGene.txt.gz \
+--output examples/example_vcf.html
 
 ```
 
