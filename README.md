@@ -43,8 +43,8 @@ conda install pysam
 
 ## Creating a report
 
-A report consists of a table of sites or regions and an associated IGV views for each site.  Reports are created with 
-the command line script ```create_report```.  Command line arguments are described below.
+A report consists of a table of sites or regions and an associated IGV view for each site.  Reports are created with 
+the command line script ```create_report```, or alternatively ```python igv_reports/report.py```.  Command line arguments are described below.
 Although _--tracks_ is optional, a typical report will include at least an alignment track
 (BAM or CRAM) file from which the variants were called.  
 
@@ -63,7 +63,7 @@ Although _--tracks_ is optional, a typical report will include at least an align
 
 * Optional
     * __--tracks__ LIST.  Space-delimited list of track files, see below for supported formats.  If both *tracks* and *track-config* are specified *tracks* will appear first by default.
-    * __--track-config__  FILE.  File containing array of json configuration objects for igv.js tracks.  See the [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details.  This option allows customization of track parameters.  When using this option, the track ```url``` and ```indexURL``` properties should be set to the paths to the respective files.
+    * __--track-config__  FILE.  File containing array of json configuration objects for igv.js tracks.  See the [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details.  This option allows customization of track parameters.  When using this option, the track ```url``` and ```indexURL``` properties should be set to the paths of the respective files.
     * __--ideogram__ FILE. Ideogram file in UCSC cytoIdeo format.
     * __--template__ FILE. HTML template file.
     * __--output__ FILE. Output file name; default="igvjs_viewer.html".
