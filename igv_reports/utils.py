@@ -9,8 +9,12 @@ def getreader(config, filetype=None, fasta=None):
     else:
         filetype = filetype.lower()
 
-    if filetype == "bam" or filetype == "cram":
+    if filetype == "bam" :
+        return bam.BamReader(path)
+
+    if filetype == "cram":
         return bam.BamReader(path, fasta)
+
 
     elif filetype == "vcf" or filetype == "bcf":
         return vcf.VcfReader(path)

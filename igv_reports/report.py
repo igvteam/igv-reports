@@ -14,10 +14,16 @@ from igv_reports.regions import parse_region
 from igv_reports.feature import MockReader
 from igv_reports.fasta import FastaReader
 from igv_reports.ideogram import IdeogramReader
+from igv_reports.genome import get_genome
 
-
+'''
+Create an html report.  This is the main function for the application.
+'''
 def create_report(args):
+
+    trackconfigs = []
     trackreaders = []
+    session_dict = {}
 
     # Read the variant data
     variants_file = args.sites
@@ -42,36 +48,46 @@ def create_report(args):
         flist = []
         for tuple in table.features:
             flist.append(tuple[0])
-        trackreaders.append({
-            "track": "variants.bed",
+        trackconfigs.append({
+            "config": {"name": "variants", "type": "annotation", "format": "bed"},
             "reader": MockReader(flist)
         })
 
-    table_json = table.to_JSON()
+    # Track json array.  Tracks can come from (1) tracks CL argument, (2) genome CL argument, and (3) track_config Cl argument
+    trackjson = []
 
-    session_dict = {}
+    # Check for optional genome argument.  If supplied an igv.js genome json definition is used in lieu of a fasta file
+    if args.genome is not None:
+        genome = get_genome(args.genome)
+        if args.fasta is None:
+            args.fasta = genome["fastaURL"]
+        if args.ideogram is None and "cytobandURL" in genome:
+            args.ideogram = genome["cytobandURL"]
+        if "tracks" in genome:
+            for config in genome["tracks"]:
+                trackjson.append(config)
 
-    # Create file readers for tracks.  This is done outside the locus loop so initialization happens once
     if args.tracks is not None:
         for track in args.tracks:
-            reader = utils.getreader({"url": track}, None, args.fasta)
-            trackreaders.append({
-                "track": track,
-                "reader": reader
-            })
+           trackjson.append(tracks.get_track_json_dict(track))
 
-    # Track configuration initialization
-    trackconfigs = []
     if args.track_config is not None:
         for trackobj in args.track_config:
             with open(trackobj) as f:
-                data = json.load(f)
-                for config in data:
-                    reader = utils.getreader(config)
-                    trackconfigs.append({
-                        "config": config,
-                        "reader": reader
-                    })
+                j = json.load(f)
+                for c in j:
+                    trackjson.append(c)
+
+    # Create file readers for tracks.  This is done outside the locus loop so initialization happens once
+
+    for config in trackjson:
+        reader = utils.getreader(config, None, args.fasta)
+        trackconfigs.append({
+            "config": config,
+            "reader": reader
+        })
+
+
 
     # Other readers
     fasta_reader = FastaReader(args.fasta)
@@ -169,35 +185,29 @@ def create_report(args):
             }
 
             track_objects = []
-            for tr in trackreaders:
-                track = tr["track"]
-                reader = tr["reader"]
-                trackobj = tracks.get_track_json_dict(track)
-
-                data = reader.slice(region, region2)
-
-                trackobj["url"] = datauri.get_data_uri(data)
-                track_objects.append(trackobj)
-
             # Loop through user supplied track configs
             # "cram" input format is converted to "bam" for output track configs
             for tc in trackconfigs:
                 trackobj = tc["config"];
-                default_trackobj = tracks.get_track_json_dict(trackobj["url"]);
-                if "type" not in trackobj:
-                    trackobj["type"] = default_trackobj["type"]
-                if "format" not in trackobj:
-                    trackobj["format"] = default_trackobj["format"]
-                if trackobj["format"] == "cram":
-                    trackobj["format"] = "bam"
-                if "name" not in trackobj:
-                    trackobj["name"] = default_trackobj["url"]
+
+                # Set some defaults if not specified
+                if "url" in trackobj:
+                    default_trackobj = tracks.get_track_json_dict(trackobj["url"]);
+                    if "type" not in trackobj:
+                        trackobj["type"] = default_trackobj["type"]
+                    if "format" not in trackobj:
+                        trackobj["format"] = default_trackobj["format"]
+                    if trackobj["format"] == "cram":
+                        trackobj["format"] = "bam"
+                    if "name" not in trackobj:
+                        trackobj["name"] = default_trackobj["url"]
+
+                # Indexes are not used with data URIs
                 if "indexURL" in trackobj:
                     del trackobj["indexURL"]
+
                 reader = tc["reader"]
-
                 data = reader.slice(region, region2)
-
                 trackobj["url"] = datauri.get_data_uri(data)
                 track_objects.append(trackobj)
 
@@ -257,7 +267,7 @@ def create_report(args):
                         continue
                 j = line.find('"@TABLE_JSON@"')
                 if j >= 0:
-                    line = line.replace('"@TABLE_JSON@"', table_json)
+                    line = line.replace('"@TABLE_JSON@"', table.to_JSON())
 
                 j = line.find('"@SESSION_DICTIONARY@"')
                 if j >= 0:
@@ -303,7 +313,8 @@ def locus_string(chr, start, end):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("sites", help="vcf file defining variants, required")
-    parser.add_argument("fasta", help="reference fasta file, required")
+    parser.add_argument("fasta", nargs="?", default=None, help="reference fasta file, required if --genome is not specified")
+    parser.add_argument("--genome",  help="igv.js genome id (e.g. hg38)")
     parser.add_argument("--type", help="Report type.  Possible values are mutation and junctions.  Default is mutation")
     parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
     parser.add_argument("--tracks", nargs="+", help="list of track files")

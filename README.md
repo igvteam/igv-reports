@@ -28,7 +28,7 @@ conda activate igvreports
 pip install igv-reports
 ```
 
-igv-reports requires the package _pysam_ which should be installed automatically.  However on OSX this sometimes 
+igv-reports requires the package _pysam_ version 0.19.1 or greater, which should be installed automatically.  However on OSX this sometimes 
 fails due to missing dependent libraries.  This can be fixed following the procedure below, from the pysam 
 [docs](https://pysam.readthedocs.io/en/latest/installation.html#installation);  
 _"The recommended way to install pysam is through conda/bioconda. 
@@ -51,7 +51,7 @@ Although _--tracks_ is optional, a typical report will include at least an align
 **Arguments:**
 * Required
     * __sites__   VCF, BED, MAF, BEDPE, or generic tab delimited file of genomic variant sites.  Tabix indexed files are supported and strongly recommended for large files.
-    * __fasta__   Reference fasta file; must be indexed.
+    * __fasta__   Required IF --genome is not specified.  Reference fasta file; must be indexed.
     
 * Required for generic tab delimited __sites__ file
     * __--begin__ INT.   Column of start chromosomal position for __sites__ file.  Used for generic tab delimited input.
@@ -62,6 +62,7 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * __--zero-based__  Specify that the position in the __sites__ file is 0-based (e.g. UCSC files) rather than 1-based.  Default is ```false```.
 
 * Optional
+    * __--genome__ An igv.js genome identifier (e.g. hg38).  If supplied fasta, ideogram, and the default annotation track for the specified genome will be used.
     * __--tracks__ LIST.  Space-delimited list of track files, see below for supported formats.  If both *tracks* and *track-config* are specified *tracks* will appear first by default.
     * __--track-config__  FILE.  File containing array of json configuration objects for igv.js tracks.  See the [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details.  This option allows customization of track parameters.  When using this option, the track ```url``` and ```indexURL``` properties should be set to the paths of the respective files.
     * __--ideogram__ FILE. Ideogram file in UCSC cytoIdeo format.
@@ -86,6 +87,21 @@ be indexed.  Tabix is supported for other file types and it is recommended that 
 Data for the examples are available in the github repository [https://github.com/igvteam/igv-reports](https://github.com/igvteam/igv-reports).  The repository can be
 downloaded as a zip archive here [https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip](https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip).
 It is assumed that the examples are run from the root directory of the repository.  Output html is written to the [examples directory](examples)
+
+#### Create a report using a genome identifier: \([Link to example output](examples/example_genome.html)\)
+
+**NEW (version 1.5.0) - use igv.js genome identifier in lieu of fasta and --ideogram arguments**
+
+```bash
+create_report \ 
+test/data/variants/variants.vcf.gz \
+--genome hg38 \
+--flanking 1000 \
+--info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
+--tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam \
+--output examples/example_genome.html
+```
+
 
 #### Create a variant report from a VCF file: \([Link to example output](examples/example_vcf.html)\)
 

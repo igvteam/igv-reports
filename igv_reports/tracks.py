@@ -13,6 +13,7 @@ def get_track_json_dict(filename):
     type = get_track_type(format)
     return {
         "name": name,
+        "url": filename,
         "type": type,
         "format": format
     }

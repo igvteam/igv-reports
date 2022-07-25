@@ -1,4 +1,5 @@
 from igv_reports.chralias import get_alias
+from igv_reports.stream import getstream
 
 class IdeogramReader:
 
@@ -9,7 +10,10 @@ class IdeogramReader:
 
         lastchr = None
         result = ''
-        with open(file) as f:
+
+        f = None
+        try:
+            f = getstream(file)
             for line in f:
                 tokens = line.split('\t')
                 chr = tokens[0]
@@ -24,6 +28,10 @@ class IdeogramReader:
                     result = ''
                 else:
                     result += line
+        finally:
+            if f:
+                f.close()
+
         # final chr
         if lastchr is not None:
             self.ideogram_map[lastchr] = result

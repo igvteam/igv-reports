@@ -19,7 +19,8 @@ class BamReader:
         else:
             args = ["-b", "-h", self.filename]
         if self.fasta:
-            args.append("-T" + self.fasta)
+            args.append("-T")
+            args.append(self.fasta)
         if region:
             range_string = self.get_chrname(region['chr']) + ":" + str(region['start']) + "-" + str(region['end'])
             args.append(range_string)
