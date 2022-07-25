@@ -1,0 +1,26 @@
+[
+  {
+    "name": "junctions",
+    "type": "spliceJunctions",
+    "format": "bed",
+    "url": "test/data/junctions/introns.38.bed"
+  },
+  {
+    "name": "NCBI RefSeq",
+    "format": "refgene",
+    "type": "annotation",
+    "displayMode": "EXPANDED",
+    "height": 300,
+    "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/refGene.txt.gz"
+  },
+  {
+    "name": "Alignments",
+    "type": "alignment",
+    "showMismatches": false,
+    "alignmentRowHeight": 6,
+    "url": "test/data/junctions/alignments.b38.sorted.bam",
+    "indexURL": "test/data/junctions/alignments.b38.sorted.bam.bai",
+    "visibilityWindow": 1000000,
+    "order": 10
+  }
+]

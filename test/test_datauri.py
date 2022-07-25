@@ -1,8 +1,7 @@
 import unittest
 import pathlib
-import io
-from igv_reports.feature import FeatureReader, _NonIndexed, parse_gff
 from igv_reports import datauri
+from igv_reports.regions import parse_region
 
 class FeatureFileTest(unittest.TestCase):
 
@@ -10,8 +9,8 @@ class FeatureFileTest(unittest.TestCase):
     def test_query(self):
 
         gff = str((pathlib.Path(__file__).parent / "data/minigenome/annotations.gtf.gz").resolve())
-        range =  "minigenome:5000-6000"
-        uri = datauri.file_to_data_uri(gff, 'gff', range)
+        region =  parse_region("minigenome:5000-6000")
+        uri = datauri.file_to_data_uri(gff, 'gff', region)
         self.assertIsNotNone(uri)
 
 

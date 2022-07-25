@@ -5,7 +5,6 @@ from .feature import parse
 
 class GenericTable:
 
-    # Always remember the *self* argument
     def __init__(self, file, info_columns = None, sequence = None, begin = None, end = None, zero_based=False):
 
         self.column_names = info_columns
@@ -87,9 +86,10 @@ class GenericTable:
         filename = filename.lower()
         if (filename.endswith(".gz")):
             filename = filename[:-3]
-
         if filename.endswith(".bed"):
             return (0, 1, 2, True)
+        elif filename.endswith(".gff") or filename.endswith("gff3") or filename.endswith("gtf"):
+            return (0, 3, 4, False)
         elif filename.endswith(".maf"):
             return (4, 5, 6, False)
         else:

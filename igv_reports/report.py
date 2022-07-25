@@ -4,7 +4,7 @@ import json
 import math
 import argparse
 from urllib.request import urlopen
-from igv_reports import fasta, ideogram, datauri, tracks, feature, bam, vcf, utils
+from igv_reports import datauri, tracks, utils
 from igv_reports.varianttable import VariantTable
 from igv_reports.bedtable import BedTable
 from igv_reports.bedtable import BedpeTable
@@ -12,16 +12,19 @@ from igv_reports.bedtable import JunctionBedTable
 from igv_reports.generictable import GenericTable
 from igv_reports.regions import parse_region
 from igv_reports.feature import MockReader
+from igv_reports.fasta import FastaReader
+from igv_reports.ideogram import IdeogramReader
+
 
 def create_report(args):
-
     trackreaders = []
 
     # Read the variant data
     variants_file = args.sites
 
-    if variants_file.endswith(".bcf") or variants_file.endswith(".vcf") or variants_file.endswith (".vcf.gz"):
-        table = VariantTable(variants_file, args.info_columns, args.info_columns_prefixes, args.sample_columns, args.idlink)
+    if variants_file.endswith(".bcf") or variants_file.endswith(".vcf") or variants_file.endswith(".vcf.gz"):
+        table = VariantTable(variants_file, args.info_columns, args.info_columns_prefixes, args.sample_columns,
+                             args.idlink)
 
     elif variants_file.endswith(".bed") or variants_file.endswith(".bed.gz"):
         if args.type is not None and args.type == "junction":
@@ -32,9 +35,10 @@ def create_report(args):
     elif variants_file.endswith(".bedpe") or variants_file.endswith(".bedpe.gz"):
         table = BedpeTable(variants_file)
 
-    elif variants_file.endswith(".maf") or variants_file.endswith(".maf.gz") or (args.sequence is not None and args.begin is not None and args.end is not None):
+    elif variants_file.endswith(".maf") or variants_file.endswith(".maf.gz") or (
+            args.sequence is not None and args.begin is not None and args.end is not None):
+        # A hack -- since these file formats are not supported by igv.js mock up a bed style track from a table of generic features
         table = GenericTable(variants_file, args.info_columns, args.sequence, args.begin, args.end, args.zero_based)
-        # A hack -- since these file formats are not supported by igv.js mock up a bed style track
         flist = []
         for tuple in table.features:
             flist.append(tuple[0])
@@ -43,7 +47,6 @@ def create_report(args):
             "reader": MockReader(flist)
         })
 
-
     table_json = table.to_JSON()
 
     session_dict = {}
@@ -51,7 +54,7 @@ def create_report(args):
     # Create file readers for tracks.  This is done outside the locus loop so initialization happens once
     if args.tracks is not None:
         for track in args.tracks:
-            reader = utils.getreader(track, None, args.fasta)
+            reader = utils.getreader({"url": track}, None, args.fasta)
             trackreaders.append({
                 "track": track,
                 "reader": reader
@@ -64,12 +67,18 @@ def create_report(args):
             with open(trackobj) as f:
                 data = json.load(f)
                 for config in data:
-                    reader = utils.getreader(config["url"])
+                    reader = utils.getreader(config)
                     trackconfigs.append({
                         "config": config,
                         "reader": reader
                     })
 
+    # Other readers
+    fasta_reader = FastaReader(args.fasta)
+    if (args.ideogram):
+        ideogram_reader = IdeogramReader(args.ideogram)
+    else:
+        ideogram_reader = None
 
     # loop through regions defined from variant, annotation, or bedpe files,  creating an igv.js session for each one
     flanking = 0
@@ -103,9 +112,9 @@ def create_report(args):
                 end = region["end"]
             else:
                 chr = feature.chr
-                start = int (math.floor(feature.start - flanking / 2))
-                start = max(start,1) # bound start to 1
-                end = int (math.ceil(feature.end + flanking / 2))
+                start = int(math.floor(feature.start - flanking / 2))
+                start = max(start, 1)  # bound start to 1
+                end = int(math.ceil(feature.end + flanking / 2))
                 region = {
                     "chr": chr,
                     "start": start,
@@ -115,23 +124,21 @@ def create_report(args):
                 # If feature has a second locus (bedpe file) create the region here.
                 if hasattr(feature, 'chr2') and feature.chr2 is not None:
                     chr2 = feature.chr2
-                    start2 = int (math.floor(feature.start2 - flanking / 2))
-                    start2 = max(start2,1) # bound start to 1
-                    end2 = int (math.ceil(feature.end2 + flanking / 2))
+                    start2 = int(math.floor(feature.start2 - flanking / 2))
+                    start2 = max(start2, 1)  # bound start to 1
+                    end2 = int(math.ceil(feature.end2 + flanking / 2))
                     region2 = {
                         "chr": chr2,
                         "start": start2,
                         "end": end2
                     }
 
-
-
             # Fasta
-            data = fasta.get_data(args.fasta, region)
+            data = fasta_reader.slice(region)
             fa = '>' + chr + ':' + str(start) + '-' + str(end) + '\n' + data
 
             if region2 is not None:
-                data2 = fasta.get_data(args.fasta, region2)
+                data2 = fasta_reader.slice(region2)
                 fa += '\n' + '>' + chr2 + ':' + str(start2) + '-' + str(end2) + '\n' + data2
 
             fasta_uri = datauri.get_data_uri(fa)
@@ -140,17 +147,15 @@ def create_report(args):
             }
 
             # Ideogram
-            if(args.ideogram):
-                if region2 is None:
-                    ideo_string = ideogram.get_data(args.ideogram, region)
-                else:
-                    ideo_string = ideogram.get_data(args.ideogram, region) + ideogram.get_data(args.ideogram, region2)
+            if (args.ideogram):
+                ideo_string = ideogram_reader.get_data(region["chr"])
+                if region2 is not None:
+                    ideo_string += ideogram_reader.get_data(region2["chr"])
                 ideo_uri = datauri.get_data_uri(ideo_string)
                 fastaJson["cytobandURL"] = ideo_uri
 
-
             # Initial locus
-            if(hasattr(feature, "viewport")):
+            if (hasattr(feature, "viewport")):
                 initial_locus = feature.viewport
             else:
                 initial_locus = locus_string(feature.chr, feature.start, feature.end)
@@ -163,7 +168,6 @@ def create_report(args):
                 "tracks": []
             }
 
-
             track_objects = []
             for tr in trackreaders:
                 track = tr["track"]
@@ -171,6 +175,7 @@ def create_report(args):
                 trackobj = tracks.get_track_json_dict(track)
 
                 data = reader.slice(region, region2)
+
                 trackobj["url"] = datauri.get_data_uri(data)
                 track_objects.append(trackobj)
 
@@ -179,7 +184,7 @@ def create_report(args):
             for tc in trackconfigs:
                 trackobj = tc["config"];
                 default_trackobj = tracks.get_track_json_dict(trackobj["url"]);
-                if "type"  not in trackobj:
+                if "type" not in trackobj:
                     trackobj["type"] = default_trackobj["type"]
                 if "format" not in trackobj:
                     trackobj["format"] = default_trackobj["format"]
@@ -190,31 +195,32 @@ def create_report(args):
                 if "indexURL" in trackobj:
                     del trackobj["indexURL"]
                 reader = tc["reader"]
-                data = reader.slice(region)
+
+                data = reader.slice(region, region2)
+
                 trackobj["url"] = datauri.get_data_uri(data)
                 track_objects.append(trackobj)
 
             track_order = 1
             for trackobj in track_objects:
-                if(trackobj["type"] == "alignment"):
+                if (trackobj["type"] == "alignment"):
                     trackobj["height"] = 500
                     is_snv = feature.end - feature.start == 1
-                    if (trackobj["type"]) == "alignment" and (args.sort is not None or is_snv) and (args.sort != 'NONE'):
+                    if (trackobj["type"]) == "alignment" and (args.sort is not None or is_snv) and (
+                            args.sort != 'NONE'):
                         sort_option = 'BASE' if args.sort is None else args.sort.upper()
                         trackobj["sort"] = {
                             "option": sort_option,
                             "chr": chr,
                             "position": str(feature.start + 1),
                             "direction": "ASC"
-                     }
+                        }
                 if "order" not in trackobj:
                     trackobj["order"] = track_order
                 session_json["tracks"].append(trackobj)
                 track_order += 1
 
-
-
-    # Build the session data URI
+            # Build the session data URI
 
             session_string = json.dumps(session_json)
             session_uri = datauri.get_data_uri(session_string)
@@ -261,7 +267,7 @@ def create_report(args):
 
 
 def inline_script(line, o, source_type):
-    #<script type="text/javascript" src="https://igv.org/web/test/dist/igv.min.js"></script>
+    # <script type="text/javascript" src="https://igv.org/web/test/dist/igv.min.js"></script>
     if source_type == "js":
         s = line.find('src="')
         offset = 5
@@ -274,7 +280,7 @@ def inline_script(line, o, source_type):
         raise KeyError("Inline script must be either js- or css-file")
     if s > 0:
         e = line.find('">', s)
-        url = line[s+offset:e]
+        url = line[s + offset:e]
         response = urlopen(url)
         content = response.read().decode('utf-8')
         response.close()
@@ -285,6 +291,7 @@ def inline_script(line, o, source_type):
             o.write('</style>\n')
     else:
         raise ValueError("No file path in {l} for inline script.".format(l=line))
+
 
 def locus_string(chr, start, end):
     if (end - start) == 1:
@@ -301,23 +308,29 @@ def main():
     parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
     parser.add_argument("--tracks", nargs="+", help="list of track files")
     parser.add_argument("--track-config", nargs="+", help="track json file")
-    parser.add_argument("--sort", help="initial sort option for alignment tracks.   Supported values include  BASE, STRAND, INSERT_SIZE, and MATE_CHR. Default value is BASE for single nucleotide variants, no sorting otherwise.  See the igv.js documentation for more information. ")
+    parser.add_argument("--sort",
+                        help="initial sort option for alignment tracks.   Supported values include  BASE, STRAND, INSERT_SIZE, and MATE_CHR. Default value is BASE for single nucleotide variants, no sorting otherwise.  See the igv.js documentation for more information. ")
     parser.add_argument("--template", help="html template file", default=None)
     parser.add_argument("--output", help="output file name", default="igvjs_viewer.html")
     parser.add_argument("--info-columns", nargs="+", help="list of VCF info field names to include in variant table")
-    parser.add_argument("--info-columns-prefixes", nargs="+", help="list of prefixes of VCF info field names to include in variant table")
-    parser.add_argument("--sample-columns", nargs="+", help="list of VCF sample/format field names to include in variant table")
+    parser.add_argument("--info-columns-prefixes", nargs="+",
+                        help="list of prefixes of VCF info field names to include in variant table")
+    parser.add_argument("--sample-columns", nargs="+",
+                        help="list of VCF sample/format field names to include in variant table")
     parser.add_argument("--flanking", help="genomic region to include either side of variant", default=1000)
     parser.add_argument("--standalone", help='Print more data', action='store_true')
     parser.add_argument("--title", help="optional title string")
-    parser.add_argument("--sequence", help="Column of sequence (chromosome) name.  For tab-delimited sites file.", default=None)
+    parser.add_argument("--sequence", help="Column of sequence (chromosome) name.  For tab-delimited sites file.",
+                        default=None)
     parser.add_argument("--begin", help="Column of start position.  For tab-delimited sites file.", default=None)
     parser.add_argument("--end", help="column of end position. For tab-delimited sites file.", default=None)
-    parser.add_argument("--zero_based", help="Specify that the position in the data file is 0-based (e.g. UCSC files) rather than 1-based.", default=None)
-    parser.add_argument("--idlink", type = str, help="url link template for the VCF ID column")
+    parser.add_argument("--zero_based",
+                        help="Specify that the position in the data file is 0-based (e.g. UCSC files) rather than 1-based.",
+                        default=None)
+    parser.add_argument("--idlink", type=str, help="url link template for the VCF ID column")
     args = parser.parse_args()
     create_report(args)
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     main()

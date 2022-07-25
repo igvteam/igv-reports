@@ -2,8 +2,8 @@
 from base64 import b64encode
 from gzip import compress
 import argparse
-from . import utils
-from .regions import parse_region
+from igv_reports import utils
+from igv_reports.regions import parse_region
 
 
 #This module exports functions to convert text or binary data to a data URI readable by igv.js.
@@ -29,9 +29,8 @@ def get_data_uri(data):
     return data_uri
 
 
-def file_to_data_uri(filename, filetype=None, genomic_range=None):
-    reader = utils.getreader(filename, filetype)
-    region = parse_region(genomic_range) if genomic_range else None
+def file_to_data_uri(filename, filetype=None, region=None):
+    reader = utils.getreader({"url": filename}, filetype)
     data = reader.slice(region)
     data_uri = get_data_uri(data)
     return data_uri

@@ -153,10 +153,13 @@
     <div id="igvDiv"></div>
 </div>
 
+<!--
+Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repository
+<script type="module">
+      import igv from "./igv.js";
+-->
 
 <script type="text/javascript">
-
-    //import igv from "http://localhost:63342/igv.js/js/index.js";
 
     var tableJson = "@TABLE_JSON@"
     var igvBrowser;
