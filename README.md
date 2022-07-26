@@ -8,7 +8,7 @@ The generated HTML page contains all data neccessary for IGV as uuencoded blobs.
 
 #### Prerequisites
 
-igv-reports __requires Python 3.6__ or greater and __pip__.  
+igv-reports __requires Python 3.6__ or greater.  
 
 As with all Python projects, use of a __virtual environment__ is recommended.
 Instructions for creating a virtual environment using ```conda``` follow.
