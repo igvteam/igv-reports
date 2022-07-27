@@ -11,9 +11,6 @@
 
     <title>IGV Variant Inspector </title>
 
-    <!-- igv -->
-    <script src="https://igv.org/web/snapshot/dist/igv.min.js"></script>
-
 
     <style type="text/css">
         body {
@@ -153,17 +150,14 @@
     <div id="igvDiv"></div>
 </div>
 
-<!--
-Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repository
+
 <script type="module">
       import igv from "./igv.js/js/index.js";
--->
 
-<script type="text/javascript">
 
-    var tableJson = "@TABLE_JSON@"
+    var tableJson = {"headers": ["unique_id", "Chrom", "Start", "End", "Name"], "rows": [[0, "1", 14, 14, ""]]}
     var igvBrowser;
-    var sessionDictionary = "@SESSION_DICTIONARY@"
+    var sessionDictionary = {"0": "data:application/gzip;base64,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"}
 
     document.addEventListener("DOMContentLoaded", function () {
         initIGV();

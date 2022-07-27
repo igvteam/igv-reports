@@ -64,26 +64,35 @@ class VcfTest(unittest.TestCase):
         count = count_variants(data)
         self.assertEqual(count, 0)
 
-    def test_tabix(self):
-        path = str((pathlib.Path(__file__).parent / "../test/data/variants/1kg_phase3_sites.vcf.gz").resolve())
+    def test_notindexed(self):
+        path = str((pathlib.Path(__file__).parent / "../test/data/variants/1kg_phase3_sites.vcf").resolve())
         vcf = VcfReader(path)
         region = {"chr": "chr22", "start": 50173573-1, "end": 50173573+1}
         data = vcf.slice(region)
         count = count_variants(data)
-        self.assertEqual(count, 3)
+        self.assertEqual(2, count)
+
+
+    def test_tabix(self):
+        path = str((pathlib.Path(__file__).parent / "../test/data/variants/1kg_phase3_sites.vcf.gz").resolve())
+        vcf = VcfReader(path)
+        region = {"chr": "chr22", "start": 50173573-1, "end": 50173573}
+        data = vcf.slice(region)
+        count = count_variants(data)
+        self.assertEqual(2, count)
 
     def test_tabix_alias(self):
         path = str((pathlib.Path(__file__).parent / "../test/data/variants/1kg_phase3_sites.vcf.gz").resolve())
         vcf = VcfReader(path)
-        region = {"chr": "22", "start": 50173573-1, "end": 50173573+1}
+        region = {"chr": "22", "start": 50173573-1, "end": 50173573}
         data = vcf.slice(region)
         count = count_variants(data)
-        self.assertEqual(count, 3)
+        self.assertEqual(2, count)
 
     def test_tabix_missingchr(self):
         path = str((pathlib.Path(__file__).parent / "../test/data/variants/1kg_phase3_sites.vcf.gz").resolve())
         vcf = VcfReader(path)
-        region = {"chr": "99", "start": 50173573-1, "end": 50173573+1}
+        region = {"chr": "99", "start": 50173573-1, "end": 50173573}
         data = vcf.slice(region)
         count = count_variants(data)
         self.assertEqual(count, 0)
@@ -95,6 +104,7 @@ def count_variants(data):
     header_read = False
     for line in lines:
         if header_read and len(line) > 0:
+            print(line)
             count+=1
         else:
             if line.startswith("#CHROM"):

@@ -56,7 +56,7 @@ class BAMTest(unittest.TestCase):
             "end": 143923759
         }
 
-        bam_file_path = str((pathlib.Path(__file__).parent / "data/recalibrated.bam").resolve())
+        bam_file_path = str((pathlib.Path(__file__).parent / "data/variants/recalibrated.bam").resolve())
         reader = BamReader(bam_file_path);
         data = reader.slice(region, region2=region2, sam=True)
         self.assertEqual(count_alignments(data), 81)
@@ -74,7 +74,7 @@ class BAMTest(unittest.TestCase):
             "end": 181224474
         }
 
-        bam_file_path = str((pathlib.Path(__file__).parent / "data/recalibrated.bam").resolve())
+        bam_file_path = str((pathlib.Path(__file__).parent / "data/variants/recalibrated.bam").resolve())
         reader = BamReader(bam_file_path);
         data = reader.slice(region, region2=region2, sam=True)
         self.assertEqual(count_alignments(data), 58)
@@ -91,7 +91,7 @@ class BAMTest(unittest.TestCase):
             "end": 181224474
         }
 
-        bam_file_path = str((pathlib.Path(__file__).parent / "data/recalibrated.bam").resolve())
+        bam_file_path = str((pathlib.Path(__file__).parent / "data/variants/recalibrated.bam").resolve())
         reader = BamReader(bam_file_path);
         data = reader.slice(region, region2, sam=True)
         self.assertEqual(count_alignments(data), 58)

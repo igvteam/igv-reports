@@ -2,6 +2,7 @@ import pysam
 from igv_reports.featureTree import FeatureTree
 from igv_reports.chralias import build_aliastable, get_alias
 
+
 class VcfReader:
 
     def __init__(self, path):
@@ -11,7 +12,7 @@ class VcfReader:
 
         if self.file.index is None:
             records = self.file.fetch()
-            nodes = list(map(lambda rec: TreeNode(rec.contig, rec.pos - 1, rec.stop,  rec), records))
+            nodes = list(map(lambda rec: TreeNode(rec.contig, rec.pos - 1, rec.stop, rec), records))
             self.feature_tree = FeatureTree(nodes)
             chrs = self.feature_tree.getchrs()
             self.aliastable = build_aliastable(chrs)
@@ -21,8 +22,7 @@ class VcfReader:
             chrs = get_contigs(str(self.file.header))
             self.aliastable = build_aliastable(chrs)
 
-
-    def slice(self, region = None, region2 = None):
+    def slice(self, region=None, region2=None):
 
         vcf = self.file
 
@@ -49,6 +49,7 @@ class VcfReader:
     '''
     Wrap pysam fetch with workaround for non-indexed files. This exact logic is repeated in feature.py.
     '''
+
     def fetch(self, chr, start, end):
 
         if chr is None:
@@ -72,9 +73,8 @@ class VcfReader:
                     return []
 
         else:
-            nodes =  self.feature_tree.query(chr, start, end)
-            return list(map(lambda node: node.data.record, nodes))
-
+            nodes = self.feature_tree.query(chr, start, end)
+            return list(filter(lambda rec: rec.stop >= start and rec.start <= end, map(lambda node: node.data.record, nodes)))
 
     def get_chrname(self, c):
         if c in self.aliastable:
@@ -91,8 +91,8 @@ class TreeNode:
         self.end = end
         self.record = record
 
-def parse_info(record):
 
+def parse_info(record):
     info_str = str(record).split('\t')[7]
     fields = info_str.split(';')
     info_dict = {}
@@ -102,8 +102,8 @@ def parse_info(record):
             info_dict[kv[0]] = kv[1]
     return info_dict
 
-def get_contigs(data):
 
+def get_contigs(data):
     contigs = []
     lines = data.split('\n')
     for line in lines:
@@ -111,8 +111,6 @@ def get_contigs(data):
             idx1 = line.find("ID=")
             if idx1 > 0:
                 idx2 = line.find(",")
-                contigs.append(line[idx1+3:idx2])
+                contigs.append(line[idx1 + 3:idx2])
 
     return contigs
-
-

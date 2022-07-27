@@ -204,12 +204,12 @@ https://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/
 
 
 ```bash
-create_report test/data/infofields/SS_consensus.filtered.ann.vcf \
+create_report test/data/infofields/consensus.filtered.ann.vcf \
 --genome hg19 \
 --flanking 1000 \
 --info-columns cosmic_gene \
 --info-columns-prefixes clinvar \
---tracks test/data/infofields/SS_consensus.filtered.ann.vcf \
+--tracks test/data/infofields/consensus.filtered.ann.vcf \
 --output examples/example_ann.html 
 ```
 

@@ -1,0 +1,10 @@
+[
+  {
+    "type": "alignment",
+    "format": "bam",
+    "url": "test/data/softclip/overhanging_softclip.bam",
+    "indexURL": "test/data/softclip/overhanging_softclip.bam.bai",
+    "showSoftClips": true,
+    "showMismatches": false
+  }
+]
