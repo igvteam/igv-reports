@@ -184,10 +184,11 @@ def render_ids(v, idlink=None):
 
 
 def decode_ann(variant):
-    """Decode the standardized ANN field to something human readable."""
-    annotations = ([variant.info['ANN'].split('|'
-                                              )] if isinstance(variant.info['ANN'],
-                                                               str) else [e.split('|') for e in variant.info['ANN']])
+    """
+    Decode the standardized ANN field to something human readable. This is somewhat fragile and depends on the
+    specifics of the ANNOVAR annotation output
+    """
+    annotations = ([variant.info['ANN'].split('|')] if isinstance(variant.info['ANN'],str) else [e.split('|') for e in variant.info['ANN']])
     genes = []
     effects = []
     impacts = []
@@ -204,9 +205,6 @@ def decode_ann(variant):
             if allele != ann_allele:
                 continue
 
-            full = '|'.join(ann)
-            # Keep the most severe effect.
-            # Link out to Genecards and show the full record in a tooltip.
             genes.append(gene)
             gene_ids.append(gene_id)
             effects.append(kind.replace('&', '/'))
@@ -214,8 +212,8 @@ def decode_ann(variant):
             transcripts.append(feature_id)
             aa_alts.append(aa_mod)
             nt_alts.append(nt_mod)
-    return ','.join(genes), ','.join(effects), ','.join(impacts), ','.join(transcripts), ','.join(gene_ids), ','.join(
-        aa_alts), ','.join(nt_alts)
+    return '<br>'.join(genes), '<br>'.join(effects), '<br>'.join(impacts), '<br>'.join(transcripts), \
+           '<br>'.join(gene_ids), '<br>'.join(aa_alts), '<br>'.join(nt_alts)
 
 
 def create_link(url):
