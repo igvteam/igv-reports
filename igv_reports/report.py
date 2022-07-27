@@ -29,8 +29,8 @@ def create_report(args):
     variants_file = args.sites
 
     if variants_file.endswith(".bcf") or variants_file.endswith(".vcf") or variants_file.endswith(".vcf.gz"):
-        table = VariantTable(variants_file, args.info_columns, args.info_columns_prefixes, args.sample_columns,
-                             args.idlink)
+        table = VariantTable(variants_file, args.info_columns, args.info_columns_prefixes, args.samples,
+                             args.sample_columns, args.idlink)
 
     elif variants_file.endswith(".bed") or variants_file.endswith(".bed.gz"):
         if args.type is not None and args.type == "junction":
@@ -326,8 +326,10 @@ def main():
     parser.add_argument("--info-columns", nargs="+", help="list of VCF info field names to include in variant table")
     parser.add_argument("--info-columns-prefixes", nargs="+",
                         help="list of prefixes of VCF info field names to include in variant table")
+    parser.add_argument("--samples", nargs="+",
+                        help="Space delimited list of sample (i.e. genotypes) names.  Used in conjunction with --sample-columns")
     parser.add_argument("--sample-columns", nargs="+",
-                        help="list of VCF sample/format field names to include in variant table")
+                        help="list of VCF sample (genomtype) FORMAT field names to include in variant table")
     parser.add_argument("--flanking", help="genomic region to include either side of variant", default=1000)
     parser.add_argument("--standalone", help='Print more data', action='store_true')
     parser.add_argument("--title", help="optional title string")

@@ -70,7 +70,8 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * __--output__ FILE. Output file name; default="igvjs_viewer.html".
     * __--info-columns__ LIST. Space delimited list of field names to include in the variant table.  If __sites__ is a VCF file these are the info field names.  If __sites__ is a tab delimited format these are column names.
     * __--info-columns-prefixes__ LIST. Space delimited list of prefixes of VCF info field names to include in variant table.
-    * __--sample-columns__ LIST. Space delimited list of VCF sample/format field names to include in variant table.
+    * __--samples__ LIST.  Space delimited list of sample (i.e. genotypes) names.  Used in conjunction with __--sample-columns__.
+    * __--sample-columns__ LIST. Space delimited list of VCF sample FORMAT field names to include in the variant table.  If __--samples__ is specified columns will be restricted to those samples, otherwise all samples will be included.
     * __--flanking__ INT. Genomic region to include either side of variant; default=1000.
     * __--standalone__ Embed all JavaScript referenced via ```<script>``` tags in the page.
     * __--sort__ Applies to alignment tracks only.  If specified alignments are initally sorted by the specified option. Supported values include  ```BASE, STRAND, INSERT_SIZE, MATE_CHR, and NONE```. Default value is ```BASE``` for single nucleotide variants, ```NONE``` (no sorting) otherwise.  See the igv.js documentation for more information.
@@ -113,6 +114,8 @@ http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
 --ideogram test/data/hg38/cytoBandIdeo.txt \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
+--samples reads_1_fastq \
+--sample-columns DP GQ \
 --tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam test/data/hg38/refGene.txt.gz \
 --output examples/example_vcf.html
 

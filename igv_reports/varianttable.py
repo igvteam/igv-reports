@@ -7,7 +7,7 @@ from .feature import Feature
 class VariantTable:
 
     # Always remember the *self* argument
-    def __init__(self, vcfFile, info_columns=None, info_columns_prefixes=None, sample_columns=None, idlink=None):
+    def __init__(self, vcfFile, info_columns=None, info_columns_prefixes=None, samples=None, sample_columns=None, idlink=None):
 
         vcf = pysam.VariantFile(vcfFile)
 
@@ -17,6 +17,13 @@ class VariantTable:
         self.sample_fields = sample_columns or []
         self.variants = []
         self.features = []  # Bed-like features
+
+        if samples is not None:
+            self.samples = samples
+        else :
+            self.samples = []
+            for s in vcf.header.samples:
+                self.samples.append(s)
 
         for unique_id, var in enumerate(vcf.fetch()):
             self.variants.append((var, unique_id))
@@ -98,34 +105,41 @@ class VariantTable:
             for obj in json_array:
                 del obj['ID']
 
-        normalized_json = normalize_json(self.info_fields, json_array)
+        normalized_json = self.normalize_json(json_array)
         return json.dumps(normalized_json)
 
 
-def normalize_json(info_fields, json_array):
-    headers = ['unique_id', 'CHROM', 'POSITION', 'REF', 'ALT', 'ID']
-    if info_fields is not None:
-        for h in info_fields:
-            if h == 'ANN':
-                headers = headers + ['GENE', 'EFFECTS', 'IMPACT', 'TRANSCRIPT', 'GENE_ID', 'PROTEIN ALTERATION',
-                                     'DNA ALTERATION']
-            else:
-                headers.append(h)
+    def normalize_json(self, json_array):
 
-    rows = []
-    for json in json_array:
-        r = []
-        for h in headers:
-            if h in json:
-                r.append(json[h])
-            else:
-                r.append("")
-        rows.append(r)
+        headers = ['unique_id', 'CHROM', 'POSITION', 'REF', 'ALT', 'ID']
+        if self.info_fields is not None:
+            for h in self.info_fields:
+                if h == 'ANN':
+                    headers = headers + ['GENE', 'EFFECTS', 'IMPACT', 'TRANSCRIPT', 'GENE_ID', 'PROTEIN ALTERATION',
+                                         'DNA ALTERATION']
+                else:
+                    headers.append(h)
 
-    return {
-        "headers": headers,
-        "rows": rows
-    }
+        if self.samples is not None and self.sample_fields is not None:
+            for s in self.samples:
+                for f in self.sample_fields:
+                    h = f'{s}:{f}'
+                    headers.append(h)
+
+        rows = []
+        for json in json_array:
+            r = []
+            for h in headers:
+                if h in json:
+                    r.append(json[h])
+                else:
+                    r.append("")
+            rows.append(r)
+
+        return {
+            "headers": headers,
+            "rows": rows
+        }
 
 
 def render_value(v):
