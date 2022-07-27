@@ -12,11 +12,16 @@ class VariantTable:
         vcf = pysam.VariantFile(vcfFile)
 
         self.info_fields = info_columns or []
-        self.info_field_prefixes = info_columns_prefixes or []
         self.idlink = idlink
         self.sample_fields = sample_columns or []
         self.variants = []
         self.features = []  # Bed-like features
+
+        if info_columns_prefixes is not None:
+            for p in info_columns_prefixes:
+                for info in vcf.header.info:
+                    if info.startswith(p):
+                        self.info_fields.append(info)
 
         if samples is not None:
             self.samples = samples
@@ -81,11 +86,6 @@ class VariantTable:
                         obj[h] = render_values(variant.info[h])
                 else:
                     obj[h] = ''
-
-            for h in self.info_field_prefixes:
-                for field in variant.info:
-                    if field.startswith(h):
-                        obj[field] = render_values(variant.info[field])
 
             for h in self.sample_fields:
                 for sample, values in variant.samples.items():

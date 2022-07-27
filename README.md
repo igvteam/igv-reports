@@ -68,8 +68,8 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * __--ideogram__ FILE. Ideogram file in UCSC cytoIdeo format.
     * __--template__ FILE. HTML template file.
     * __--output__ FILE. Output file name; default="igvjs_viewer.html".
-    * __--info-columns__ LIST. Space delimited list of field names to include in the variant table.  If __sites__ is a VCF file these are the info field names.  If __sites__ is a tab delimited format these are column names.
-    * __--info-columns-prefixes__ LIST. Space delimited list of prefixes of VCF info field names to include in variant table.
+    * __--info-columns__ LIST. Space delimited list of info field names to include in the variant table.  If __sites__ is a VCF file these are the info ID values.  If __sites__ is a tab delimited format these are column names.
+    * __--info-columns-prefixes__ LIST. For VCF based reports only.  Space delimited list of prefixes of VCF info field IDs to include in the variant table.  Any info field with ID starting with one of the listed values will be included.
     * __--samples__ LIST.  Space delimited list of sample (i.e. genotypes) names.  Used in conjunction with __--sample-columns__.
     * __--sample-columns__ LIST. Space delimited list of VCF sample FORMAT field names to include in the variant table.  If __--samples__ is specified columns will be restricted to those samples, otherwise all samples will be included.
     * __--flanking__ INT. Genomic region to include either side of variant; default=1000.
@@ -94,8 +94,7 @@ It is assumed that the examples are run from the root directory of the repositor
 **NEW (version 1.5.0) - use igv.js genome identifier in lieu of fasta and --ideogram arguments**
 
 ```bash
-create_report \ 
-test/data/variants/variants.vcf.gz \
+create_report test/data/variants/variants.vcf.gz \
 --genome hg38 \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
@@ -108,8 +107,7 @@ test/data/variants/variants.vcf.gz \
 
 ```bash
 
-create_report \
-test/data/variants/variants.vcf.gz \
+create_report test/data/variants/variants.vcf.gz \
 http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
 --ideogram test/data/hg38/cytoBandIdeo.txt \
 --flanking 1000 \
@@ -126,8 +124,7 @@ http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
 #### Create a variant report with tracks defined in an [igv.js track config json file](test/data/variants/trackConfigs.json): \([Link to example output](examples/example_config.html)\)
 
 ``` bash
-create_report \
-test/data/variants/variants.vcf.gz \
+create_report test/data/variants/variants.vcf.gz \
 https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
 --ideogram test/data/hg38/cytoBandIdeo.txt \
 --flanking 1000 \
@@ -141,8 +138,7 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
 
 ```bash
 
-create_report \
-test/data/variants/tcga_test.maf \
+create_report test/data/variants/tcga_test.maf \
 https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
 --ideogram test/data/hg19/cytoBandIdeo.txt \
 --flanking 1000 \
@@ -156,8 +152,7 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
 
 ```bash
 
-create_report \
-test/data/variants/test.maflite.tsv \
+create_report test/data/variants/test.maflite.tsv \
 https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
 --sequence 1 --begin 2 --end 3 \
 --ideogram test/data/hg19/cytoBandIdeo.txt \
@@ -171,7 +166,7 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
 
 ```bash
 
-create_report \
+create_report test/data/variants/SKBR3_Sniffles_tra.bedpe \
 --genome hg19 \
 --flanking 1000 \
 --tracks test/data/variants/SKBR3_Sniffles_variants_tra.vcf test/data/variants/SKBR3.ill.bam https://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz \
@@ -182,8 +177,7 @@ create_report \
 
 ```bash
 
-create_report \
-test/data/variants/1kg_phase3_sites.vcf.gz \
+create_report test/data/variants/1kg_phase3_sites.vcf.gz \
 https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
 --ideogram test/data/hg19/cytoBandIdeo.txt \
 --flanking 1000 \
@@ -196,8 +190,7 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
 #### Create a junction report from a splice-junction bed file: \([Link to example output](examples/example_junctions.html)\)
 
 ```bash
-create_report \
-test/data/junctions/Introns.38.bed \
+create_report test/data/junctions/Introns.38.bed \
 https://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
 --type junction \
 --ideogram test/data/hg38/cytoBandIdeo.txt \
@@ -205,6 +198,19 @@ https://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/
 --info-columns TCGA GTEx variant_name \
 --title "Sample A" \
 --output examples/example_junctions.html
+```
+
+#### Use of ```info-columns-prefixes``` option.  Variant track only, no alignments. \([Link to example output](examples/example_ann.html)\)
+
+
+```bash
+create_report test/data/infofields/SS_consensus.filtered.ann.vcf \
+--genome hg19 \
+--flanking 1000 \
+--info-columns cosmic_gene \
+--info-columns-prefixes clinvar \
+--tracks test/data/infofields/SS_consensus.filtered.ann.vcf \
+--output examples/example_ann.html 
 ```
 
 
