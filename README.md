@@ -87,9 +87,9 @@ be indexed.  Tabix is supported and it is recommended that all large files be in
 
 Data for the examples are available in the github repository [https://github.com/igvteam/igv-reports](https://github.com/igvteam/igv-reports).  The repository can be
 downloaded as a zip archive here [https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip](https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip).
-It is assumed that the examples are run from the root directory of the repository.  Output html is written to the [examples directory](examples)
+It is assumed that the examples are run from the root directory of the repository.  Output html is written to the [examples directory](docs/examples)
 
-#### Create a report using a genome identifier: \([Link to example output](examples/example_genome.html)\)
+#### Create a report using a genome identifier: \([Link to example output](docs/examples/example_genome.html)\)
 
 **NEW (version 1.5.0) - use igv.js genome identifier in lieu of fasta and --ideogram arguments**
 
@@ -103,7 +103,7 @@ create_report test/data/variants/variants.vcf.gz \
 ```
 
 
-#### Create a variant report from a VCF file: \([Link to example output](examples/example_vcf.html)\)
+#### Create a variant report from a VCF file: \([Link to example output](docs/examples/example_vcf.html)\)
 
 ```bash
 
@@ -121,7 +121,7 @@ http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
 
 
 
-#### Create a variant report with tracks defined in an [igv.js track config json file](test/data/variants/trackConfigs.json): \([Link to example output](examples/example_config.html)\)
+#### Create a variant report with tracks defined in an [igv.js track config json file](test/data/variants/trackConfigs.json): \([Link to example output](docs/examples/example_config.html)\)
 
 ``` bash
 create_report test/data/variants/variants.vcf.gz \
@@ -134,7 +134,7 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
 ```
 
 
-#### Create a variant report from a TCGA MAF file: \([Link to example output](examples/example_maf.html)\)
+#### Create a variant report from a TCGA MAF file: \([Link to example output](docs/examples/example_maf.html)\)
 
 ```bash
 
@@ -148,7 +148,7 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
 
 ```
 
-#### Create a variant report from a generic tab-delimited file: \([Link to example output](examples/example_tab.html)\)
+#### Create a variant report from a generic tab-delimited file: \([Link to example output](docs/examples/example_tab.html)\)
 
 ```bash
 
@@ -162,7 +162,7 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
 --output examples/example_tab.html
 
 ```
-#### NEW (version 1.5.0) - Create a structural variant report from a bedpe file with two locations (BEDPE format): \([Link to example output](examples/example_bedpe.html)\)
+#### NEW (version 1.5.0) - Create a structural variant report from a bedpe file with two locations (BEDPE format): \([Link to example output](docs/examples/example_bedpe.html)\)
 
 ```bash
 
@@ -173,7 +173,7 @@ create_report test/data/variants/SKBR3_Sniffles_tra.bedpe \
 --output examples/example_bedpe.html
 ```
 
-#### Create a variant report with custom ID link urls: \([Link to example output](examples/example_idlink.html)\)
+#### Create a variant report with custom ID link urls: \([Link to example output](docs/examples/example_idlink.html)\)
 
 ```bash
 
@@ -187,7 +187,7 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
 
 ```
 
-#### Create a junction report from a splice-junction bed file: \([Link to example output](examples/example_junctions.html)\)
+#### Create a junction report from a splice-junction bed file: \([Link to example output](docs/examples/example_junctions.html)\)
 
 ```bash
 create_report test/data/junctions/Introns.38.bed \
@@ -200,7 +200,7 @@ https://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/
 --output examples/example_junctions.html
 ```
 
-#### Use of ```info-columns-prefixes``` option.  Variant track only, no alignments. \([Link to example output](examples/example_ann.html)\)
+#### Use of ```info-columns-prefixes``` option.  Variant track only, no alignments. \([Link to example output](docs/examples/example_ann.html)\)
 
 
 ```bash
