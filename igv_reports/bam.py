@@ -3,32 +3,42 @@ from igv_reports.chralias import build_aliastable
 
 class BamReader:
 
-    def __init__(self, filename, fasta=None):
+    def __init__(self, filetype, filename, args = None):
+        self.filtetype = filetype
         self.filename = filename
-        self.fasta = fasta
+        self.args = args
 
-        args = ["-H", filename]
-        header = pysam.view(*args)
+        samargs = ["-H", filename]
+        header = pysam.view(*samargs)
         seqnames = parse_seqnames(header)
         self.aliastable = build_aliastable(seqnames)
 
     # add sam flag for unit tests
     def slice(self, region=None, region2=None,  sam=False):
         if sam:
-            args = ["-h", self.filename]
+            samargs = ["-h", self.filename]
         else:
-            args = ["-b", "-h", self.filename]
-        if self.fasta:
-            args.append("-T")
-            args.append(self.fasta)
+            samargs = ["-b", "-h", self.filename]
+        if self.filtetype == "cram" and self.args is not None:
+            samargs.append("-T")
+            samargs.append(self.args.fasta)
+
+        if self.args is not None and hasattr(self.args, "exclude_flags"):
+            if self.args.exclude_flags != 0:
+                samargs.append("-F")
+                samargs.append(str(self.args.exclude_flags))
+        else:
+            samargs.append("-F")
+            samargs.append("1536")
+
         if region:
             range_string = self.get_chrname(region['chr']) + ":" + str(region['start']) + "-" + str(region['end'])
-            args.append(range_string)
+            samargs.append(range_string)
         if region2:
             range_string = self.get_chrname(region2['chr']) + ":" + str(region2['start']) + "-" + str(region2['end'])
-            args.append(range_string)
+            samargs.append(range_string)
 
-        return pysam.view(*args)
+        return pysam.view(*samargs)
 
     def get_chrname(self, c):
         if c in self.aliastable:
