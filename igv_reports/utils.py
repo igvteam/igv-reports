@@ -1,6 +1,6 @@
 from . import feature, bam, vcf
 
-def getreader(config, filetype=None, fasta=None):
+def getreader(config, filetype=None, args = None):
 
     path = config["url"]
 
@@ -9,12 +9,8 @@ def getreader(config, filetype=None, fasta=None):
     else:
         filetype = filetype.lower()
 
-    if filetype == "bam" :
-        return bam.BamReader(path)
-
-    if filetype == "cram":
-        return bam.BamReader(path, fasta)
-
+    if filetype == "bam" or filetype == "cram" :
+        return bam.BamReader(filetype, path, args)
 
     elif filetype == "vcf" or filetype == "bcf":
         return vcf.VcfReader(path)

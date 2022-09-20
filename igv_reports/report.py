@@ -331,7 +331,7 @@ def main():
     parser.add_argument("--sample-columns", nargs="+",
                         help="list of VCF sample (genomtype) FORMAT field names to include in variant table")
     parser.add_argument("--flanking", help="genomic region to include either side of variant", default=1000)
-    parser.add_argument("--standalone", help='Print more data', action='store_true')
+    parser.add_argument("--standalone", help="embed javascript as well as data in output html", action='store_true')
     parser.add_argument("--title", help="optional title string")
     parser.add_argument("--sequence", help="Column of sequence (chromosome) name.  For tab-delimited sites file.",
                         default=None)
@@ -341,6 +341,7 @@ def main():
                         help="Specify that the position in the data file is 0-based (e.g. UCSC files) rather than 1-based.",
                         default=None)
     parser.add_argument("--idlink", type=str, help="url link template for the VCF ID column")
+    parser.add_argument("--exclude-flags", type=int, help="Passed to samtools to filter alignments.  For BAM and CRAM files.", default=1536)
     args = parser.parse_args()
     create_report(args)
 
