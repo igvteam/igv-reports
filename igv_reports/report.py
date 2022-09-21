@@ -81,7 +81,7 @@ def create_report(args):
     # Create file readers for tracks.  This is done outside the locus loop so initialization happens once
 
     for config in trackjson:
-        reader = utils.getreader(config, None, args.fasta)
+        reader = utils.getreader(config, None, args)
         trackconfigs.append({
             "config": config,
             "reader": reader
