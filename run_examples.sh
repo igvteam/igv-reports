@@ -8,3 +8,4 @@ python igv_reports/report.py test/data/junctions/Introns.38.bed http://s3.dualst
 python igv_reports/report.py test/data/variants/variants.vcf.gz --genome hg38 --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam --output examples/example_genome.html
 python igv_reports/report.py test/data/annotated_vcf/consensus.filtered.ann.vcf --genome hg19 --flanking 1000 --info-columns cosmic_gene --info-columns-prefixes clinvar --tracks test/data/annotated_vcf/consensus.filtered.ann.vcf --output examples/example_ann.html
 python igv_reports/report.py test/data/softclip/variant.bed --genome hg19 --flanking 1000 --track-config test/data/softclip/trackconfig.json --output examples/example_softclip.html
+python igv_reports/report.py test/data/dups/dups.bed --genome hg19 --flanking 1000 --tracks test/data/dups/dups.bam --exclude-flags 512 --output  examples/example_dups.html

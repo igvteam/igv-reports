@@ -3,6 +3,7 @@
 A Python application to generate self-contained HTML reports that consist of a table of genomic sites or regions and associated IGV views for each site.
 The generated HTML page contains all data neccessary for IGV as uuencoded blobs. It can be opened within a web browser as a static page, with no depenency on the original input files.
 
+## NEW - alignments marked "duplicate" are now filtered by default.  See the --exclude-flags option.
 
 ## Installation
 
@@ -75,7 +76,7 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * __--flanking__ INT. Genomic region to include either side of variant; default=1000.
     * __--standalone__ Embed all JavaScript referenced via ```<script>``` tags in the page.
     * __--sort__ Applies to alignment tracks only.  If specified alignments are initally sorted by the specified option. Supported values include  ```BASE, STRAND, INSERT_SIZE, MATE_CHR, and NONE```. Default value is ```BASE``` for single nucleotide variants, ```NONE``` (no sorting) otherwise.  See the igv.js documentation for more information.
-    * __--exclude-flags__ Passed to samtools as "-F" flag.  Used to filter alignments.  Default value is 1536 which filters marked "duplicate" or "vendor failed". See [samtools documentation](http://www.htslib.org/doc/samtools-view.html) for more details.
+    * __--exclude-flags__ Passed to samtools as "-F" flag.  Used to filter alignments.  Default value is 1536 which filters alignments marked "duplicate" or "vendor failed". See [samtools documentation](http://www.htslib.org/doc/samtools-view.html) for more details.
     * __--idlink__ URL tempate for information link for VCF ID values.  The token $$ will be substituted with the ID value.  Example: ```--idlink 'https://www.ncbi.nlm.nih.gov/snp/?term=$$'```
      
 
@@ -213,6 +214,16 @@ create_report test/data/infofields/consensus.filtered.ann.vcf \
 --output https://igv.org/igv-reports/examples/1.5.1/example_ann.html 
 ```
 
+#### Use ```--exclude-flags``` option to include duplicate alignments in report.  Default value is 1536 which filters duplicates and vendor-failed reads.
+
+```bash
+create_report test/data/dups/dups.bed \
+--genome hg19 \
+--exclude-flags 512 \
+--tracks test/data/dups/dups.bam \
+--output examples/example_dups.html
+
+```
 
 #### Converting genomic files to data URIs for use in igv.js 
 
