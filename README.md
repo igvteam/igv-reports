@@ -3,7 +3,7 @@
 A Python application to generate self-contained HTML reports that consist of a table of genomic sites or regions and associated IGV views for each site.
 The generated HTML page contains all data neccessary for IGV as uuencoded blobs. It can be opened within a web browser as a static page, with no depenency on the original input files.
 
-## NEW - alignments marked "duplicate" are now filtered by default.  See the --exclude-flags option.
+### _NEW - alignments marked "duplicate" are now filtered by default.  See the --exclude-flags option._
 
 ## Installation
 
@@ -76,7 +76,7 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * __--flanking__ INT. Genomic region to include either side of variant; default=1000.
     * __--standalone__ Embed all JavaScript referenced via ```<script>``` tags in the page.
     * __--sort__ Applies to alignment tracks only.  If specified alignments are initally sorted by the specified option. Supported values include  ```BASE, STRAND, INSERT_SIZE, MATE_CHR, and NONE```. Default value is ```BASE``` for single nucleotide variants, ```NONE``` (no sorting) otherwise.  See the igv.js documentation for more information.
-    * __--exclude-flags__ Passed to samtools as "-F" flag.  Used to filter alignments.  Default value is 1536 which filters alignments marked "duplicate" or "vendor failed". See [samtools documentation](http://www.htslib.org/doc/samtools-view.html) for more details.
+    * __--exclude-flags__  INT. Value is passed to samtools as "-F" flag.  Used to filter alignments.  Default value is 1536 which filters alignments marked "duplicate" or "vendor failed". To include all alignments use ```--exclude-flags 0```.  See [samtools documentation](http://www.htslib.org/doc/samtools-view.html) for more details.
     * __--idlink__ URL tempate for information link for VCF ID values.  The token $$ will be substituted with the ID value.  Example: ```--idlink 'https://www.ncbi.nlm.nih.gov/snp/?term=$$'```
      
 
