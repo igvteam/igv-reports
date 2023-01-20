@@ -1,4 +1,4 @@
-from . import feature, bam, vcf
+from . import feature, bam, vcf, coverage
 
 def getreader(config, filetype=None, args = None):
 
@@ -14,6 +14,9 @@ def getreader(config, filetype=None, args = None):
 
     elif filetype == "vcf" or filetype == "bcf":
         return vcf.VcfReader(path)
+    
+    elif filetype == "wig":
+        return coverage.WigReader(filetype, path)
 
     else:
         return feature.get_featurereader(path)
