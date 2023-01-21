@@ -40,7 +40,7 @@ class WIGTest(unittest.TestCase):
         wig_file_path = str((pathlib.Path(__file__).parent / "data/wig/variable_step.wig").resolve())
         wigreader = WigReader(wig_file_path)
         data = wigreader.slice(region, region2)
-        self.assertEqual(count_depths(data), 1266)
+        self.assertEqual(count_depths(data), 1268)
 
 
     def test_multiple_wig_regions_same_chrom(self):
@@ -58,7 +58,7 @@ class WIGTest(unittest.TestCase):
         wig_file_path = str((pathlib.Path(__file__).parent / "data/wig/variable_step.wig").resolve())
         wigreader = WigReader(wig_file_path)
         data = wigreader.slice(region, region2)
-        self.assertEqual(count_depths(data), 63)
+        self.assertEqual(count_depths(data), 64)
     
     def test_wig_mixed_step_same_chrom(self):
         region = {
@@ -88,7 +88,7 @@ class WIGTest(unittest.TestCase):
         wig_file_path = str((pathlib.Path(__file__).parent / "data/wig/variable_step.wig").resolve())
         wigreader = WigReader(wig_file_path)
         data = wigreader.slice(region, region2)
-        self.assertEqual(count_depths(data), 1266)
+        self.assertEqual(count_depths(data), 1268)
 
 def count_depths(data):
     return len([i for i in data.split('\n')])

@@ -63,7 +63,7 @@ def parse_wig_header(header):
     # parse the key=value pairs in the header
     # return a dictionary
     header_dict = dict(ChainMap(*[{i.split('=')[0]: i.split('=')[1]} for i in header.split(' ')[1:]]))
-    if 'span' in header_dict:
+    if 'span' not in header_dict:
         header_dict['span'] = 1
     return header_dict
 
