@@ -1,0 +1,24 @@
+track type=wiggle_0 name="variableStep" description="variableStep format" visibility=full autoScale=off viewLimits=0.0:25.0 color=50,150,255 yLineMark=11.76 yLineOnOff=on priority=10
+variableStep chrom=chr19 span=150
+49304701 10.0
+49304901 12.5
+49305401 15.0
+49305601 17.5
+49305901 20.0
+49306081 17.5
+49306301 15.0
+49306691 12.5
+49307871 10.0
+# comment
+# comment
+fixedStep chrom=chr19 start=49307401 step=300 span=200
+1000
+ 900
+ 800
+ 700
+ 600
+ 500
+ 400
+ 300
+ 200
+ 100

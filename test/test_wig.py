@@ -2,7 +2,7 @@ import unittest
 import pathlib
 import types
 
-from igv_reports.coverage import WigReader
+from igv_reports.wig import WigReader
 
 class WIGTest(unittest.TestCase):
 
@@ -14,16 +14,16 @@ class WIGTest(unittest.TestCase):
             "end": 42130810
         }
 
-        wig_file_path = str((pathlib.Path(__file__).parent / "data/coverage/NA12878.CYPs.wig").resolve())
-        wigreader = WigReader("wig", wig_file_path)
+        wig_file_path = str((pathlib.Path(__file__).parent / "data/wig/variable_step.wig").resolve())
+        wigreader = WigReader(wig_file_path)
         data = wigreader.slice(region)
-        self.assertEqual(count_depths(data), 173)
+        self.assertEqual(count_depths(data), 1284)
 
-    def test_bam_noregion(self):
-        wig_file_path = str((pathlib.Path(__file__).parent / "data/coverage/NA12878.CYPs.wig").resolve())
-        wigreader = WigReader("wig", wig_file_path)
+    def test_wig_noregion(self):
+        wig_file_path = str((pathlib.Path(__file__).parent / "data/wig/variable_step.wig").resolve())
+        wigreader = WigReader(wig_file_path)
         data = wigreader.slice(region=None)
-        self.assertEqual(count_depths(data), 1280)
+        self.assertEqual(count_depths(data), 1284)
 
     def test_multiple_wig_regions_diff_chrom(self):
         region = {
@@ -37,10 +37,10 @@ class WIGTest(unittest.TestCase):
             "end": 42130810
         }
 
-        wig_file_path = str((pathlib.Path(__file__).parent / "data/coverage/NA12878.CYPs.wig").resolve())
-        wigreader = WigReader("wig", wig_file_path)
+        wig_file_path = str((pathlib.Path(__file__).parent / "data/wig/variable_step.wig").resolve())
+        wigreader = WigReader(wig_file_path)
         data = wigreader.slice(region, region2)
-        self.assertEqual(count_depths(data), 1262)
+        self.assertEqual(count_depths(data), 1266)
 
 
     def test_multiple_wig_regions_same_chrom(self):
@@ -55,10 +55,22 @@ class WIGTest(unittest.TestCase):
             "end": 42130810
         }
 
-        wig_file_path = str((pathlib.Path(__file__).parent / "data/coverage/NA12878.CYPs.wig").resolve())
-        wigreader = WigReader("wig", wig_file_path)
+        wig_file_path = str((pathlib.Path(__file__).parent / "data/wig/variable_step.wig").resolve())
+        wigreader = WigReader(wig_file_path)
         data = wigreader.slice(region, region2)
-        self.assertEqual(count_depths(data), 173)
+        self.assertEqual(count_depths(data), 63)
+    
+    def test_wig_mixed_step_same_chrom(self):
+        region = {
+            "chr": "chr19",
+            "start": 49304901,
+            "end": 49305601
+        }
+
+        wig_file_path = str((pathlib.Path(__file__).parent / "data/wig/mixed_step.wig").resolve())
+        wigreader = WigReader(wig_file_path)
+        data = wigreader.slice(region)
+        self.assertEqual(count_depths(data), 24)
 
 
     def test_chralias(self):
@@ -73,13 +85,10 @@ class WIGTest(unittest.TestCase):
             "end": 42130810
         }
 
-        wig_file_path = str((pathlib.Path(__file__).parent / "data/coverage/NA12878.CYPs.wig").resolve())
-        wigreader = WigReader("wig", wig_file_path)
+        wig_file_path = str((pathlib.Path(__file__).parent / "data/wig/variable_step.wig").resolve())
+        wigreader = WigReader(wig_file_path)
         data = wigreader.slice(region, region2)
-        self.assertEqual(count_depths(data), 1262)
-
-
-
+        self.assertEqual(count_depths(data), 1266)
 
 def count_depths(data):
-    return len([i for i in data.split('\n') if i.split('\t')[0].isnumeric()])
+    return len([i for i in data.split('\n')])
