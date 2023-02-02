@@ -34,11 +34,13 @@ class WigReader:
             start = region["start"]
             end = region["end"]
             features.append(self._query_trees(reference, start, end))
-        if region2:
-            reference = self.get_chrname(region2["chr"])
-            start = region2["start"]
-            end = region2["end"]
-            features.append(self._query_trees(reference, start, end))
+
+            # Check for second region
+            if region2:
+                reference = self.get_chrname(region2["chr"])
+                start = region2["start"]
+                end = region2["end"]
+                features.append(self._query_trees(reference, start, end))
         else:
             f = None
             try:
