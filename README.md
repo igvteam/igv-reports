@@ -82,7 +82,7 @@ Although _--tracks_ is optional, a typical report will include at least an align
 
 **Track file formats:**
 
-Currently supported track file formats are BAM, CRAM, VCF, BED, GFF3, and GTF.  FASTA. BAM, CRAM, and VCF  files must 
+Currently supported track file formats are BAM, CRAM, VCF, BED, GFF3, GTF, and WIG.  FASTA. BAM, CRAM, and VCF  files must 
 be indexed.  Tabix is supported and it is recommended that all large files be indexed.   
 
 ## Examples

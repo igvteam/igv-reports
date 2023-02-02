@@ -340,6 +340,8 @@ def infer_format(filename):
         return "gff"
     elif filename.endswith(".gtf"):
         return "gtf"
+    elif filename.endswith(".wig"):
+        return "wig"
     elif filename.find("refgene"):
         return "refgene"
     else:
