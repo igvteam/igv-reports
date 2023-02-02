@@ -114,6 +114,7 @@ def parse_wig(path):
             end = start + int(step_header['span'])
             seq_features[step_header_string].append(Feature(step_header['chrom'], start, end, s, ''))
     #igv.js does not enforce the UCSC track line requirement for wig tracks
-    #if not track_header:
+    if not track_header:
+        track_header = ''
     #    raise Exception('Wig file is not properly formatted: missing track header in first line')
     return track_header, seq_features, list(set(seq_names))
