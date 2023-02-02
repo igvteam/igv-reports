@@ -116,10 +116,9 @@ class FeatureReader:
                     f.close()
 
         else:
-
             # If first time through read the entire file and create a queyable feature tree.
             if not self.tree:
-                features = parse(self.file)
+                features = parse(self.file, reader=self)
                 for f in features:
                     if f.chr not in self.aliastable:
                         self.aliastable[get_alias(f.chr)] = f.chr
@@ -145,6 +144,8 @@ class FeatureReader:
                         features.append(i.data)
 
         content = ''
+        if hasattr(self, "trackline") and self.trackline is not None:
+            content += self.trackline
         for f in features:
             content += f.text
         return content
@@ -210,7 +211,7 @@ class MockReader:
         else:
             return c
 
-def parse(path, format=None):
+def parse(path, format=None, reader=None):
     '''
     Parse a feature file and return an array of feature objects.  Supported formats are bed, gff, and gtf.
     :param path: Path to feature file, which can be local or url
@@ -226,17 +227,17 @@ def parse(path, format=None):
             format = infer_format(path)
 
         if format == 'bed':
-            return parse_bed(f)
+            return parse_bed(f, reader)
         elif format == 'gff'  or format == 'gff3' or format == 'gtf':
-            return parse_gff(f)
-        elif format == 'tab':
-            return parse_tab(f)
+            return parse_gff(f, reader)
         elif format == 'bedpe':
-            return parse_bedpe(f)
+            return parse_bedpe(f, reader)
         elif format == 'refgene':
-            return parse_refgene(f)
+            return parse_refgene(f, reader)
         elif format == 'bedgraph':
-            return parse_bedgraph(f)
+            return parse_bedgraph(f, reader)
+        elif format == 'tab':
+            return parse_tab(f, reader)
         else:
             raise Exception("Unknown file format: " + path)
     finally:
@@ -244,10 +245,12 @@ def parse(path, format=None):
             f.close()
 
 
-def parse_bed(f):
+def parse_bed(f, reader=None):
     features = []
     for line in f:
-        if not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
+        if line.startswith("track") and reader is not None:
+            reader.trackline = line
+        elif not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
             tokens = line.rstrip('\n').rstrip('\r').split('\t')
             if len(tokens) >= 3:
                 chr = tokens[0]
@@ -257,10 +260,12 @@ def parse_bed(f):
                 features.append(Feature(chr, start, end, line, name))
     return features
 
-def parse_bedgraph(f):
+def parse_bedgraph(f, reader=None):
     features = []
     for line in f:
-        if not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
+        if line.startswith("track") and reader is not None:
+            reader.trackline = line
+        elif not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
             tokens = line.rstrip('\n').rstrip('\r').split('\t')
             if len(tokens) >= 3:
                 chr = tokens[0]
@@ -271,10 +276,12 @@ def parse_bedgraph(f):
     return features
 
 
-def parse_refgene(f):
+def parse_refgene(f, reader=None):
     features = []
     for line in f:
-        if not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
+        if line.startswith("track") and reader is not None:
+            reader.trackline = line
+        elif not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
             tokens = line.rstrip('\n').rstrip('\r').split('\t')
             if len(tokens) >= 3:
                 chr = tokens[2]
@@ -285,10 +292,12 @@ def parse_refgene(f):
     return features
 
 
-def parse_bedpe(f):
+def parse_bedpe(f, reader=None):
     features = []
     for line in f:
-        if not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
+        if line.startswith("track") and reader is not None:
+            reader.trackline = line
+        elif not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
             tokens = line.rstrip('\n').rstrip('\r').split('\t')
             if len(tokens) >= 6:
                 chr = tokens[0]
@@ -302,10 +311,12 @@ def parse_bedpe(f):
     return features
 
 
-def parse_gff(f):
+def parse_gff(f, reader=None):
     features = []
     for line in f:
-        if not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
+        if line.startswith("#track") and reader is not None:
+            reader.trackline = line
+        elif not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
             tokens = line.rstrip('\n').rstrip('\r').split('\t')
             # if we encounter a blank or malformed line (no start and end coords), skip it
             if len(tokens) < 5:
@@ -318,11 +329,12 @@ def parse_gff(f):
 
     return features
 
-
-def parse_tab(f):
+def parse_tab(f, reader=None):
     rows = []
     for line in f:
-        if not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
+        if line.startswith("#track") and reader is not None:
+            reader.trackline = line
+        elif not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
             tokens = line.rstrip('\n').rstrip('\r').split('\t')
             if len(tokens) > 2:
                 rows.append(tokens)
