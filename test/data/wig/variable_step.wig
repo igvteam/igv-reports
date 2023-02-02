@@ -1,4 +1,4 @@
-track type=wiggle_0 color=50,150,50
+track type=wiggle_0 color=150,0,0
 variableStep chrom=chr7 span=25
 99756851	0.68
 99756876	12.36

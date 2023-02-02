@@ -112,6 +112,5 @@ venv.bak/
 /sarscov_genomes/sample.vcf.gz.tbi
 /sarscov_genomes/sarscov2.fa
 /sarscov_genomes/sarscov2.fa.fai
-/examples/igv.js
-/publish_examples.sh
-/examples/example_wig.html
+
+
