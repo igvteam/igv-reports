@@ -114,3 +114,4 @@ venv.bak/
 /sarscov_genomes/sarscov2.fa.fai
 /examples/igv.js
 /publish_examples.sh
+/examples/example_wig.html

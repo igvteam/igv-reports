@@ -201,6 +201,17 @@ https://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/
 --output examples/example_junctions.html
 ```
 
+#### Create a report containing wig and bedgraph files
+
+```bash
+create_report test/data/wig/regions.bed \
+--genome hg19 \
+--exclude-flags 512 \
+--tracks test/data/wig/ucsc.bedgraph test/data/wig/mixed_step.wig test/data/wig/variable_step.wig \
+--output examples/example_wig.html
+
+```
+
 #### Use of ```info-columns-prefixes``` option.  Variant track only, no alignments. ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_ann.html))
 
 

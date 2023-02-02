@@ -50,6 +50,7 @@ def get_track_type(format):
         "refgene": "annotation",
         "bcf": "variant",
         "vcf": "variant",
-        "wig": "wig"
+        "wig": "wig",
+        "bedgraph": "wig"
     }
     return dict[format]
