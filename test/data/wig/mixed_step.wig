@@ -11,7 +11,7 @@ variableStep chrom=chr19 span=150
 49307871 10.0
 # comment
 # comment
-fixedStep chrom=chr19 start=49307401 step=300 span=200
+fixedStep chrom=chr19 start=49308000 step=300 span=200
 1000
  900
  800

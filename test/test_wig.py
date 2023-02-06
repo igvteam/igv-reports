@@ -17,13 +17,13 @@ class WIGTest(unittest.TestCase):
         wig_file_path = str((pathlib.Path(__file__).parent / "data/wig/variable_step.wig").resolve())
         wigreader = WigReader(wig_file_path)
         data = wigreader.slice(region)
-        self.assertEqual(count_depths(data), 1284)
+        self.assertEqual(count_lines(data), 177)
 
     def test_wig_noregion(self):
         wig_file_path = str((pathlib.Path(__file__).parent / "data/wig/variable_step.wig").resolve())
         wigreader = WigReader(wig_file_path)
         data = wigreader.slice(region=None)
-        self.assertEqual(count_depths(data), 1284)
+        self.assertEqual(count_lines(data), 1284)
 
     def test_multiple_wig_regions_diff_chrom(self):
         region = {
@@ -40,7 +40,7 @@ class WIGTest(unittest.TestCase):
         wig_file_path = str((pathlib.Path(__file__).parent / "data/wig/variable_step.wig").resolve())
         wigreader = WigReader(wig_file_path)
         data = wigreader.slice(region, region2)
-        self.assertEqual(count_depths(data), 1268)
+        self.assertEqual(count_lines(data), 1268)
 
 
     def test_multiple_wig_regions_same_chrom(self):
@@ -58,19 +58,19 @@ class WIGTest(unittest.TestCase):
         wig_file_path = str((pathlib.Path(__file__).parent / "data/wig/variable_step.wig").resolve())
         wigreader = WigReader(wig_file_path)
         data = wigreader.slice(region, region2)
-        self.assertEqual(count_depths(data), 64)
+        self.assertEqual(count_lines(data), 64)
     
     def test_wig_mixed_step_same_chrom(self):
         region = {
             "chr": "chr19",
-            "start": 49304901,
-            "end": 49305601
+            "start": 49306691,
+            "end": 49309000
         }
 
         wig_file_path = str((pathlib.Path(__file__).parent / "data/wig/mixed_step.wig").resolve())
         wigreader = WigReader(wig_file_path)
         data = wigreader.slice(region)
-        self.assertEqual(count_depths(data), 24)
+        self.assertEqual(count_lines(data), 10)
 
 
     def test_chralias(self):
@@ -88,7 +88,7 @@ class WIGTest(unittest.TestCase):
         wig_file_path = str((pathlib.Path(__file__).parent / "data/wig/variable_step.wig").resolve())
         wigreader = WigReader(wig_file_path)
         data = wigreader.slice(region, region2)
-        self.assertEqual(count_depths(data), 1268)
+        self.assertEqual(count_lines(data), 1268)
 
-def count_depths(data):
+def count_lines(data):
     return len([i for i in data.split('\n')])
