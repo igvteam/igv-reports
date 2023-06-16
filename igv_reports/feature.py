@@ -238,6 +238,10 @@ def parse(path, format=None, reader=None):
             return parse_bedgraph(f, reader)
         elif format == 'tab':
             return parse_tab(f, reader)
+        elif format == 'maf':
+            return parse_maf(f, reader)
+        elif format == 'mut':
+            return parse_mut(f, reader)
         else:
             raise Exception("Unknown file format: " + path)
     finally:
@@ -340,6 +344,43 @@ def parse_tab(f, reader=None):
                 rows.append(tokens)
     return rows
 
+def parse_mut(f, reader=None):
+    firstline = True
+    features = []
+    for line in f:
+        if not line.startswith('#'):
+            if firstline:
+                reader.trackline = line
+                firstline = False
+            else:
+                tokens = line.rstrip('\n').rstrip('\r').split('\t')
+                if len(tokens) >= 3:
+                    chr = tokens[0]
+                    start = int(tokens[1]) - 1
+                    end = int(tokens[2])
+                    name = ''
+                    features.append(Feature(chr, start, end, line, name))
+
+    return features
+
+def parse_maf(f, reader=None):
+    firstline = True
+    features = []
+    for line in f:
+        if not line.startswith('#'):
+            if firstline:
+                reader.trackline = line
+                firstline = False
+            else:
+                tokens = line.rstrip('\n').rstrip('\r').split('\t')
+                if len(tokens) >= 6:
+                    chr = tokens[4]
+                    start = int(tokens[5]) - 1
+                    end = int(tokens[6])
+                    name =  ''
+                    features.append(Feature(chr, start, end, line, name))
+    return features
+
 
 def infer_format(filename):
     '''
@@ -372,6 +413,10 @@ def infer_format(filename):
         return "wig"
     elif filename.endswith(".bedgraph"):
         return "bedgraph"
+    elif filename.endswith(".maf"):
+        return "maf"
+    elif filename.endswith(".mut"):
+        return "mut"
     elif filename.find("refgene"):
         return "refgene"
     else:

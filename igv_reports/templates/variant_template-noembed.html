@@ -161,9 +161,9 @@ Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repo
 
 <script type="text/javascript">
 
-    var tableJson = {"headers": ["unique_id", "Chrom", "Start", "End", "Name"], "rows": [[0, "1", 14, 14, ""]]}
+    var tableJson = "@TABLE_JSON@"
     var igvBrowser;
-    var sessionDictionary = {"0": "data:application/gzip;base64,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"}
+    var locusDictionary = "@LOCUS_DICTIONARY@"
 
     document.addEventListener("DOMContentLoaded", function () {
         initIGV();
@@ -175,18 +175,13 @@ Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repo
         var igvDiv;
 
         igvDiv = document.getElementById("igvDiv");
-        var options =
-            {
-                sessionURL: sessionDictionary["0"],
-                showChromosomeWidget: false,
-                showCenterGuide: true,
-                search: false     // disable webservice search
-            };
+        var options = "@IGV_CONFIG@"
 
         igv.createBrowser(igvDiv, options)
             .then(function (b) {
                 igvBrowser = b;
                 initTable();
+                b.search(locusDictionary["0"])
             })
     }
 
@@ -232,10 +227,8 @@ Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repo
                 const row = document.getElementById(rowID)
                 row.classList.add("selected")
                 const uniqueId = rowID.substring(4);
-                const session = sessionDictionary[uniqueId]
-                igvBrowser.loadSession({
-                    url: session
-                })
+                const locus = locusDictionary[uniqueId]
+                igvBrowser.search(locus)
             }
 
             for (let j = 1; j < headers.length; j++) {

@@ -11,17 +11,6 @@ The generated HTML page contains all data neccessary for IGV as uuencoded blobs.
 
 igv-reports __requires Python 3.6__ or greater.  
 
-As with all Python projects, use of a __virtual environment__ is recommended.
-Instructions for creating a virtual environment using ```conda``` follow.
-
-__1.__ Install Anaconda from https://docs.anaconda.com/anaconda/
-
-__2.__ Create a virtual environment
-
-```bash
-conda create -n igvreports python=3.7.1
-conda activate igvreports
-```
 
 #### Installing igv-reports
 
@@ -78,7 +67,7 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * __--sort__ Applies to alignment tracks only.  If specified alignments are initally sorted by the specified option. Supported values include  ```BASE, STRAND, INSERT_SIZE, MATE_CHR, and NONE```. Default value is ```BASE``` for single nucleotide variants, ```NONE``` (no sorting) otherwise.  See the igv.js documentation for more information.
     * __--exclude-flags__  INT. Value is passed to samtools as "-F" flag.  Used to filter alignments.  Default value is 1536 which filters alignments marked "duplicate" or "vendor failed". To include all alignments use ```--exclude-flags 0```.  See [samtools documentation](http://www.htslib.org/doc/samtools-view.html) for more details.
     * __--idlink__ URL tempate for information link for VCF ID values.  The token $$ will be substituted with the ID value.  Example: ```--idlink 'https://www.ncbi.nlm.nih.gov/snp/?term=$$'```
-     
+    * __--no-encode__ Don't embed data.  Fasta and track URLs are embedded unchanged.  The resulting report is depedendent on the original data files, which must be specified as URLs.  Local files are not supported with this option.
 
 **Track file formats:**
 
@@ -144,7 +133,7 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
 --ideogram test/data/hg19/cytoBandIdeo.txt \
 --flanking 1000 \
 --info-columns Chromosome Start_position End_position Variant_Classification Variant_Type Reference_Allele Tumor_Seq_Allele1 Tumor_Seq_Allele2 dbSNP_RS \
---tracks  https://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz \
+--tracks test/data/variants/tcga_test.maf https://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz \
 --output examples/example_maf.html
 
 ```
@@ -163,7 +152,7 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
 --output examples/example_tab.html
 
 ```
-#### NEW (version 1.5.0) - Create a structural variant report from a bedpe file with two locations (BEDPE format): ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_bedpe.html))
+####  Create a structural variant report from a bedpe file with two locations (BEDPE format): ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_bedpe.html))
 
 ```bash
 
@@ -233,6 +222,20 @@ create_report test/data/dups/dups.bed \
 --exclude-flags 512 \
 --tracks test/data/dups/dups.bam \
 --output examples/example_dups.html
+```
+
+### Use ```-no-embed``` option to use external URL references for tracks in the report.  
+
+```bash
+create report test/data/variants/variants.vcf.gz \
+--genome hg38 \
+--no-embed \
+--flanking 1000 \
+--info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
+--samples reads_1_fastq \
+--sample-columns DP GQ \
+--tracks https://igv-genepattern-org.s3.amazonaws.com/test/reports/variants.vcf.gz https://igv-genepattern-org.s3.amazonaws.com/test/reports/recalibrated.bam \
+--output examples/example_noembed.html
 
 ```
 

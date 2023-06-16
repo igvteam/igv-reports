@@ -17,7 +17,7 @@ class GenericTable:
             seq_col = presets[0]
             start_col = presets[1]
             end_col = presets[2]
-            start_offset = presets[3]
+            zero_based = presets[3]
 
 
         if start_col < 0:
@@ -92,6 +92,8 @@ class GenericTable:
             return (0, 3, 4, False)
         elif filename.endswith(".maf"):
             return (4, 5, 6, False)
+        elif filename.endswith(".mut"):
+            return (0, 1, 2, False)
         else:
             msg = f"Unknown file format for: {filename} Please set --sequence, --start, and --end"
             sys.exit(msg)
