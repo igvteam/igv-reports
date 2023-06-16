@@ -19,8 +19,9 @@ from igv_reports.tracks import get_track_type
 '''
 Create an html report.  This is the main function for the application.
 '''
-def create_report(args):
 
+
+def create_report(args):
     # Read the variant data
     variants_file = args.sites
 
@@ -40,7 +41,6 @@ def create_report(args):
     elif variants_file.endswith(".maf") or variants_file.endswith(".maf.gz") or (
             args.sequence is not None and args.begin is not None and args.end is not None):
         table = GenericTable(variants_file, args.info_columns, args.sequence, args.begin, args.end, args.zero_based)
-
 
     # Track json array.  Tracks can come from (1) tracks CL argument, (2) genome CL argument, and (3) track_config Cl argument
     trackjson = []
@@ -63,7 +63,7 @@ def create_report(args):
     # --tracks argument
     if args.tracks is not None:
         for track in args.tracks:
-           trackjson.append(tracks.get_track_json_dict(track))
+            trackjson.append(tracks.get_track_json_dict(track))
 
     # --track_config argument
     if args.track_config is not None:
@@ -77,7 +77,6 @@ def create_report(args):
                         config["type"] = get_track_type(config["format"])
                     trackjson.append(config)
 
-
     if args.no_embed == True:
         igv_config = json.dumps(create_noembed_session(args, trackjson))
         locus_dict = json.dumps(create_locus_dict(args, table))
@@ -86,14 +85,14 @@ def create_report(args):
     else:
         session_dict = json.dumps(create_session_dict(args, table, trackjson))
 
-
     # Generate the HTML
     template_file = args.template
     if None == template_file:
         if 'junction' == args.type:
             template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/junction_template.html'
         elif args.no_embed == True:
-            template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/variant_template-noembed.html'
+            template_file = os.path.dirname(
+                sys.modules['igv_reports'].__file__) + '/templates/variant_template-noembed.html'
         else:
             template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/variant_template.html'
 
@@ -136,18 +135,14 @@ def create_report(args):
                 o.write(line)
 
 
-
 # Create a dictionary of igv.js session objects, one for each variant
 def create_session_dict(args, table, trackjson):
-
     session_dict = {}
-
 
     # Create file readers for tracks.  This is done outside the locus loop so initialization happens once
     readers = []
     for config in trackjson:
         readers.append(utils.getreader(config, None, args))
-
 
     # Other readers
     fasta_reader = FastaReader(args.fasta)
@@ -198,7 +193,7 @@ def create_session_dict(args, table, trackjson):
                     start2 = int(math.floor(feature.start2 - flanking / 2))
                     start2 = max(start2, 1)  # bound start to 1
                     end2 = int(math.ceil(feature.end2 + flanking / 2))
-                    region2 = {"chr": chr2,"start": start2,"end": end2}
+                    region2 = {"chr": chr2, "start": start2, "end": end2}
 
             # Fasta
             data = fasta_reader.slice(region)
@@ -245,7 +240,7 @@ def create_session_dict(args, table, trackjson):
 
                 # "cram" input format is converted to "bam" for output track configs
                 if config["format"] == "cram":
-                   config["format"] = "bam"
+                    config["format"] = "bam"
 
                 if config["format"] == "bcf":
                     config["format"] == "vcf"
@@ -283,8 +278,8 @@ def create_session_dict(args, table, trackjson):
 
     return session_dict
 
-def create_noembed_session(args, trackjson):
 
+def create_noembed_session(args, trackjson):
     reference = {
         "fastaURL": args.fasta,
         "indexURL": args.fasta + ".fai"
@@ -298,8 +293,8 @@ def create_noembed_session(args, trackjson):
         "tracks": trackjson
     }
 
-def create_locus_dict(args, table):
 
+def create_locus_dict(args, table):
     locus_dict = {}
 
     # loop through regions defined from variant, annotation, or bedpe files,  creating  locus for each one
@@ -363,8 +358,9 @@ def locus_string(chr, start, end):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("sites", help="vcf file defining variants, required")
-    parser.add_argument("fasta", nargs="?", default=None, help="reference fasta file, required if --genome is not specified")
-    parser.add_argument("--genome",  help="igv.js genome id (e.g. hg38)")
+    parser.add_argument("fasta", nargs="?", default=None,
+                        help="reference fasta file, required if --genome is not specified")
+    parser.add_argument("--genome", help="igv.js genome id (e.g. hg38)")
     parser.add_argument("--type", help="Report type.  Possible values are mutation and junctions.  Default is mutation")
     parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
     parser.add_argument("--tracks", nargs="+", help="list of track files")
@@ -391,7 +387,8 @@ def main():
                         help="Specify that the position in the data file is 0-based (e.g. UCSC files) rather than 1-based.",
                         default=None)
     parser.add_argument("--idlink", type=str, help="url link template for the VCF ID column")
-    parser.add_argument("--exclude-flags", type=int, help="Passed to samtools to filter alignments.  For BAM and CRAM files.", default=1536)
+    parser.add_argument("--exclude-flags", type=int,
+                        help="Passed to samtools to filter alignments.  For BAM and CRAM files.", default=1536)
     parser.add_argument("--no-embed", help="Do not embed fasta or track data.  This is not common", action="store_true")
     args = parser.parse_args()
     create_report(args)
