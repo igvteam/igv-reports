@@ -153,17 +153,13 @@
     <div id="igvDiv"></div>
 </div>
 
-<!--
-Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repository
-<script type="module">
-      import igv from "./igv.js/js/index.js";
--->
 
 <script type="text/javascript">
 
-    var tableJson = "@TABLE_JSON@"
-    var igvBrowser;
-    var locusDictionary = "@LOCUS_DICTIONARY@"
+    const tableJson = "@TABLE_JSON@"
+    const locusDictionary = "@LOCUS_DICTIONARY@"
+    let sortOption = "@SORT@"
+    let igvBrowser;
 
     document.addEventListener("DOMContentLoaded", function () {
         initIGV();
@@ -179,13 +175,13 @@ Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repo
 
         igv.createBrowser(igvDiv, options)
             .then(function (b) {
-                igvBrowser = b;
-                initTable();
-                b.search(locusDictionary["0"])
+                if(sortOption === "@SORT@") sortOption = "NONE"
+                initTable(b);
+                searchAndSort(b, locusDictionary["0"])
             })
     }
 
-    function initTable() {
+    function initTable(igvBrowser) {
 
         const table = document.createElement("table");
         table.id = "variant_table"
@@ -228,7 +224,7 @@ Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repo
                 row.classList.add("selected")
                 const uniqueId = rowID.substring(4);
                 const locus = locusDictionary[uniqueId]
-                igvBrowser.search(locus)
+                searchAndSort(igvBrowser, locus)
             }
 
             for (let j = 1; j < headers.length; j++) {
@@ -272,9 +268,47 @@ Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repo
                 }(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
             }
         }
+    }
+
+
+    function searchAndSort(igvBrowser, locus) {
+        igvBrowser.search(locus)
+            .then(function (ignore) {
+                const locusObject = parseLocus(locus)
+                const isSNV = locusObject &&  locusObject.start === locusObject.end
+                if(sortOption !== "NONE" || isSNV) {
+                    const option = sortOption === "NONE" ? "BASE" : sortOption
+                    const position = Math.floor((locusObject.start + locusObject.end)/2)
+                    const sortObject = {
+                        chr: locusObject.chr,
+                        position: position,
+                        option: option,
+                        direction: true
+                    }
+                    const alignmentTracks = igvBrowser.findTracks("type", "alignment")
+                    for(let t of alignmentTracks) {
+                        t.sort(sortObject)
+                    }
+                }
+
+            })
 
     }
 
+    function parseLocus(locus) {
+        const a = locus.split(":")
+        if(a.length === 2) {
+            const b = a[1].split("-")
+            if(b.length === 2) {
+                return {
+                    chr: a[0],
+                    start: Number.parseInt(b[0]) - 1,
+                    end: Number.parseInt(b[1])
+                }
+            }
+        }
+        return undefined
+    }
 
 </script>
 </body>

@@ -15,6 +15,7 @@ from igv_reports.fasta import FastaReader
 from igv_reports.ideogram import IdeogramReader
 from igv_reports.genome import get_genome
 from igv_reports.tracks import get_track_type
+from igv_reports.stream import resource_exists
 
 '''
 Create an html report.  This is the main function for the application.
@@ -58,12 +59,20 @@ def create_report(args):
                     config["format"] = feature.infer_format(config["url"])
                 if "type" not in config:
                     config["type"] = get_track_type(config["format"])
+
+                # Add potential index references
+
                 trackjson.append(config)
 
     # --tracks argument
     if args.tracks is not None:
         for track in args.tracks:
-            trackjson.append(tracks.get_track_json_dict(track))
+            config = tracks.get_track_json_dict(track)
+            # If this is a no-embed report add index URLs
+            if args.no_embed == True:
+                add_index(config)
+
+            trackjson.append(config)
 
     # --track_config argument
     if args.track_config is not None:
@@ -79,7 +88,7 @@ def create_report(args):
 
     if args.no_embed == True:
         igv_config = json.dumps(create_noembed_session(args, trackjson))
-        locus_dict = json.dumps(create_locus_dict(args, table))
+        locus_dict = json.dumps(create_locus_dict(table))
 
     # Create the session dictionary json, containing a session object for each variant
     else:
@@ -131,6 +140,11 @@ def create_report(args):
                 j = line.find('"@IGV_CONFIG@"')
                 if j >= 0:
                     line = line.replace('"@IGV_CONFIG@"', igv_config)
+
+                sort_option = args.sort.upper() if args.sort is not None else "BASE"
+                j = line.find('"@SORT@"')
+                if j >= 0:
+                    line = line.replace('"@SORT@"', '"' + sort_option + '"')
 
                 o.write(line)
 
@@ -279,11 +293,13 @@ def create_session_dict(args, table, trackjson):
     return session_dict
 
 
+# Create an igv session config object.  This is used for no-embed reports
 def create_noembed_session(args, trackjson):
     reference = {
         "fastaURL": args.fasta,
-        "indexURL": args.fasta + ".fai"
     }
+    if resource_exists(args.fasta + ".fai"):
+        reference["indexURL"] = args.fasta + ".fai"
 
     if args.ideogram is not None:
         reference["cytobandURL"] = args.ideogram
@@ -294,7 +310,7 @@ def create_noembed_session(args, trackjson):
     }
 
 
-def create_locus_dict(args, table):
+def create_locus_dict(table):
     locus_dict = {}
 
     # loop through regions defined from variant, annotation, or bedpe files,  creating  locus for each one
@@ -353,6 +369,42 @@ def locus_string(chr, start, end):
         return f'{chr}:{start + 1}'
     else:
         return f'{chr}:{start + 1}-{end}'
+
+
+# Potentially add an index URL to a track config.  The "format" field must be set before calling this function
+def add_index(config):
+    if "url" not in config or "indexURL" in config:
+        return
+
+    indexURL = None
+    url = config["url"]
+
+    # Check tabix first
+    if url.endswith(".gz"):
+        if resource_exists(url + ".tbi"):
+            indexURL = url + ".tbi"
+        elif resource_exists(url + ".csi"):
+            indexURL = url + ".csi"
+
+    # Check potential bam/cram files
+    if "format" in config:
+        format = config["format"]
+        if format == "bam" or format == "cram":
+            if resource_exists(url + ".bai"):
+                indexURL = url + ".bai"
+            elif resource_exists(format + ".csi"):
+                indexURL = url + ".csi"
+            else:
+                k = url.rfind(".")
+                tmp = url[:k] + ".bai"
+                if resource_exists(tmp):
+                    indexURL = tmp
+        elif format == "cram" and indexURL == None:
+            if (resource_exists(url + ".crai")):
+                indexURL = url + ".crai"
+
+    if indexURL is not None:
+        config["indexURL"] = indexURL
 
 
 def main():
