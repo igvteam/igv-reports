@@ -227,13 +227,9 @@ create_report test/data/dups/dups.bed \
 ### Use ```-no-embed``` option to use external URL references for tracks in the report.  
 
 ```bash
-create report test/data/variants/variants.vcf.gz \
+create_report test/data/variants/variants.vcf.gz \
 --genome hg38 \
 --no-embed \
---flanking 1000 \
---info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
---samples reads_1_fastq \
---sample-columns DP GQ \
 --tracks https://igv-genepattern-org.s3.amazonaws.com/test/reports/variants.vcf.gz https://igv-genepattern-org.s3.amazonaws.com/test/reports/recalibrated.bam \
 --output examples/example_noembed.html
 

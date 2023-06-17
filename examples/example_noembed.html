@@ -153,17 +153,13 @@
     <div id="igvDiv"></div>
 </div>
 
-<!--
-Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repository
-<script type="module">
-      import igv from "./igv.js/js/index.js";
--->
 
 <script type="text/javascript">
 
-    var tableJson = {"headers": ["unique_id", "CHROM", "POSITION", "REF", "ALT", "ID", "GENE", "TISSUE", "TUMOR", "COSMIC_ID", "GENE", "SOMATIC", "reads_1_fastq:DP", "reads_1_fastq:GQ"], "rows": [[0, "chr5", 474989, "A", "G", "", "LOC100288152,SLC9A3", "urinary_tract", "carcinoma_--_NS", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=4006021\" target=\"_blank\">COSM4006021</a>", "LOC100288152,SLC9A3", "Confirmed_somatic_variant", "4", "12"], [1, "chr5", 181224474, "G", "A", "", "TRIM41", "", "", "", "TRIM41", "", "45", "99"], [2, "chr8", 143923759, "G", "A", "", "PLEC", "large_intestine", "carcinoma_--_adenocarcinoma", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3750086\" target=\"_blank\">COSM3750086</a>", "PLEC", "Confirmed_somatic_variant", "66", "99"], [3, "chr12", 56420869, "G", "A", "", "TIMELESS", "large_intestine", "carcinoma_--_adenocarcinoma", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3753397\" target=\"_blank\">COSM3753397</a>", "TIMELESS", "Confirmed_somatic_variant", "48", "99"], [4, "chr17", 7673767, "C", "T", "", "TP53", "bone", "Ewings_sarcoma-peripheral_primitive_neuroectodermal_tumour_--_NS", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3717625\" target=\"_blank\">COSM3717625</a>", "TP53", "Confirmed_somatic_variant", "61", "99"], [5, "chr17", 7676154, "G", "C", "", "TP53", "haematopoietic_and_lymphoid_tissue", "haematopoietic_neoplasm_--_acute_myeloid_leukaemia", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3766193\" target=\"_blank\">COSM3766193</a>", "TP53", "Reported_in_another_cancer_sample_as_somatic", "80", "99"], [6, "chr17", 43071077, "T", "C", "", "BRCA1", "haematopoietic_and_lymphoid_tissue", "haematopoietic_neoplasm_--_acute_myeloid_leukaemia", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3755560\" target=\"_blank\">COSM3755560</a>", "BRCA1", "Confirmed_somatic_variant", "4", "12"], [7, "chr17", 43091983, "T", "C", "", "BRCA1", "soft_tissue", "haemangioblastoma_--_NS", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3755561\" target=\"_blank\">COSM3755561</a>", "BRCA1", "Confirmed_somatic_variant", "4", "12"], [8, "chr17", 43092919, "G", "A", "", "BRCA1", "prostate", "carcinoma_--_NS", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3755564\" target=\"_blank\">COSM3755564</a>", "BRCA1", "Confirmed_somatic_variant", "2", "6"], [9, "chr17", 43093454, "C", "T", "", "BRCA1", "soft_tissue", "rhabdomyosarcoma_--_embryonal", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=4989394\" target=\"_blank\">COSM4989394</a>", "BRCA1", "Reported_in_another_cancer_sample_as_somatic", "11", "33"], [10, "chr19", 39177761, "G", "C", "", "PAK4", "", "", "", "PAK4", "", "106", "99"], [11, "chr19", 47271515, "T", "C", "", "CCDC9", "haematopoietic_and_lymphoid_tissue", "haematopoietic_neoplasm_--_acute_myeloid_leukaemia", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3721172\" target=\"_blank\">COSM3721172</a>", "CCDC9", "Confirmed_somatic_variant", "12", "36"], [12, "chr20", 46687147, "C", "T", "", "TP53RK", "pancreas", "carcinoma_--_ductal_carcinoma", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3758608\" target=\"_blank\">COSM3758608</a>", "TP53RK", "Confirmed_somatic_variant", "26", "99"]]}
-    var igvBrowser;
-    var locusDictionary = {"0": "chr5:474990-474989", "1": "chr5:181224475-181224474", "2": "chr8:143923760-143923759", "3": "chr12:56420870-56420869", "4": "chr17:7673768-7673767", "5": "chr17:7676155-7676154", "6": "chr17:43071078-43071077", "7": "chr17:43091984-43091983", "8": "chr17:43092920-43092919", "9": "chr17:43093455-43093454", "10": "chr19:39177762-39177761", "11": "chr19:47271516-47271515", "12": "chr20:46687148-46687147"}
+    const tableJson = {"headers": ["unique_id", "CHROM", "POSITION", "REF", "ALT", "ID", "GENE", "TISSUE", "TUMOR", "COSMIC_ID", "GENE", "SOMATIC", "reads_1_fastq:DP", "reads_1_fastq:GQ"], "rows": [[0, "chr5", 474989, "A", "G", "", "LOC100288152,SLC9A3", "urinary_tract", "carcinoma_--_NS", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=4006021\" target=\"_blank\">COSM4006021</a>", "LOC100288152,SLC9A3", "Confirmed_somatic_variant", "4", "12"], [1, "chr5", 181224474, "G", "A", "", "TRIM41", "", "", "", "TRIM41", "", "45", "99"], [2, "chr8", 143923759, "G", "A", "", "PLEC", "large_intestine", "carcinoma_--_adenocarcinoma", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3750086\" target=\"_blank\">COSM3750086</a>", "PLEC", "Confirmed_somatic_variant", "66", "99"], [3, "chr12", 56420869, "G", "A", "", "TIMELESS", "large_intestine", "carcinoma_--_adenocarcinoma", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3753397\" target=\"_blank\">COSM3753397</a>", "TIMELESS", "Confirmed_somatic_variant", "48", "99"], [4, "chr17", 7673767, "C", "T", "", "TP53", "bone", "Ewings_sarcoma-peripheral_primitive_neuroectodermal_tumour_--_NS", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3717625\" target=\"_blank\">COSM3717625</a>", "TP53", "Confirmed_somatic_variant", "61", "99"], [5, "chr17", 7676154, "G", "C", "", "TP53", "haematopoietic_and_lymphoid_tissue", "haematopoietic_neoplasm_--_acute_myeloid_leukaemia", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3766193\" target=\"_blank\">COSM3766193</a>", "TP53", "Reported_in_another_cancer_sample_as_somatic", "80", "99"], [6, "chr17", 43071077, "T", "C", "", "BRCA1", "haematopoietic_and_lymphoid_tissue", "haematopoietic_neoplasm_--_acute_myeloid_leukaemia", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3755560\" target=\"_blank\">COSM3755560</a>", "BRCA1", "Confirmed_somatic_variant", "4", "12"], [7, "chr17", 43091983, "T", "C", "", "BRCA1", "soft_tissue", "haemangioblastoma_--_NS", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3755561\" target=\"_blank\">COSM3755561</a>", "BRCA1", "Confirmed_somatic_variant", "4", "12"], [8, "chr17", 43092919, "G", "A", "", "BRCA1", "prostate", "carcinoma_--_NS", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3755564\" target=\"_blank\">COSM3755564</a>", "BRCA1", "Confirmed_somatic_variant", "2", "6"], [9, "chr17", 43093454, "C", "T", "", "BRCA1", "soft_tissue", "rhabdomyosarcoma_--_embryonal", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=4989394\" target=\"_blank\">COSM4989394</a>", "BRCA1", "Reported_in_another_cancer_sample_as_somatic", "11", "33"], [10, "chr19", 39177761, "G", "C", "", "PAK4", "", "", "", "PAK4", "", "106", "99"], [11, "chr19", 47271515, "T", "C", "", "CCDC9", "haematopoietic_and_lymphoid_tissue", "haematopoietic_neoplasm_--_acute_myeloid_leukaemia", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3721172\" target=\"_blank\">COSM3721172</a>", "CCDC9", "Confirmed_somatic_variant", "12", "36"], [12, "chr20", 46687147, "C", "T", "", "TP53RK", "pancreas", "carcinoma_--_ductal_carcinoma", "<a href = \"https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=3758608\" target=\"_blank\">COSM3758608</a>", "TP53RK", "Confirmed_somatic_variant", "26", "99"]]}
+    const locusDictionary = {"0": "chr5:474990-474989", "1": "chr5:181224475-181224474", "2": "chr8:143923760-143923759", "3": "chr12:56420870-56420869", "4": "chr17:7673768-7673767", "5": "chr17:7676155-7676154", "6": "chr17:43071078-43071077", "7": "chr17:43091984-43091983", "8": "chr17:43092920-43092919", "9": "chr17:43093455-43093454", "10": "chr19:39177762-39177761", "11": "chr19:47271516-47271515", "12": "chr20:46687148-46687147"}
+    let sortOption = "BASE"
+    let igvBrowser;
 
     document.addEventListener("DOMContentLoaded", function () {
         initIGV();
@@ -175,17 +171,17 @@ Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repo
         var igvDiv;
 
         igvDiv = document.getElementById("igvDiv");
-        var options = {"reference": {"fastaURL": "https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa", "indexURL": "https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa.fai", "cytobandURL": "https://s3.amazonaws.com/igv.org.genomes/hg38/annotations/cytoBandIdeo.txt.gz"}, "tracks": [{"name": "Refseq Genes", "format": "refgene", "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/ncbiRefSeq.txt.gz", "indexed": false, "removable": false, "order": 1000000, "infoURL": "https://www.ncbi.nlm.nih.gov/gene/?term=$$", "type": "annotation"}, {"name": "variants.vcf", "url": "https://igv-genepattern-org.s3.amazonaws.com/test/reports/variants.vcf.gz", "type": "variant", "format": "vcf"}, {"name": "recalibrated", "url": "https://igv-genepattern-org.s3.amazonaws.com/test/reports/recalibrated.bam", "type": "alignment", "format": "bam", "height": 500}]}
+        var options = {"reference": {"fastaURL": "https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa", "indexURL": "https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa.fai", "cytobandURL": "https://s3.amazonaws.com/igv.org.genomes/hg38/annotations/cytoBandIdeo.txt.gz"}, "tracks": [{"name": "Refseq Genes", "format": "refgene", "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/ncbiRefSeq.txt.gz", "indexed": false, "removable": false, "order": 1000000, "infoURL": "https://www.ncbi.nlm.nih.gov/gene/?term=$$", "type": "annotation"}, {"name": "variants.vcf", "url": "https://igv-genepattern-org.s3.amazonaws.com/test/reports/variants.vcf.gz", "type": "variant", "format": "vcf"}, {"name": "recalibrated", "url": "https://igv-genepattern-org.s3.amazonaws.com/test/reports/recalibrated.bam", "type": "alignment", "format": "bam", "height": 500, "indexURL": "https://igv-genepattern-org.s3.amazonaws.com/test/reports/recalibrated.bam.bai"}]}
 
         igv.createBrowser(igvDiv, options)
             .then(function (b) {
-                igvBrowser = b;
-                initTable();
-                b.search(locusDictionary["0"])
+                if(sortOption === "BASE") sortOption = "NONE"
+                initTable(b);
+                searchAndSort(b, locusDictionary["0"])
             })
     }
 
-    function initTable() {
+    function initTable(igvBrowser) {
 
         const table = document.createElement("table");
         table.id = "variant_table"
@@ -228,7 +224,7 @@ Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repo
                 row.classList.add("selected")
                 const uniqueId = rowID.substring(4);
                 const locus = locusDictionary[uniqueId]
-                igvBrowser.search(locus)
+                searchAndSort(igvBrowser, locus)
             }
 
             for (let j = 1; j < headers.length; j++) {
@@ -272,9 +268,47 @@ Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repo
                 }(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
             }
         }
+    }
+
+
+    function searchAndSort(igvBrowser, locus) {
+        igvBrowser.search(locus)
+            .then(function (ignore) {
+                const locusObject = parseLocus(locus)
+                const isSNV = locusObject &&  locusObject.start === locusObject.end
+                if(sortOption !== "NONE" || isSNV) {
+                    const option = sortOption === "NONE" ? "BASE" : sortOption
+                    const position = Math.floor((locusObject.start + locusObject.end)/2)
+                    const sortObject = {
+                        chr: locusObject.chr,
+                        position: position,
+                        option: option,
+                        direction: true
+                    }
+                    const alignmentTracks = igvBrowser.findTracks("type", "alignment")
+                    for(let t of alignmentTracks) {
+                        t.sort(sortObject)
+                    }
+                }
+
+            })
 
     }
 
+    function parseLocus(locus) {
+        const a = locus.split(":")
+        if(a.length === 2) {
+            const b = a[1].split("-")
+            if(b.length === 2) {
+                return {
+                    chr: a[0],
+                    start: Number.parseInt(b[0]) - 1,
+                    end: Number.parseInt(b[1])
+                }
+            }
+        }
+        return undefined
+    }
 
 </script>
 </body>
