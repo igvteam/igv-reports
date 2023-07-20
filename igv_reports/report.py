@@ -16,6 +16,7 @@ from igv_reports.ideogram import IdeogramReader
 from igv_reports.genome import get_genome
 from igv_reports.tracks import get_track_type
 from igv_reports.stream import resource_exists
+from igv_reports.utils import resolve_relative_path
 
 '''
 Create an html report.  This is the main function for the application.
@@ -41,7 +42,10 @@ def create_report(args):
 
     elif variants_file.endswith(".maf") or variants_file.endswith(".maf.gz") or (
             args.sequence is not None and args.begin is not None and args.end is not None):
-        table = GenericTable(variants_file, args.info_columns, args.sequence, args.begin, args.end, args.zero_based)
+        table = GenericTable.from_tabfile(variants_file, args.info_columns, args.sequence, args.begin, args.end, args.zero_based)
+
+    elif variants_file.endswith(".json"):
+        table = GenericTable.from_fusionjson(variants_file)
 
     # Track json array.  Tracks can come from (1) tracks CL argument, (2) genome CL argument, and (3) track_config Cl argument
     trackjson = []
@@ -80,7 +84,9 @@ def create_report(args):
             with open(trackobj) as f:
                 j = json.load(f)
                 for config in j:
-                    if "format" not in config and "url in c":
+                    if "url" in config:
+                        config["url"] = resolve_relative_path(trackobj, config["url"])
+                    if "format" not in config and "url" in config:
                         config["format"] = feature.infer_format(config["url"])
                     if "type" not in config:
                         config["type"] = get_track_type(config["format"])
@@ -196,9 +202,12 @@ def create_session_dict(args, table, trackjson):
                 end = region["end"]
             else:
                 chr = feature.chr
-                start = int(math.floor(feature.start - flanking / 2))
-                start = max(start, 1)  # bound start to 1
-                end = int(math.ceil(feature.end + flanking / 2))
+                if feature.start is not None:
+                    start = int(math.floor(feature.start - flanking / 2))
+                    start = max(start, 1)  # bound start to 1
+                else:
+                    start = None
+                end = int(math.ceil(feature.end + flanking / 2)) if feature.end is not None else None
                 region = {"chr": chr, "start": start, "end": end}
 
                 # If feature has a second locus (bedpe file) create the region here.
@@ -365,6 +374,9 @@ def inline_script(line, o, source_type):
 
 
 def locus_string(chr, start, end):
+    if start is None:
+        return chr
+
     if (end - start) == 1:
         return f'{chr}:{start + 1}'
     else:
