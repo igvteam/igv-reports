@@ -3,8 +3,6 @@
 A Python application to generate self-contained HTML reports that consist of a table of genomic sites or regions and associated IGV views for each site.
 The generated HTML page contains all data neccessary for IGV as uuencoded blobs. It can be opened within a web browser as a static page, with no depenency on the original input files.
 
-### _NEW - alignments marked "duplicate" are now filtered by default.  See the --exclude-flags option._
-
 ## Installation
 
 #### Prerequisites
