@@ -26,6 +26,7 @@ Create an html report.  This is the main function for the application.
 def create_report(args):
 
     # Read the variant data -- this populates the variant table and defines the corresponding regions
+
     variants_file = args.sites
 
     if variants_file.endswith(".bcf") or variants_file.endswith(".vcf") or variants_file.endswith(".vcf.gz"):
@@ -76,7 +77,6 @@ def create_report(args):
             # If this is a no-embed report add index URLs
             if args.no_embed == True:
                 add_index(config)
-
             trackjson.append(config)
 
     # --track_config argument
@@ -99,7 +99,6 @@ def create_report(args):
 
     # Create the session dictionary json, containing a session object for each variant
     else:
-        #print(create_session_dict(args, table, trackjson))
         session_dict = json.dumps(create_session_dict(args, table, trackjson))
 
     # Generate the HTML
@@ -206,12 +205,14 @@ def create_session_dict(args, table, trackjson):
                 end = region["end"]
             else:
                 chr = feature.chr
+
                 if feature.start is not None:
                     start = int(math.floor(feature.start - flanking / 2))
                     start = max(start, 1)  # bound start to 1
                 else:
                     start = None
                 end = int(math.ceil(feature.end + flanking / 2)) if feature.end is not None else None
+
                 region = {"chr": chr, "start": start, "end": end}
 
                 # If feature has a second locus (bedpe file) create the region here.
@@ -284,7 +285,9 @@ def create_session_dict(args, table, trackjson):
                 if (config["type"] == "alignment"):
                     if "height" not in config:
                         config["height"] = 500
+                        
                     is_snv = feature.end is not None and feature.end - feature.start == 1
+                    
                     if (config["type"]) == "alignment" and (args.sort is not None or is_snv) and (
                             args.sort != 'NONE'):
                         sort_option = 'BASE' if args.sort is None else args.sort.upper()
@@ -430,6 +433,7 @@ def main():
     parser.add_argument("fasta", nargs="?", default=None,
                         help="reference fasta file, required if --genome is not specified")
     parser.add_argument("--genome", help="igv.js genome id (e.g. hg38)")
+
     parser.add_argument("--type", help="Report type.  Possible values are mutation, junction, and fusion.  Default is mutation")
     parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
     parser.add_argument("--tracks", nargs="+", help="list of track files")

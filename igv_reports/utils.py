@@ -25,7 +25,6 @@ def getreader(config, filetype=None, args = None):
 
 
 
-
 def resolve_relative_path(path1, path2):
 
     if path2.startswith("http://") or path2.startswith("https://") or path.isabs(path2):
@@ -41,5 +40,3 @@ def resolve_relative_path(path1, path2):
     else:
         dir = path.dirname(path1)
         return path.join(dir, path2)
-
-

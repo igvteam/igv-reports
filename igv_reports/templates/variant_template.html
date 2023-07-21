@@ -139,6 +139,7 @@
 
 <body>
 
+
 <!--title-->
 
 <div id="tableContainer" class="wrap-collabsible">
@@ -157,6 +158,7 @@
 Remove igv.js script tag in header and uncomment for local debugging.  "igv.js" is the root directory of a  local
 igv.js repository.  Adjust path as neccessary
 
+
 <script type="module">
       import igv from "./igv.js/js/index.js";
 -->
@@ -170,6 +172,7 @@ igv.js repository.  Adjust path as neccessary
     document.addEventListener("DOMContentLoaded", function () {
         initIGV();
     });
+
 
 
     /**
@@ -212,6 +215,7 @@ igv.js repository.  Adjust path as neccessary
             headerRow.appendChild(cell);
             cell.innerHTML = headers[j];
         }
+
 
         // body
         const tbody = document.createElement('tbody');
