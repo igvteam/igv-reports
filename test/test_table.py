@@ -38,7 +38,7 @@ class TableTest(unittest.TestCase):
     def test_maftable(self):
 
         maf_file = str((pathlib.Path(__file__).parent / "data/maf/tcga_test.maf").resolve())
-        table = generictable.GenericTable(maf_file)
+        table = generictable.GenericTable.from_tabfile(maf_file)
 
         json = table.to_JSON()
         self.assertEqual(len(table.features), 17)
@@ -53,7 +53,7 @@ class TableTest(unittest.TestCase):
         start = 2
         end = 3
 
-        table = generictable.GenericTable(maf_file, info_columns, sequence, start, end)
+        table = generictable.GenericTable.from_tabfile(maf_file, info_columns, sequence, start, end)
 
         json = table.to_JSON()
         self.assertEqual(29, len(table.features))
@@ -70,5 +70,8 @@ class TableTest(unittest.TestCase):
         json = table.to_JSON()
         self.assertTrue(json is not None)
 
+    def test_fusions(self):
 
-
+        fusions_file = str((pathlib.Path(__file__).parent / "data/fusion/fusions.json").resolve())
+        table = generictable.GenericTable.from_fusionjson(fusions_file)
+        self.assertTrue(table is not None)

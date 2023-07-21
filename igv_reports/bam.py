@@ -32,7 +32,10 @@ class BamReader:
             samargs.append("1536")
 
         if region:
-            range_string = self.get_chrname(region['chr']) + ":" + str(region['start']) + "-" + str(region['end'])
+            if region['start'] is not None:
+                range_string = self.get_chrname(region['chr']) + ":" + str(region['start']) + "-" + str(region['end'])
+            else:
+                range_string = self.get_chrname(region['chr'])
             samargs.append(range_string)
         if region2:
             range_string = self.get_chrname(region2['chr']) + ":" + str(region2['start']) + "-" + str(region2['end'])

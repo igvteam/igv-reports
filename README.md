@@ -190,6 +190,16 @@ https://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/
 --output examples/example_junctions.html
 ```
 
+#### Create a fusion report from a Trinity fusion json file: 
+
+```bash
+create_report test/data/fusion/igv.fusion_inspector_web.json \
+test/data/fusion/igv.genome.fa  \
+--template igv_reports/templates/fusion_template.html  \  
+--track-config test/data/fusion/tracks.json  \
+--output examples/example_fusion.html
+```
+
 #### Create a report containing wig and bedgraph files
 
 ```bash

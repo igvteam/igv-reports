@@ -24,7 +24,8 @@ Create an html report.  This is the main function for the application.
 
 
 def create_report(args):
-    # Read the variant data
+
+    # Read the variant data -- this populates the variant table and defines the corresponding regions
     variants_file = args.sites
 
     if variants_file.endswith(".bcf") or variants_file.endswith(".vcf") or variants_file.endswith(".vcf.gz"):
@@ -98,6 +99,7 @@ def create_report(args):
 
     # Create the session dictionary json, containing a session object for each variant
     else:
+        #print(create_session_dict(args, table, trackjson))
         session_dict = json.dumps(create_session_dict(args, table, trackjson))
 
     # Generate the HTML
@@ -278,8 +280,9 @@ def create_session_dict(args, table, trackjson):
                 config["url"] = datauri.get_data_uri(data)
 
                 if (config["type"] == "alignment"):
-                    config["height"] = 500
-                    is_snv = feature.end - feature.start == 1
+                    if "height" not in config:
+                        config["height"] = 500
+                    is_snv = feature.end is not None and feature.end - feature.start == 1
                     if (config["type"]) == "alignment" and (args.sort is not None or is_snv) and (
                             args.sort != 'NONE'):
                         sort_option = 'BASE' if args.sort is None else args.sort.upper()
