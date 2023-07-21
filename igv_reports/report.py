@@ -107,6 +107,8 @@ def create_report(args):
     if None == template_file:
         if 'junction' == args.type:
             template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/junction_template.html'
+        elif 'fusion' == args.type:
+            template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/fusion_template.html'
         elif args.no_embed == True:
             template_file = os.path.dirname(
                 sys.modules['igv_reports'].__file__) + '/templates/variant_template-noembed.html'
@@ -428,7 +430,7 @@ def main():
     parser.add_argument("fasta", nargs="?", default=None,
                         help="reference fasta file, required if --genome is not specified")
     parser.add_argument("--genome", help="igv.js genome id (e.g. hg38)")
-    parser.add_argument("--type", help="Report type.  Possible values are mutation and junctions.  Default is mutation")
+    parser.add_argument("--type", help="Report type.  Possible values are mutation, junction, and fusion.  Default is mutation")
     parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
     parser.add_argument("--tracks", nargs="+", help="list of track files")
     parser.add_argument("--track-config", nargs="+", help="track json file")
