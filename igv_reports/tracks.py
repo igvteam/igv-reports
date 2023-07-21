@@ -1,22 +1,25 @@
 from igv_reports import feature
 
-def get_track_json_dict(filename):
+def get_track_json_dict(url):
 
-    name = get_name(filename)
-    format = feature.infer_format(filename)
-    # Note: CRAM files are output in BAM format
-    if format == 'cram':
-        format = 'bam'
-    # Note: BCF files are output in VCF format
-    if format == 'bcf':
-        format = 'vcf'
+    name = get_name(url)
+    format = feature.infer_format(url)
     type = get_track_type(format)
-    return {
+
+    trackobj = {
         "name": name,
-        "url": filename,
+        "url": url,
         "type": type,
         "format": format
     }
+
+    if type == "alignment":
+        trackobj["height"] = 500
+    elif type == "mut":
+        trackobj["height"] = 50
+        trackobj["color"] = "rgb(0,0,150)"
+
+    return trackobj
 
 def get_name(filename):
 
@@ -51,6 +54,7 @@ def get_track_type(format):
         "bcf": "variant",
         "vcf": "variant",
         "wig": "wig",
-        "bedgraph": "wig"
+        "bedgraph": "wig",
+        "maf": "mut"
     }
     return dict[format]

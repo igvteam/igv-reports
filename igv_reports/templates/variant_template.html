@@ -12,8 +12,7 @@
     <title>IGV Variant Inspector </title>
 
     <!-- igv -->
-    <script src="https://cdn.jsdelivr.net/npm/igv@2.13.11/dist/igv.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/igv@2.15.9/dist/igv.min.js"></script>
 
     <style type="text/css">
         body {
@@ -155,31 +154,35 @@
 </div>
 
 <!--
-Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repository
+Remove igv.js script tag in header and uncomment for local debugging.  "igv.js" is the root directory of a  local
+igv.js repository.  Adjust path as neccessary
+
 <script type="module">
       import igv from "./igv.js/js/index.js";
 -->
 
 <script type="text/javascript">
 
-    var tableJson = "@TABLE_JSON@"
-    var igvBrowser;
-    var sessionDictionary = "@SESSION_DICTIONARY@"
+    const tableJson = "@TABLE_JSON@"
+    const sessionDictionary = "@SESSION_DICTIONARY@"
+    let igvBrowser;
 
     document.addEventListener("DOMContentLoaded", function () {
         initIGV();
     });
 
 
+    /**
+     * Create the igv instance initialized with the first session in the session dictionary.  This will correspond
+     * to the first variant in the variant table. *
+     */
     function initIGV() {
 
-        var igvDiv;
-
-        igvDiv = document.getElementById("igvDiv");
-        var options =
+        const igvDiv = document.getElementById("igvDiv");
+        const options =
             {
                 sessionURL: sessionDictionary["0"],
-                showChromosomeWidget: false,
+                showChromosomeWidget: false,  // The session for each variant contains data and sequence for that variant only
                 showCenterGuide: true,
                 search: false     // disable webservice search
             };
@@ -193,16 +196,16 @@ Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repo
 
     function initTable() {
 
+        // table
         const table = document.createElement("table");
         table.id = "variant_table"
         table.style.width = "100%";
-
         document.getElementById("tableSelectorDiv").appendChild(table);
 
+        // header
         const thead = document.createElement('thead');
         table.appendChild(thead);
         const headerRow = thead.insertRow(0);
-
         const headers = tableJson.headers;
         for (let j = 1; j < headers.length; j++) {
             var cell = document.createElement("th");
@@ -210,13 +213,14 @@ Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repo
             cell.innerHTML = headers[j];
         }
 
+        // body
         const tbody = document.createElement('tbody');
         table.appendChild(tbody);
         const tableRows = tableJson.rows;
         for (let i = 0; i < tableRows.length; i++) {
 
-            const json = tableRows[i];
-            const unique_id = json[0]
+            const rowData = tableRows[i];
+            const unique_id = rowData[0]
             const row = document.createElement("tr");
             row.id = "row_" + unique_id;
             tbody.appendChild(row);
@@ -240,12 +244,10 @@ Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repo
             }
 
             for (let j = 1; j < headers.length; j++) {
-
-                var value = json[j];
                 cell = document.createElement("td");
-                cell.rowID = i;
+                //cell.rowID = i;
                 row.appendChild(cell);
-                cell.innerHTML = value;
+                cell.innerHTML = rowData[j];
             }
         }
 

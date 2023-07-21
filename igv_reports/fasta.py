@@ -27,9 +27,8 @@ def get_data(fasta_file,region=None):
 
 class FastaReader:
 
-    def __init__(self, path):
-
-        self.fasta = pysam.FastaFile(path)
+    def __init__(self, file):
+        self.fasta = pysam.FastaFile(file)
 
     def slice(self, region = None):
 
@@ -43,8 +42,8 @@ class FastaReader:
                 region = regions.parse_region(region)
 
             chr = region["chr"]
-            start = region["start"] - 1
-            end = region["end"]
+            start = region["start"] - 1 if region["start"] is not None else None
+            end = region["end"] if region["end"] is not None else None
 
             try:
                 seq = self.fasta.fetch(chr, start, end)

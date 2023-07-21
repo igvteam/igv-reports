@@ -1,6 +1,7 @@
 import gzip
 import io
 import requests
+from os.path import exists
 
 def getstream(file):
     # TODO -- gcs
@@ -24,3 +25,17 @@ def getstream(file):
         f = open(file, encoding='UTF-8')
 
     return f
+
+
+# Check if the http or https URL resource exists.
+# Used to probe for index files
+
+def resource_exists(url):
+
+    try:
+        response = requests.get(url)
+        status_code = response.status_code
+        return status_code >= 200 and status_code < 400
+    except:
+        return False
+

@@ -1,0 +1,68 @@
+{
+  "fusions": [
+    {
+      "# Long Reads": "1",
+      "Annotations": "[\"Klijn_CellLines\",\"ChimerSeq\",\"CCLE_StarF2019\",\"INTRACHROMOSOMAL[chr17:1.80Mb]\"]",
+      "Fusion": "ACACA--STAC2",
+      "Left Breakpoint": "chr17:37122531:-",
+      "Right Breakpoint": "chr17:39218173:-",
+      "Splice Type": "ONLY_REF_SPLICE"
+    },
+    {
+      "# Long Reads": "1",
+      "Annotations": "[\"CCLE_StarF2019\",\"INTERCHROMOSOMAL[chr1--chr4]\"]",
+      "Fusion": "AHCTF1--NAAA",
+      "Left Breakpoint": "chr1:246931578:-",
+      "Right Breakpoint": "chr4:75925811:-",
+      "Splice Type": "ONLY_REF_SPLICE"
+    },
+    {
+      "# Long Reads": "1",
+      "Annotations": "[\"CCLE_StarF2019\",\"INTRACHROMOSOMAL[chr17:10.97Mb]\"]",
+      "Fusion": "MED1--ACSF2",
+      "Left Breakpoint": "chr17:39439165:-",
+      "Right Breakpoint": "chr17:50471028:+",
+      "Splice Type": "ONLY_REF_SPLICE"
+    },
+    {
+      "# Long Reads": "1",
+      "Annotations": "[\"Klijn_CellLines\",\"CCLE_StarF2019\",\"INTRACHROMOSOMAL[chr17:15.52Mb]\"]",
+      "Fusion": "MED1--STXBP4",
+      "Left Breakpoint": "chr17:39451038:-",
+      "Right Breakpoint": "chr17:55141310:+",
+      "Splice Type": "ONLY_REF_SPLICE"
+    },
+    {
+      "# Long Reads": "1",
+      "Annotations": "[\"Klijn_CellLines\",\"ChimerSeq\",\"CCLE_StarF2019\",\"INTRACHROMOSOMAL[chr17:10.95Mb]\"]",
+      "Fusion": "RPS6KB1--SNF8",
+      "Left Breakpoint": "chr17:59893325:+",
+      "Right Breakpoint": "chr17:48943975:-",
+      "Splice Type": "ONLY_REF_SPLICE"
+    },
+    {
+      "# Long Reads": "1",
+      "Annotations": "[\"CCLE_StarF2019\",\"INTRACHROMOSOMAL[chr20:1.27Mb]\"]",
+      "Fusion": "STX16--RAE1",
+      "Left Breakpoint": "chr20:58652087:+",
+      "Right Breakpoint": "chr20:57354032:+",
+      "Splice Type": "ONLY_REF_SPLICE"
+    },
+    {
+      "# Long Reads": "1",
+      "Annotations": "[\"CCLE_StarF2019\",\"INTRACHROMOSOMAL[chr17:13.25Mb]\"]",
+      "Fusion": "TOB1--SYNRG",
+      "Left Breakpoint": "chr17:50866058:-",
+      "Right Breakpoint": "chr17:37520648:-",
+      "Splice Type": "ONLY_REF_SPLICE"
+    },
+    {
+      "# Long Reads": "1",
+      "Annotations": "[\"Klijn_CellLines\",\"DEEPEST2019\",\"ChimerPub\",\"ChimerSeq\",\"CCLE_StarF2019\",\"INTERCHROMOSOMAL[chr20--chr17]\"]",
+      "Fusion": "VAPB--IKZF3",
+      "Left Breakpoint": "chr20:58389517:+",
+      "Right Breakpoint": "chr17:39777767:-",
+      "Splice Type": "ONLY_REF_SPLICE"
+    }
+  ]
+}
