@@ -259,6 +259,8 @@ def parse_bed(f, reader=None):
             if len(tokens) >= 3:
                 chr = tokens[0]
                 start = int(tokens[1])
+                if start < 0:
+                    continue
                 end = int(tokens[2])
                 name = tokens[3] if len(tokens) > 3 else ''
                 features.append(Feature(chr, start, end, line, name))

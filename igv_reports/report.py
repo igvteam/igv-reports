@@ -16,6 +16,7 @@ from igv_reports.ideogram import IdeogramReader
 from igv_reports.genome import get_genome
 from igv_reports.tracks import get_track_type
 from igv_reports.stream import resource_exists
+from igv_reports.utils import resolve_relative_path
 
 '''
 Create an html report.  This is the main function for the application.
@@ -23,7 +24,9 @@ Create an html report.  This is the main function for the application.
 
 
 def create_report(args):
-    # Read the variant data
+
+    # Read the variant data -- this populates the variant table and defines the corresponding regions
+
     variants_file = args.sites
 
     if variants_file.endswith(".bcf") or variants_file.endswith(".vcf") or variants_file.endswith(".vcf.gz"):
@@ -41,7 +44,10 @@ def create_report(args):
 
     elif variants_file.endswith(".maf") or variants_file.endswith(".maf.gz") or (
             args.sequence is not None and args.begin is not None and args.end is not None):
-        table = GenericTable(variants_file, args.info_columns, args.sequence, args.begin, args.end, args.zero_based)
+        table = GenericTable.from_tabfile(variants_file, args.info_columns, args.sequence, args.begin, args.end, args.zero_based)
+
+    elif variants_file.endswith(".json"):
+        table = GenericTable.from_fusionjson(variants_file)
 
     # Track json array.  Tracks can come from (1) tracks CL argument, (2) genome CL argument, and (3) track_config Cl argument
     trackjson = []
@@ -71,7 +77,6 @@ def create_report(args):
             # If this is a no-embed report add index URLs
             if args.no_embed == True:
                 add_index(config)
-
             trackjson.append(config)
 
     # --track_config argument
@@ -80,7 +85,9 @@ def create_report(args):
             with open(trackobj) as f:
                 j = json.load(f)
                 for config in j:
-                    if "format" not in config and "url in c":
+                    if "url" in config:
+                        config["url"] = resolve_relative_path(trackobj, config["url"])
+                    if "format" not in config and "url" in config:
                         config["format"] = feature.infer_format(config["url"])
                     if "type" not in config:
                         config["type"] = get_track_type(config["format"])
@@ -99,6 +106,8 @@ def create_report(args):
     if None == template_file:
         if 'junction' == args.type:
             template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/junction_template.html'
+        elif 'fusion' == args.type:
+            template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/fusion_template.html'
         elif args.no_embed == True:
             template_file = os.path.dirname(
                 sys.modules['igv_reports'].__file__) + '/templates/variant_template-noembed.html'
@@ -196,9 +205,14 @@ def create_session_dict(args, table, trackjson):
                 end = region["end"]
             else:
                 chr = feature.chr
-                start = int(math.floor(feature.start - flanking / 2))
-                start = max(start, 1)  # bound start to 1
-                end = int(math.ceil(feature.end + flanking / 2))
+
+                if feature.start is not None:
+                    start = int(math.floor(feature.start - flanking / 2))
+                    start = max(start, 1)  # bound start to 1
+                else:
+                    start = None
+                end = int(math.ceil(feature.end + flanking / 2)) if feature.end is not None else None
+
                 region = {"chr": chr, "start": start, "end": end}
 
                 # If feature has a second locus (bedpe file) create the region here.
@@ -269,8 +283,11 @@ def create_session_dict(args, table, trackjson):
                 config["url"] = datauri.get_data_uri(data)
 
                 if (config["type"] == "alignment"):
-                    config["height"] = 500
-                    is_snv = feature.end - feature.start == 1
+                    if "height" not in config:
+                        config["height"] = 500
+                        
+                    is_snv = feature.end is not None and feature.end - feature.start == 1
+                    
                     if (config["type"]) == "alignment" and (args.sort is not None or is_snv) and (
                             args.sort != 'NONE'):
                         sort_option = 'BASE' if args.sort is None else args.sort.upper()
@@ -365,6 +382,9 @@ def inline_script(line, o, source_type):
 
 
 def locus_string(chr, start, end):
+    if start is None:
+        return chr
+
     if (end - start) == 1:
         return f'{chr}:{start + 1}'
     else:
@@ -413,7 +433,8 @@ def main():
     parser.add_argument("fasta", nargs="?", default=None,
                         help="reference fasta file, required if --genome is not specified")
     parser.add_argument("--genome", help="igv.js genome id (e.g. hg38)")
-    parser.add_argument("--type", help="Report type.  Possible values are mutation and junctions.  Default is mutation")
+
+    parser.add_argument("--type", help="Report type.  Possible values are mutation, junction, and fusion.  Default is mutation")
     parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
     parser.add_argument("--tracks", nargs="+", help="list of track files")
     parser.add_argument("--track-config", nargs="+", help="track json file")

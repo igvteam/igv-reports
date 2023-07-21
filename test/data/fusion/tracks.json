@@ -1,0 +1,38 @@
+[
+  {
+    "label": "ref_annot",
+    "url": "igv.annot.bed",
+    "displayMode": "SQUISHED",
+    "order": 10,
+    "type": "annotation",
+    "format": "bed"
+  },
+  {
+    "label": "Pfam",
+    "url": "igv.pfam.bed",
+    "displayMode": "SQUISHED",
+    "order": 10,
+    "type": "annotation",
+    "color": "orange",
+    "format": "bed"
+  },
+  {
+    "label": "SeqSimilar",
+    "url": "igv.seqsimilar.bed",
+    "displayMode": "SQUISHED",
+    "order": 10,
+    "type": "annotation",
+    "color": "gray",
+    "format": "bed"
+  },
+  {
+    "url": "igv.LR.sorted.bam",
+    "label": "Long_Read_Alignments",
+    "type": "alignment",
+    "format": "bam",
+    "height": 200,
+    "showCoverage": false,
+    "visibilityWindow": -1,
+    "order": 35
+  }
+]

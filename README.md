@@ -3,8 +3,6 @@
 A Python application to generate self-contained HTML reports that consist of a table of genomic sites or regions and associated IGV views for each site.
 The generated HTML page contains all data neccessary for IGV as uuencoded blobs. It can be opened within a web browser as a static page, with no depenency on the original input files.
 
-### _NEW - alignments marked "duplicate" are now filtered by default.  See the --exclude-flags option._
-
 ## Installation
 
 #### Prerequisites
@@ -188,6 +186,16 @@ https://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/
 --info-columns TCGA GTEx variant_name \
 --title "Sample A" \
 --output examples/example_junctions.html
+```
+
+#### Create a fusion report from a Trinity fusion json file: 
+
+```bash
+create_report test/data/fusion/igv.fusion_inspector_web.json \
+test/data/fusion/igv.genome.fa  \
+--template igv_reports/templates/fusion_template.html  \  
+--track-config test/data/fusion/tracks.json  \
+--output examples/example_fusion.html
 ```
 
 #### Create a report containing wig and bedgraph files
