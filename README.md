@@ -51,9 +51,10 @@ Although _--tracks_ is optional, a typical report will include at least an align
 
 * Optional
     * __--genome__ **_New_** An igv.js genome identifier (e.g. hg38).  If supplied fasta, ideogram, and the default annotation track for the specified genome will be used.
+    * __--ideogram__ FILE. Ideogram file in UCSC cytoIdeo format.  Useful when __fasta__ is used to specify the reference.
     * __--tracks__ LIST.  Space-delimited list of track files, see below for supported formats.  If both *tracks* and *track-config* are specified *tracks* will appear first by default.
     * __--track-config__  FILE.  File containing array of json configuration objects for igv.js tracks.  See the [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details.  This option allows customization of track parameters.  When using this option, the track ```url``` and ```indexURL``` properties should be set to the paths of the respective files.
-    * __--ideogram__ FILE. Ideogram file in UCSC cytoIdeo format.
+    * __--roi__ LIST.  Space-delimited list of region-of-interest (ROI) files.  See [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Regions-of-Interest).
     * __--template__ FILE. HTML template file.
     * __--output__ FILE. Output file name; default="igvjs_viewer.html".
     * __--info-columns__ LIST. Space delimited list of info field names to include in the variant table.  If __sites__ is a VCF file these are the info ID values.  If __sites__ is a tab delimited format these are column names.

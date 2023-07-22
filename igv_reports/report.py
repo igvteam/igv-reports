@@ -79,6 +79,16 @@ def create_report(args):
                 add_index(config)
             trackjson.append(config)
 
+    # --roi argument
+    if args.roi is not None:
+        for track in args.roi:
+            config = tracks.get_track_json_dict(track)
+            config["type"] = "roi"
+            # If this is a no-embed report add index URLs
+            if args.no_embed == True:
+                add_index(config)
+            trackjson.append(config)
+
     # --track_config argument
     if args.track_config is not None:
         for trackobj in args.track_config:
@@ -160,6 +170,7 @@ def create_report(args):
 
 # Create a dictionary of igv.js session objects, one for each variant
 def create_session_dict(args, table, trackjson):
+
     session_dict = {}
 
     # Create file readers for tracks.  This is done outside the locus loop so initialization happens once
@@ -252,13 +263,10 @@ def create_session_dict(args, table, trackjson):
                 if region2 is not None:
                     initial_locus += f' {locus_string(feature.chr2, feature.start2, feature.end2)}'
 
-            session_json = {
-                "locus": initial_locus,
-                "reference": fastaJson,
-                "tracks": []
-            }
 
             # Loop through track configs
+            tracks = []
+            roi = []
             track_order = 1
             idx = 0
             for config in trackjson:
@@ -300,7 +308,19 @@ def create_session_dict(args, table, trackjson):
                 if "order" not in config:
                     config["order"] = track_order
                 track_order += 1
-                session_json["tracks"].append(config)
+
+                if "roi" == config["type"]:
+                    roi.append(config)
+                else:
+                    tracks.append(config)
+
+            session_json = {
+                "locus": initial_locus,
+                "reference": fastaJson,
+                "tracks": tracks
+            }
+            if len(roi) > 0:
+                session_json["roi"] = roi
 
             # Build the session data URI
             session_string = json.dumps(session_json)
@@ -321,10 +341,21 @@ def create_noembed_session(args, trackjson):
     if args.ideogram is not None:
         reference["cytobandURL"] = args.ideogram
 
-    return {
+    tracks = []
+    roi = []
+    for tj in trackjson:
+        if "roi" == trackjson["type"]:
+            roi.append(tj)
+        else:
+            tracks.append(tj)
+    session = {
         "reference": reference,
-        "tracks": trackjson
+        "tracks": tracks
     }
+    if len(roi) > 0:
+        session["roi"] = roi
+
+    return session
 
 
 def create_locus_dict(table):
@@ -438,6 +469,7 @@ def main():
     parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
     parser.add_argument("--tracks", nargs="+", help="list of track files")
     parser.add_argument("--track-config", nargs="+", help="track json file")
+    parser.add_argument("--roi", nargs="+", help="list of region-of-interest files")
     parser.add_argument("--sort",
                         help="initial sort option for alignment tracks.   Supported values include  BASE, STRAND, INSERT_SIZE, and MATE_CHR. Default value is BASE for single nucleotide variants, no sorting otherwise.  See the igv.js documentation for more information. ")
     parser.add_argument("--template", help="html template file", default=None)
