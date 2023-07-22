@@ -26,4 +26,4 @@ python igv_reports/report.py test/data/wig/regions.bedpe --genome hg19 --exclude
 echo "noembd"
 python igv_reports/report.py test/data/variants/variants.vcf.gz --genome hg38 --no-embed --flanking 1000 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC --samples reads_1_fastq --sample-columns DP GQ --tracks https://igv-genepattern-org.s3.amazonaws.com/test/reports/variants.vcf.gz https://igv-genepattern-org.s3.amazonaws.com/test/reports/recalibrated.bam --output examples/example_noembed.html
 echo "fusions"
-python igv_reports/report.py test/data/fusion/igv.fusion_inspector_web.json test/data/fusion/igv.genome.fa  --template igv_reports/templates/fusion_template.html  --track-config test/data/fusion/tracks.json  --output examples/example_fusion.html
+python igv_reports/report.py test/data/fusion/igv.fusion_inspector_web.json test/data/fusion/igv.genome.fa  --type fusion  --track-config test/data/fusion/tracks.json  --output examples/example_fusions.html
