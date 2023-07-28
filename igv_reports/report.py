@@ -344,7 +344,7 @@ def create_noembed_session(args, trackjson):
     tracks = []
     roi = []
     for tj in trackjson:
-        if "roi" == trackjson["type"]:
+        if "roi" == tj["type"]:
             roi.append(tj)
         else:
             tracks.append(tj)
@@ -461,7 +461,9 @@ def add_index(config):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("sites", help="vcf file defining variants, required")
-    parser.add_argument("fasta", nargs="?", default=None,
+    parser.add_argument("fasta_", nargs="?", default=None,
+                        help="reference fasta file.  Deprecated positional argument,  use --fasta")
+    parser.add_argument("--fasta", nargs="?", default=None,
                         help="reference fasta file, required if --genome is not specified")
     parser.add_argument("--genome", help="igv.js genome id (e.g. hg38)")
 
@@ -496,6 +498,10 @@ def main():
                         help="Passed to samtools to filter alignments.  For BAM and CRAM files.", default=1536)
     parser.add_argument("--no-embed", help="Do not embed fasta or track data.  This is not common", action="store_true")
     args = parser.parse_args()
+
+    # For backward compatibility with 'fasta' positional argument
+    if args.fasta_ is not None and args.fasta is None:
+        args.fasta = args.fasta_
     create_report(args)
 
 
