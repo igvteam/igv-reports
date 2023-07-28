@@ -1,7 +1,6 @@
 from . import feature, bam, vcf, wig
 from os import path
 
-
 def getreader(config, filetype=None, args = None):
 
     path = config["url"]
@@ -38,5 +37,8 @@ def resolve_relative_path(path1, path2):
         return strippedURL[0:lastSlashIdx] + path2 + query
 
     else:
-        dir = path.dirname(path1)
-        return path.join(dir, path2)
+        if path.exists(path2):
+            return path2
+        else:
+            dir = path.dirname(path1)
+            return path.join(dir, path2)
