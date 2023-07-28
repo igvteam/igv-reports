@@ -74,20 +74,13 @@
 </div>
 <script type="text/javascript">
 
+    "use strict;"
+
     const tableJson = "@TABLE_JSON@"
     const sessionDictionary = "@SESSION_DICTIONARY@"
+
+
     let igvBrowser
-
-
-    "use strict;"
-    var fusionInspectorState = {
-        cache: {
-            tabs: [],
-            json: tableJson
-        },
-        browserMade: false
-    }
-
 
     document.addEventListener("DOMContentLoaded", async function () {
         initTable()
@@ -131,7 +124,7 @@
         }
         fusionTable.append('</tbody>')
 
-        fusionInspectorState.cache.fusionTable = new DataTable('#fusionTable', {
+        const dataTable = new DataTable('#fusionTable', {
             columnDefs: [{target: 0, visible: false}],    // Hide the unique_id column
             'order': [[1, 'asc']],
             'scrollX': true
@@ -139,18 +132,10 @@
         })
 
         $('#fusionTable tbody').on('click', 'tr', function () {
-            const unique_id = fusionInspectorState.cache.fusionTable.row(this).data()[0]
+            const unique_id = dataTable.row(this).data()[0]
             console.log(unique_id)
             const session = sessionDictionary[unique_id]
             loadSession(session)
-            // IGV browser has to be visible when the files are loaded.
-            // If it is hidden the files load as 200 (full file) as opposed
-            // to 206, whichis needed for indexed reading as igv web needs it.
-            // loadIGVBrowser(
-            //     getFusionAnnotationFromRow('Fusion', curFusionRow),
-            //     getFusionAnnotationFromRow('Junction Reads', curFusionRow),
-            //     getFusionAnnotationFromRow('Spanning Fragments', curFusionRow)
-            //);//loadIGVBrowser
         })//#fusionTable
 
         // This hooks into the event fired off by tabs being selected.
@@ -173,23 +158,20 @@
      */
     async function loadSession(sessionBlob) {
 
-        if(!igvBrowser) {
+        if (!igvBrowser) {
 
             $('#tabDescription').append('<li role="presentation" id="igvTab"><a href="#igvBrowser" data-toggle="tab">IGV Detail</a></li>')
             $('#tabContent').append('<div role="tabpanel" id="igvBrowser" class="tab-panel fade"></div>')
 
             igvBrowser = await initIGV()
 
-             // Add and show tab for IGV
+            // Add and show tab for IGV
 
         }
-            $('.nav-tabs a[href="#igvBrowser"]').tab('show')
-            await igvBrowser.loadSession({url: sessionBlob})
-            igv.visibilityChange()
-
+        $('.nav-tabs a[href="#igvBrowser"]').tab('show')
+        igvBrowser.loadSession({url: sessionBlob})
 
     }
-
 
 
 </script>
