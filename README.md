@@ -97,7 +97,7 @@ create_report test/data/variants/variants.vcf.gz \
 ```bash
 
 create_report test/data/variants/variants.vcf.gz \
-http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
+--fasta https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa \
 --ideogram test/data/hg38/cytoBandIdeo.txt \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
@@ -114,7 +114,7 @@ http://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
 
 ``` bash
 create_report test/data/variants/variants.vcf.gz \
-https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
+--fasta https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa \
 --ideogram test/data/hg38/cytoBandIdeo.txt \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
@@ -128,11 +128,10 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
 ```bash
 
 create_report test/data/variants/tcga_test.maf \
-https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
---ideogram test/data/hg19/cytoBandIdeo.txt \
+--genome hg19 \
 --flanking 1000 \
 --info-columns Chromosome Start_position End_position Variant_Classification Variant_Type Reference_Allele Tumor_Seq_Allele1 Tumor_Seq_Allele2 dbSNP_RS \
---tracks test/data/variants/tcga_test.maf https://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz \
+--tracks test/data/variants/tcga_test.maf \
 --output examples/example_maf.html
 
 ```
@@ -142,12 +141,10 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
 ```bash
 
 create_report test/data/variants/test.maflite.tsv \
-https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
+--genome hg19 \
 --sequence 1 --begin 2 --end 3 \
---ideogram test/data/hg19/cytoBandIdeo.txt \
 --flanking 1000 \
 --info-columns chr start end ref_allele alt_allele \
---tracks https://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz \
 --output examples/example_tab.html
 
 ```
@@ -158,7 +155,7 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
 create_report test/data/variants/SKBR3_Sniffles_tra.bedpe \
 --genome hg19 \
 --flanking 1000 \
---tracks test/data/variants/SKBR3_Sniffles_variants_tra.vcf test/data/variants/SKBR3.ill.bam https://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz \
+--tracks test/data/variants/SKBR3_Sniffles_variants_tra.vcf test/data/variants/SKBR3.ill.bam \
 --output examples/example_bedpe.html
 ```
 
@@ -167,10 +164,9 @@ create_report test/data/variants/SKBR3_Sniffles_tra.bedpe \
 ```bash
 
 create_report test/data/variants/1kg_phase3_sites.vcf.gz \
-https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
---ideogram test/data/hg19/cytoBandIdeo.txt \
+--genome hg19 \
 --flanking 1000 \
---tracks test/data/variants/1kg_phase3_sites.vcf.gz test/data/variants/NA12878_lowcoverage.bam https://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz \
+--tracks test/data/variants/1kg_phase3_sites.vcf.gz test/data/variants/NA12878_lowcoverage.bam \
 --idlink 'https://www.ncbi.nlm.nih.gov/snp/?term=$$' \
 --output examples/example_idlink.html
 
@@ -180,9 +176,8 @@ https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta \
 
 ```bash
 create_report test/data/junctions/Introns.38.bed \
-https://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa \
+--genome hg38 \
 --type junction \
---ideogram test/data/hg38/cytoBandIdeo.txt \
 --track-config test/data/junctions/tracks.json \
 --info-columns TCGA GTEx variant_name \
 --title "Sample A" \
@@ -193,7 +188,7 @@ https://s3.dualstack.us-east-1.amazonaws.com/igv.broadinstitute.org/genomes/seq/
 
 ```bash
 create_report test/data/fusion/igv.fusion_inspector_web.json \
-test/data/fusion/igv.genome.fa  \
+--fasta test/data/fusion/igv.genome.fa  \
 --template igv_reports/templates/fusion_template.html  \  
 --track-config test/data/fusion/tracks.json  \
 --output examples/example_fusion.html
@@ -214,13 +209,13 @@ create_report test/data/wig/regions.bed \
 
 
 ```bash
-create_report test/data/infofields/consensus.filtered.ann.vcf \
+python igv_reports/report.py test/data/annotated_vcf/consensus.filtered.ann.vcf \
 --genome hg19 \
 --flanking 1000 \
 --info-columns cosmic_gene \
 --info-columns-prefixes clinvar \
---tracks test/data/infofields/consensus.filtered.ann.vcf \
---output https://igv.org/igv-reports/examples/1.5.1/example_ann.html 
+--tracks test/data/annotated_vcf/consensus.filtered.ann.vcf \
+--output examples/example_ann.html 
 ```
 
 #### Use ```--exclude-flags``` option to include duplicate alignments in report.  Default value is 1536 which filters duplicates and vendor-failed reads.

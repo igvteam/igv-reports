@@ -6,14 +6,6 @@
     "url": "test/data/junctions/introns.38.bed"
   },
   {
-    "name": "NCBI RefSeq",
-    "format": "refgene",
-    "type": "annotation",
-    "displayMode": "EXPANDED",
-    "height": 300,
-    "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/refGene.txt.gz"
-  },
-  {
     "name": "Alignments",
     "type": "alignment",
     "showMismatches": false,

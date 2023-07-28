@@ -12,8 +12,7 @@
     <title>IGV Variant Inspector </title>
 
     <!-- igv -->
-    <script src="https://cdn.jsdelivr.net/npm/igv@2.15.8/dist/igv.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/igv@2.15.9/dist/igv.min.js"></script>
 
     <style type="text/css">
         body {
@@ -141,6 +140,8 @@
 <body>
 
 
+<!--title-->
+
 <div id="tableContainer" class="wrap-collabsible">
     <input id="collapsible" class="toggle" type="checkbox" checked>
     <label for="collapsible" class="lbl-toggle">Variants</label>
@@ -154,31 +155,37 @@
 </div>
 
 <!--
-Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repository
+Remove igv.js script tag in header and uncomment for local debugging.  "igv.js" is the root directory of a  local
+igv.js repository.  Adjust path as neccessary
+
+
 <script type="module">
       import igv from "./igv.js/js/index.js";
 -->
 
 <script type="text/javascript">
 
-    var tableJson = {"headers": ["unique_id", "Chrom", "Start", "End", "Name"], "rows": [[0, "1", 14, 14, ""]]}
-    var igvBrowser;
-    var sessionDictionary = {"0": "data:application/gzip;base64,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"}
+    const tableJson = {"headers": ["unique_id", "Chrom", "Start", "End", "Name"], "rows": [[0, "1", 14, 14, ""]]}
+    const sessionDictionary = {"0": "data:application/gzip;base64,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"}
+    let igvBrowser;
 
     document.addEventListener("DOMContentLoaded", function () {
         initIGV();
     });
 
 
+
+    /**
+     * Create the igv instance initialized with the first session in the session dictionary.  This will correspond
+     * to the first variant in the variant table. *
+     */
     function initIGV() {
 
-        var igvDiv;
-
-        igvDiv = document.getElementById("igvDiv");
-        var options =
+        const igvDiv = document.getElementById("igvDiv");
+        const options =
             {
                 sessionURL: sessionDictionary["0"],
-                showChromosomeWidget: false,
+                showChromosomeWidget: false,  // The session for each variant contains data and sequence for that variant only
                 showCenterGuide: true,
                 search: false     // disable webservice search
             };
@@ -192,16 +199,16 @@ Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repo
 
     function initTable() {
 
+        // table
         const table = document.createElement("table");
         table.id = "variant_table"
         table.style.width = "100%";
-
         document.getElementById("tableSelectorDiv").appendChild(table);
 
+        // header
         const thead = document.createElement('thead');
         table.appendChild(thead);
         const headerRow = thead.insertRow(0);
-
         const headers = tableJson.headers;
         for (let j = 1; j < headers.length; j++) {
             var cell = document.createElement("th");
@@ -209,13 +216,15 @@ Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repo
             cell.innerHTML = headers[j];
         }
 
+
+        // body
         const tbody = document.createElement('tbody');
         table.appendChild(tbody);
         const tableRows = tableJson.rows;
         for (let i = 0; i < tableRows.length; i++) {
 
-            const json = tableRows[i];
-            const unique_id = json[0]
+            const rowData = tableRows[i];
+            const unique_id = rowData[0]
             const row = document.createElement("tr");
             row.id = "row_" + unique_id;
             tbody.appendChild(row);
@@ -239,12 +248,10 @@ Uncomment for local debugging.  "igv.js" is a soft link to the local igv.js repo
             }
 
             for (let j = 1; j < headers.length; j++) {
-
-                var value = json[j];
                 cell = document.createElement("td");
-                cell.rowID = i;
+                //cell.rowID = i;
                 row.appendChild(cell);
-                cell.innerHTML = value;
+                cell.innerHTML = rowData[j];
             }
         }
 
