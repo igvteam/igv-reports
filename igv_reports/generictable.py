@@ -28,21 +28,20 @@ class GenericTable:
             sys.exit(msg)
 
         regions = []
-        header = None
         rows = parse(file, 'tab')
-        header = None
         unique_id = 0
         start_offset = 0 if zero_based else 1
+
+        # set header to be first row and assume file has a header
+        header = rows[0]
+        rows.pop(0)
+        
         for row in rows:
-            # first line is the header
-            if header is None:
-                header = row
-            else:
-                chr = row[seq_col]
-                start = int(row[start_col]) - start_offset
-                end = int(row[end_col])
-                regions.append((_Region(chr, start, end), unique_id))
-                unique_id += 1
+            chr = row[seq_col]
+            start = int(row[start_col]) - start_offset
+            end = int(row[end_col])
+            regions.append((_Region(chr, start, end), unique_id))
+            unique_id += 1
 
         return GenericTable(rows, regions, info_columns, header)
 
