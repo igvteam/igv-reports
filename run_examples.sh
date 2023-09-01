@@ -29,8 +29,17 @@ python igv_reports/report.py test/data/variants/variants.vcf.gz \
 --track-config test/data/variants/trackConfigs.json \
 --output examples/example_config.html
 
+#### Create a variant report from a BED  file: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_bed.html))
+echo bed
+python igv_reports/report.py test/data/variants/variants.bed \
+--genome hg38 \
+--flanking 1000 \
+--info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
+--tracks test/data/variants/variants.bed test/data/variants/recalibrated.bam \
+--output examples/example_bed.html
 
-#### Create a variant report from a TCGA MAF file: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_maf.html))
+
+#### Create a variant report from a TCGA MAF file: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_bed.html))
 echo maf
 python igv_reports/report.py test/data/variants/tcga_test.maf \
 --genome hg19 \
@@ -50,7 +59,6 @@ python igv_reports/report.py test/data/variants/test.maflite.tsv \
 --output examples/example_tab.html
 
 ####  Create a structural variant report from a bedpe file with two locations (BEDPE format): ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_bedpe.html))
-
 echo bedpe
 python igv_reports/report.py test/data/variants/SKBR3_Sniffles_tra.bedpe \
 --genome hg19 \

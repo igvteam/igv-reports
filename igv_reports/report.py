@@ -49,7 +49,7 @@ def create_report(args):
     elif variants_file.endswith(".json"):
         table = GenericTable.from_fusionjson(variants_file)
 
-    # Track json array.  Tracks can come from (1) tracks CL argument, (2) genome CL argument, and (3) track_config Cl argument
+    # Track json array.  Tracks can come from (1) --tracks argument, (2) --genome  argument, and (3) --track_config argument
     trackjson = []
 
     # Check for optional genome argument.  If supplied an igv.js genome json definition is used in lieu of a fasta file
@@ -65,9 +65,6 @@ def create_report(args):
                     config["format"] = feature.infer_format(config["url"])
                 if "type" not in config:
                     config["type"] = get_track_type(config["format"])
-
-                # Add potential index references
-
                 trackjson.append(config)
 
     # --tracks argument
@@ -424,6 +421,7 @@ def locus_string(chr, start, end):
 
 # Potentially add an index URL to a track config.  The "format" field must be set before calling this function
 def add_index(config):
+
     if "url" not in config or "indexURL" in config:
         return
 
@@ -440,7 +438,7 @@ def add_index(config):
     # Check potential bam/cram files
     if "format" in config:
         format = config["format"]
-        if format == "bam" or format == "cram":
+        if format == "bam":
             if resource_exists(url + ".bai"):
                 indexURL = url + ".bai"
             elif resource_exists(format + ".csi"):

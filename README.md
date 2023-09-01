@@ -7,7 +7,7 @@ The generated HTML page contains all data neccessary for IGV as uuencoded blobs.
 
 #### Prerequisites
 
-igv-reports __requires Python 3.6__ or greater.  
+igv-reports __requires Python 3.8__ or greater.  
 
 
 #### Installing igv-reports
@@ -39,7 +39,8 @@ Although _--tracks_ is optional, a typical report will include at least an align
 **Arguments:**
 * Required
     * __sites__   VCF, BED, MAF, BEDPE, or generic tab delimited file of genomic variant sites.  Tabix indexed files are supported and strongly recommended for large files.
-    * __fasta__   Reference fasta file; must be indexed.  This argument should be ommited if --genome is used, otherwise it is required.  
+    * __--fasta__   Reference fasta file; must be indexed.  This argument should be ommited if --genome is used, otherwise it is required.  
+    * __--genome__  An igv.js genome identifier (e.g. hg38).  If supplied fasta, ideogram, and the default annotation track for the specified genome will be used.* 
     
 * The arguments _begin_, _end_, and _sequence_ are required for a generic tab delimited __sites__ file.
     * __--begin__ INT.   Column of start chromosomal position for __sites__ file.  Used for generic tab delimited input.
@@ -50,7 +51,6 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * __--zero-based__  Specify that the position in the __sites__ file is 0-based (e.g. UCSC files) rather than 1-based.  Default is ```false```.
 
 * Optional
-    * __--genome__ **_New_** An igv.js genome identifier (e.g. hg38).  If supplied fasta, ideogram, and the default annotation track for the specified genome will be used.
     * __--ideogram__ FILE. Ideogram file in UCSC cytoIdeo format.  Useful when __fasta__ is used to specify the reference.
     * __--tracks__ LIST.  Space-delimited list of track files, see below for supported formats.  If both *tracks* and *track-config* are specified *tracks* will appear first by default.
     * __--track-config__  FILE.  File containing array of json configuration objects for igv.js tracks.  See the [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details.  This option allows customization of track parameters.  When using this option, the track ```url``` and ```indexURL``` properties should be set to the paths of the respective files.
@@ -78,21 +78,10 @@ files must be indexed.  Tabix is supported and it is recommended that all large 
 Data for the examples are available in the github repository [https://github.com/igvteam/igv-reports](https://github.com/igvteam/igv-reports).  The repository can be
 downloaded as a zip archive here [https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip](https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip).
 It is assumed that the examples are run from the root directory of the repository.  Output html is written to the [examples directory](https://github.com/igvteam/igv-reports/tree/master/examples) 
-and can be viewed [here](https://igv.org/igv-reports/examples/1.5.1).
-
-#### NEW (version 1.5.0) - Create a report using a genome identifier: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_genome.html)\)
-
-```bash
-create_report test/data/variants/variants.vcf.gz \
---genome hg38 \
---flanking 1000 \
---info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
---tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam \
---output examples/example_genome.html
-```
+and can be viewed [here](https://igv.org/igv-reports/examples/1.8.1).
 
 
-#### Create a variant report from a VCF file: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_vcf.html))
+#### Create a variant report from a VCF file: ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_vcf.html))
 
 ```bash
 
@@ -108,22 +97,19 @@ create_report test/data/variants/variants.vcf.gz \
 
 ```
 
+#### Create a variant report from a BED  file: ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_bed.html))
 
-
-#### Create a variant report with tracks defined in an [igv.js track config json file](https://github.com/igvteam/igv-reports/tree/master/test/data/variants/trackConfigs.json): ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_config.html))
-
-``` bash
-create_report test/data/variants/variants.vcf.gz \
---fasta https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa \
---ideogram test/data/hg38/cytoBandIdeo.txt \
+```bash
+echo bed
+create_report test/data/variants/variants.bed \
+--genome hg38 \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
---track-config test/data/variants/trackConfigs.json \
---output examples/example_config.html
+--tracks test/data/variants/variants.bed test/data/variants/recalibrated.bam \
+--output examples/example_genome.html
 ```
 
-
-#### Create a variant report from a TCGA MAF file: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_maf.html))
+#### Create a variant report from a TCGA MAF file: ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_maf.html))
 
 ```bash
 
@@ -136,7 +122,7 @@ create_report test/data/variants/tcga_test.maf \
 
 ```
 
-#### Create a variant report from a generic tab-delimited file: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_tab.html))
+#### Create a variant report from a generic tab-delimited file: ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_tab.html))
 
 ```bash
 
@@ -148,7 +134,7 @@ create_report test/data/variants/test.maflite.tsv \
 --output examples/example_tab.html
 
 ```
-####  Create a structural variant report from a bedpe file with two locations (BEDPE format): ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_bedpe.html))
+####  Create a structural variant report from a bedpe file with two locations (BEDPE format): ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_bedpe.html))
 
 ```bash
 
@@ -159,7 +145,30 @@ create_report test/data/variants/SKBR3_Sniffles_tra.bedpe \
 --output examples/example_bedpe.html
 ```
 
-#### Create a variant report with custom ID link urls: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_idlink.html))
+#### Create a report using a genome identifier: ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_genome.html)\)
+
+```bash
+create_report test/data/variants/variants.vcf.gz \
+--genome hg38 \
+--flanking 1000 \
+--info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
+--tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam \
+--output examples/example_genome.html
+```
+
+#### Create a variant report with tracks defined in an [igv.js track config json file](https://github.com/igvteam/igv-reports/tree/master/test/data/variants/trackConfigs.json): ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_config.html))
+
+``` bash
+create_report test/data/variants/variants.vcf.gz \
+--fasta https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa \
+--ideogram test/data/hg38/cytoBandIdeo.txt \
+--flanking 1000 \
+--info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
+--track-config test/data/variants/trackConfigs.json \
+--output examples/example_config.html
+```
+
+#### Create a variant report with custom ID link urls: ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_idlink.html))
 
 ```bash
 
@@ -172,7 +181,7 @@ create_report test/data/variants/1kg_phase3_sites.vcf.gz \
 
 ```
 
-#### Create a junction report from a splice-junction bed file: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_junctions.html))
+#### Create a junction report from a splice-junction bed file: ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_junctions.html))
 
 ```bash
 create_report test/data/junctions/Introns.38.bed \
@@ -205,7 +214,7 @@ create_report test/data/wig/regions.bed \
 
 ```
 
-#### Use of ```info-columns-prefixes``` option.  Variant track only, no alignments. ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_ann.html))
+#### Use of ```info-columns-prefixes``` option.  Variant track only, no alignments. ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_ann.html))
 
 
 ```bash
@@ -218,7 +227,7 @@ python igv_reports/report.py test/data/annotated_vcf/consensus.filtered.ann.vcf 
 --output examples/example_ann.html 
 ```
 
-#### Use ```--exclude-flags``` option to include duplicate alignments in report.  Default value is 1536 which filters duplicates and vendor-failed reads.
+#### Use ```--exclude-flags``` option to include duplicate alignments in report by specifying a samtools `--exclude-flags` value.  Default value is 1536 which filters duplicates and vendor-failed reads.
 
 ```bash
 create_report test/data/dups/dups.bed \
