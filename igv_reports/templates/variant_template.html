@@ -246,19 +246,30 @@
             return tr.children[idx].innerText || tr.children[idx].textContent;
         }
 
+
         function comparer(idx, asc) {
             return function (a, b) {
-                return function (v1, v2) {
+                return function (v1, v2, asc) {
                     // Special case for chromosome coloumn
                     if (idx === 0 && v1.startsWith('chr') && v2.startsWith('chr')) {
                         v1 = v1.substr(3);
                         v2 = v2.substr(3);
                     }
+                    // always put empty columns at end of table when sorting            
+                    if (v1 == '' && v2 != '') { return(1); }
+                    if (v2 == '' && v1 != '') { return(-1); }
+                    
                     var isNumber = v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2)
-                    return isNumber ? v1 - v2 : v1.toString().localeCompare(v2);
-                }(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+                    ret =  isNumber ? v1 - v2 : v1.toString().localeCompare(v2);
+
+                    // reverse ordering if not ascending order            
+                    if (! asc) { ret = -1 * ret; }
+                    return(ret);            
+                                
+                }(getCellValue(a, idx), getCellValue(b, idx), asc);
             }
         }
+
 
     }
 
