@@ -282,8 +282,8 @@ igv.js repository.  Adjust path as neccessary
                         v2 = v2.substr(3);
                     }
                     // always put empty columns at end of table when sorting            
-                    if (v1 == '' && v2 != '') { return(1); }
-                    if (v2 == '' && v1 != '') { return(-1); }
+                    if (v1 == '' && v2 != '') { return 1; }
+                    if (v2 == '' && v1 != '') { return -1; }
                     
                     var isNumber = v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2)
                     ret =  isNumber ? v1 - v2 : v1.toString().localeCompare(v2);
