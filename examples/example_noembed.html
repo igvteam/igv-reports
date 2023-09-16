@@ -28,11 +28,6 @@
     <!-- selector table style -->
     <style>
 
-        #tableSelectorDiv {
-            max-height: 50%;
-            overflow: auto;
-        }
-
         thead {
             position: sticky;
             top: 0;
@@ -41,6 +36,7 @@
         tr {
             cursor: default;
         }
+
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
@@ -141,12 +137,13 @@
 
 <body>
 
-
-<div id="tableContainer" class="wrap-collabsible">
-    <input id="collapsible" class="toggle" type="checkbox" checked>
-    <label for="collapsible" class="lbl-toggle">Variants</label>
-    <div class="collapsible-content">
-        <div id="tableSelectorDiv"></div>
+<div id="container" style="display: flex; flex-direction: column">
+    <div id="tableContainer" class="wrap-collabsible">
+        <input id="collapsible" class="toggle" type="checkbox" checked>
+        <label for="collapsible" class="lbl-toggle">Variants</label>
+        <div class="collapsible-content">
+            <div id="tableSelectorDiv"></div>
+        </div>
     </div>
 </div>
 
@@ -160,57 +157,57 @@
     const tableJson = {"headers": ["unique_id", "CHROM", "POSITION", "REF", "ALT", "ID"], "rows": [[0, "chr5", 474989, "A", "G", ""], [1, "chr5", 181224474, "G", "A", ""], [2, "chr8", 143923759, "G", "A", ""], [3, "chr12", 56420869, "G", "A", ""], [4, "chr17", 7673767, "C", "T", ""], [5, "chr17", 7676154, "G", "C", ""], [6, "chr17", 43071077, "T", "C", ""], [7, "chr17", 43091983, "T", "C", ""], [8, "chr17", 43092919, "G", "A", ""], [9, "chr17", 43093454, "C", "T", ""], [10, "chr19", 39177761, "G", "C", ""], [11, "chr19", 47271515, "T", "C", ""], [12, "chr20", 46687147, "C", "T", ""]]}
     const locusDictionary = {"0": "chr5:474990-474989", "1": "chr5:181224475-181224474", "2": "chr8:143923760-143923759", "3": "chr12:56420870-56420869", "4": "chr17:7673768-7673767", "5": "chr17:7676155-7676154", "6": "chr17:43071078-43071077", "7": "chr17:43091984-43091983", "8": "chr17:43092920-43092919", "9": "chr17:43093455-43093454", "10": "chr19:39177762-39177761", "11": "chr19:47271516-47271515", "12": "chr20:46687148-46687147"}
     let sortOption = "BASE"
-    let igvBrowser;
+    let igvBrowser
 
     document.addEventListener("DOMContentLoaded", function () {
-        initIGV();
-    });
+        initIGV()
+    })
 
 
     function initIGV() {
 
-        var igvDiv;
+        var igvDiv
 
-        igvDiv = document.getElementById("igvDiv");
+        igvDiv = document.getElementById("igvDiv")
         var options = {"reference": {"fastaURL": "https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa", "indexURL": "https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa.fai", "cytobandURL": "https://s3.amazonaws.com/igv.org.genomes/hg38/annotations/cytoBandIdeo.txt.gz"}, "tracks": [{"name": "Refseq Genes", "format": "refgene", "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/ncbiRefSeq.txt.gz", "indexed": false, "removable": false, "order": 1000000, "infoURL": "https://www.ncbi.nlm.nih.gov/gene/?term=$$", "type": "annotation"}, {"name": "variants.vcf", "url": "https://igv-genepattern-org.s3.amazonaws.com/test/reports/variants.vcf.gz", "type": "variant", "format": "vcf", "indexURL": "https://igv-genepattern-org.s3.amazonaws.com/test/reports/variants.vcf.gz.tbi"}, {"name": "recalibrated", "url": "https://igv-genepattern-org.s3.amazonaws.com/test/reports/recalibrated.bam", "type": "alignment", "format": "bam", "height": 500, "indexURL": "https://igv-genepattern-org.s3.amazonaws.com/test/reports/recalibrated.bam.bai"}]}
 
         igv.createBrowser(igvDiv, options)
             .then(function (b) {
-                if(sortOption === "BASE") sortOption = "NONE"
-                initTable(b);
+                if (sortOption === "BASE") sortOption = "NONE"
+                initTable(b)
                 searchAndSort(b, locusDictionary["0"])
             })
     }
 
     function initTable(igvBrowser) {
 
-        const table = document.createElement("table");
+        const table = document.createElement("table")
         table.id = "variant_table"
-        table.style.width = "100%";
+        table.style.width = "100%"
 
-        document.getElementById("tableSelectorDiv").appendChild(table);
+        document.getElementById("tableSelectorDiv").appendChild(table)
 
-        const thead = document.createElement('thead');
-        table.appendChild(thead);
-        const headerRow = thead.insertRow(0);
+        const thead = document.createElement('thead')
+        table.appendChild(thead)
+        const headerRow = thead.insertRow(0)
 
-        const headers = tableJson.headers;
+        const headers = tableJson.headers
         for (let j = 1; j < headers.length; j++) {
-            var cell = document.createElement("th");
-            headerRow.appendChild(cell);
-            cell.innerHTML = headers[j];
+            var cell = document.createElement("th")
+            headerRow.appendChild(cell)
+            cell.innerHTML = headers[j]
         }
 
-        const tbody = document.createElement('tbody');
-        table.appendChild(tbody);
-        const tableRows = tableJson.rows;
+        const tbody = document.createElement('tbody')
+        table.appendChild(tbody)
+        const tableRows = tableJson.rows
         for (let i = 0; i < tableRows.length; i++) {
 
-            const json = tableRows[i];
+            const json = tableRows[i]
             const unique_id = json[0]
-            const row = document.createElement("tr");
-            row.id = "row_" + unique_id;
-            tbody.appendChild(row);
+            const row = document.createElement("tr")
+            row.id = "row_" + unique_id
+            tbody.appendChild(row)
 
             // First row selected by default
             if (i === 0) row.classList.add("selected")
@@ -220,21 +217,21 @@
                 for (let i = 0; i < list.length; i++) {
                     list[i].classList.remove("selected")
                 }
-                const rowID = event.target.parentElement.id;
+                const rowID = event.target.parentElement.id
                 const row = document.getElementById(rowID)
                 row.classList.add("selected")
-                const uniqueId = rowID.substring(4);
+                const uniqueId = rowID.substring(4)
                 const locus = locusDictionary[uniqueId]
                 searchAndSort(igvBrowser, locus)
             }
 
             for (let j = 1; j < headers.length; j++) {
 
-                var value = json[j];
-                cell = document.createElement("td");
-                cell.rowID = i;
-                row.appendChild(cell);
-                cell.innerHTML = value;
+                var value = json[j]
+                cell = document.createElement("td")
+                cell.rowID = i
+                row.appendChild(cell)
+                cell.innerHTML = value
             }
         }
 
@@ -247,28 +244,44 @@
                     .sort(comparer(Array.prototype.slice.call(th.parentNode.children).indexOf(th), this.asc = !this.asc))
                     .forEach(function (tr) {
                         table.appendChild(tr)
-                    });
+                    })
             })
-        });
+        })
 
 
         function getCellValue(tr, idx) {
-            return tr.children[idx].innerText || tr.children[idx].textContent;
+            return tr.children[idx].innerText || tr.children[idx].textContent
         }
 
         function comparer(idx, asc) {
             return function (a, b) {
-                return function (v1, v2) {
+                return function (v1, v2, asc) {
                     // Special case for chromosome coloumn
                     if (idx === 0 && v1.startsWith('chr') && v2.startsWith('chr')) {
-                        v1 = v1.substr(3);
-                        v2 = v2.substr(3);
+                        v1 = v1.substr(3)
+                        v2 = v2.substr(3)
                     }
+                    // always put empty columns at end of table when sorting
+                    if (v1 == '' && v2 != '') {
+                        return 1
+                    }
+                    if (v2 == '' && v1 != '') {
+                        return -1
+                    }
+
                     var isNumber = v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2)
-                    return isNumber ? v1 - v2 : v1.toString().localeCompare(v2);
-                }(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+                    ret = isNumber ? v1 - v2 : v1.toString().localeCompare(v2)
+
+                    // reverse ordering if not ascending order
+                    if (!asc) {
+                        ret = -1 * ret
+                    }
+                    return (ret)
+
+                }(getCellValue(a, idx), getCellValue(b, idx), asc)
             }
         }
+
     }
 
 
@@ -276,10 +289,10 @@
         igvBrowser.search(locus)
             .then(function (ignore) {
                 const locusObject = parseLocus(locus)
-                const isSNV = locusObject &&  locusObject.start === locusObject.end
-                if(sortOption !== "NONE" || isSNV) {
+                const isSNV = locusObject && locusObject.start === locusObject.end
+                if (sortOption !== "NONE" || isSNV) {
                     const option = sortOption === "NONE" ? "BASE" : sortOption
-                    const position = Math.floor((locusObject.start + locusObject.end)/2)
+                    const position = Math.floor((locusObject.start + locusObject.end) / 2)
                     const sortObject = {
                         chr: locusObject.chr,
                         position: position,
@@ -287,7 +300,7 @@
                         direction: true
                     }
                     const alignmentTracks = igvBrowser.findTracks("type", "alignment")
-                    for(let t of alignmentTracks) {
+                    for (let t of alignmentTracks) {
                         t.sort(sortObject)
                     }
                 }
@@ -298,9 +311,9 @@
 
     function parseLocus(locus) {
         const a = locus.split(":")
-        if(a.length === 2) {
+        if (a.length === 2) {
             const b = a[1].split("-")
-            if(b.length === 2) {
+            if (b.length === 2) {
                 return {
                     chr: a[0],
                     start: Number.parseInt(b[0]) - 1,

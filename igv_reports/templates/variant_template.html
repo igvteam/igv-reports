@@ -26,11 +26,6 @@
     <!-- selector table style -->
     <style>
 
-        #tableSelectorDiv {
-            max-height: 50%;
-            overflow: auto;
-        }
-
         thead {
             position: sticky;
             top: 0;
@@ -39,6 +34,7 @@
         tr {
             cursor: default;
         }
+
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
@@ -140,18 +136,18 @@
 <body>
 
 
-<!--title-->
-
-<div id="tableContainer" class="wrap-collabsible">
-    <input id="collapsible" class="toggle" type="checkbox" checked>
-    <label for="collapsible" class="lbl-toggle">Variants</label>
-    <div class="collapsible-content">
-        <div id="tableSelectorDiv"></div>
+<div id="container" style="display: flex; flex-direction: column">
+    <div id="tableContainer" class="wrap-collabsible">
+        <input id="collapsible" class="toggle" type="checkbox" checked>
+        <label for="collapsible" class="lbl-toggle">Variants</label>
+        <div class="collapsible-content">
+            <div id="tableSelectorDiv"></div>
+        </div>
     </div>
-</div>
 
-<div id="igvContainer">
-    <div id="igvDiv"></div>
+    <div id="igvContainer">
+        <div id="igvDiv"></div>
+    </div>
 </div>
 
 <!--
@@ -167,12 +163,11 @@ igv.js repository.  Adjust path as neccessary
 
     const tableJson = "@TABLE_JSON@"
     const sessionDictionary = "@SESSION_DICTIONARY@"
-    let igvBrowser;
+    let igvBrowser
 
     document.addEventListener("DOMContentLoaded", function () {
-        initIGV();
-    });
-
+        initIGV()
+    })
 
 
     /**
@@ -181,53 +176,53 @@ igv.js repository.  Adjust path as neccessary
      */
     function initIGV() {
 
-        const igvDiv = document.getElementById("igvDiv");
+        const igvDiv = document.getElementById("igvDiv")
         const options =
             {
                 sessionURL: sessionDictionary["0"],
                 showChromosomeWidget: false,  // The session for each variant contains data and sequence for that variant only
                 showCenterGuide: true,
                 search: false     // disable webservice search
-            };
+            }
 
         igv.createBrowser(igvDiv, options)
             .then(function (b) {
-                igvBrowser = b;
-                initTable();
+                igvBrowser = b
+                initTable()
             })
     }
 
     function initTable() {
 
         // table
-        const table = document.createElement("table");
+        const table = document.createElement("table")
         table.id = "variant_table"
-        table.style.width = "100%";
-        document.getElementById("tableSelectorDiv").appendChild(table);
+        table.style.width = "100%"
+        document.getElementById("tableSelectorDiv").appendChild(table)
 
         // header
-        const thead = document.createElement('thead');
-        table.appendChild(thead);
-        const headerRow = thead.insertRow(0);
-        const headers = tableJson.headers;
+        const thead = document.createElement('thead')
+        table.appendChild(thead)
+        const headerRow = thead.insertRow(0)
+        const headers = tableJson.headers
         for (let j = 1; j < headers.length; j++) {
-            var cell = document.createElement("th");
-            headerRow.appendChild(cell);
-            cell.innerHTML = headers[j];
+            var cell = document.createElement("th")
+            headerRow.appendChild(cell)
+            cell.innerHTML = headers[j]
         }
 
 
         // body
-        const tbody = document.createElement('tbody');
-        table.appendChild(tbody);
-        const tableRows = tableJson.rows;
+        const tbody = document.createElement('tbody')
+        table.appendChild(tbody)
+        const tableRows = tableJson.rows
         for (let i = 0; i < tableRows.length; i++) {
 
-            const rowData = tableRows[i];
+            const rowData = tableRows[i]
             const unique_id = rowData[0]
-            const row = document.createElement("tr");
-            row.id = "row_" + unique_id;
-            tbody.appendChild(row);
+            const row = document.createElement("tr")
+            row.id = "row_" + unique_id
+            tbody.appendChild(row)
 
             // First row selected by default
             if (i === 0) row.classList.add("selected")
@@ -237,10 +232,10 @@ igv.js repository.  Adjust path as neccessary
                 for (let i = 0; i < list.length; i++) {
                     list[i].classList.remove("selected")
                 }
-                const rowID = event.target.parentElement.id;
+                const rowID = event.target.parentElement.id
                 const row = document.getElementById(rowID)
                 row.classList.add("selected")
-                const uniqueId = rowID.substring(4);
+                const uniqueId = rowID.substring(4)
                 const session = sessionDictionary[uniqueId]
                 igvBrowser.loadSession({
                     url: session
@@ -248,10 +243,10 @@ igv.js repository.  Adjust path as neccessary
             }
 
             for (let j = 1; j < headers.length; j++) {
-                cell = document.createElement("td");
+                cell = document.createElement("td")
                 //cell.rowID = i;
-                row.appendChild(cell);
-                cell.innerHTML = rowData[j];
+                row.appendChild(cell)
+                cell.innerHTML = rowData[j]
             }
         }
 
@@ -264,35 +259,41 @@ igv.js repository.  Adjust path as neccessary
                     .sort(comparer(Array.prototype.slice.call(th.parentNode.children).indexOf(th), this.asc = !this.asc))
                     .forEach(function (tr) {
                         table.appendChild(tr)
-                    });
+                    })
             })
-        });
+        })
 
 
         function getCellValue(tr, idx) {
-            return tr.children[idx].innerText || tr.children[idx].textContent;
+            return tr.children[idx].innerText || tr.children[idx].textContent
         }
 
-         function comparer(idx, asc) {
+        function comparer(idx, asc) {
             return function (a, b) {
                 return function (v1, v2, asc) {
                     // Special case for chromosome coloumn
                     if (idx === 0 && v1.startsWith('chr') && v2.startsWith('chr')) {
-                        v1 = v1.substr(3);
-                        v2 = v2.substr(3);
+                        v1 = v1.substr(3)
+                        v2 = v2.substr(3)
                     }
                     // always put empty columns at end of table when sorting            
-                    if (v1 == '' && v2 != '') { return 1; }
-                    if (v2 == '' && v1 != '') { return -1; }
-                    
+                    if (v1 == '' && v2 != '') {
+                        return 1
+                    }
+                    if (v2 == '' && v1 != '') {
+                        return -1
+                    }
+
                     var isNumber = v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2)
-                    ret =  isNumber ? v1 - v2 : v1.toString().localeCompare(v2);
+                    ret = isNumber ? v1 - v2 : v1.toString().localeCompare(v2)
 
                     // reverse ordering if not ascending order            
-                    if (! asc) { ret = -1 * ret; }
-                    return(ret);            
-                                
-                }(getCellValue(a, idx), getCellValue(b, idx), asc);
+                    if (!asc) {
+                        ret = -1 * ret
+                    }
+                    return (ret)
+
+                }(getCellValue(a, idx), getCellValue(b, idx), asc)
             }
         }
 

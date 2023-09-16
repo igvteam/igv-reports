@@ -12,13 +12,18 @@ class BedTable:
 
         featureList = parse(bed_file)
         unique_id = 0
-        for var in featureList:
-            self.features.append((var, unique_id))
+        self.has_name = False
+        for feature in featureList:
+            if len(feature.name) > 0:
+                self.has_name = True
+            self.features.append((feature, unique_id))
             unique_id += 1
 
     def to_JSON(self):
 
-        headers = ["unique_id", "Chrom", "Start", "End", "Name"]
+        headers = ["unique_id", "Chrom", "Start", "End"]
+        if self.has_name:
+            headers.append("Name")
         rows = []
 
         for tuple in self.features:
@@ -40,13 +45,18 @@ class BedpeTable:
 
         featureList = parse(bedpe_file)
         unique_id = 0
-        for var in featureList:
-            self.features.append((var, unique_id))
+        self.has_name = False
+        for feature in featureList:
+            if len(feature.name) > 0:
+                self.has_name = True
+            self.features.append((feature, unique_id))
             unique_id += 1
 
     def to_JSON(self):
 
-        headers = ["unique_id", "Chrom_A", "Start_A", "End_A", "Chrom_B", "Start_B", "End_B", "Name"]
+        headers = ["unique_id", "Chrom_A", "Start_A", "End_A", "Chrom_B", "Start_B", "End_B"]
+        if self.has_name:
+            headers.append("Name")
         rows = []
 
         for tuple in self.features:
