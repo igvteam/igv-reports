@@ -77,11 +77,10 @@ files must be indexed.  Tabix is supported and it is recommended that all large 
 
 Data for the examples are available in the github repository [https://github.com/igvteam/igv-reports](https://github.com/igvteam/igv-reports).  The repository can be
 downloaded as a zip archive here [https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip](https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip).
-It is assumed that the examples are run from the root directory of the repository.  Output html is written to the [examples directory](https://github.com/igvteam/igv-reports/tree/master/examples) 
-and can be viewed [here](https://igv.org/igv-reports/examples/1.8.1).
+It is assumed that the examples are run from the root directory of the repository.  Output html is written to the examples directory.
 
 
-#### Create a variant report from a VCF file: ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_vcf.html))
+#### Create a variant report from a VCF file: ([Example output](https://igv.org/igv-reports/examples/1.9.0/example_vcf.html))
 
 ```bash
 
@@ -97,7 +96,7 @@ create_report test/data/variants/variants.vcf.gz \
 
 ```
 
-#### Create a variant report from a BED  file: ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_bed.html))
+#### Create a variant report from a BED  file: ([Example output](https://igv.org/igv-reports/examples/1.9.0/example_bed.html))
 
 ```bash
 echo bed
@@ -109,7 +108,7 @@ create_report test/data/variants/variants.bed \
 --output examples/example_genome.html
 ```
 
-#### Create a variant report from a TCGA MAF file: ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_maf.html))
+#### Create a variant report from a TCGA MAF file: ([Example output](https://igv.org/igv-reports/examples/1.9.0/example_maf.html))
 
 ```bash
 
@@ -122,7 +121,7 @@ create_report test/data/variants/tcga_test.maf \
 
 ```
 
-#### Create a variant report from a generic tab-delimited file: ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_tab.html))
+#### Create a variant report from a generic tab-delimited file: ([Example output](https://igv.org/igv-reports/examples/1.9.0/example_tab.html))
 
 ```bash
 
@@ -134,7 +133,7 @@ create_report test/data/variants/test.maflite.tsv \
 --output examples/example_tab.html
 
 ```
-####  Create a structural variant report from a bedpe file with two locations (BEDPE format): ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_bedpe.html))
+####  Create a structural variant report from a bedpe file with two locations (BEDPE format): ([Example output](https://igv.org/igv-reports/examples/1.9.0/example_bedpe.html))
 
 ```bash
 
@@ -145,7 +144,7 @@ create_report test/data/variants/SKBR3_Sniffles_tra.bedpe \
 --output examples/example_bedpe.html
 ```
 
-#### Create a report using a genome identifier: ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_genome.html)\)
+#### Create a report using a genome identifier: ([Example output](https://igv.org/igv-reports/examples/1.9.0/example_genome.html)\)
 
 ```bash
 create_report test/data/variants/variants.vcf.gz \
@@ -156,7 +155,7 @@ create_report test/data/variants/variants.vcf.gz \
 --output examples/example_genome.html
 ```
 
-#### Create a variant report with tracks defined in an [igv.js track config json file](https://github.com/igvteam/igv-reports/tree/master/test/data/variants/trackConfigs.json): ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_config.html))
+#### Create a variant report with tracks defined in an [igv.js track config json file](https://github.com/igvteam/igv-reports/tree/master/test/data/variants/trackConfigs.json): ([Example output](https://igv.org/igv-reports/examples/1.9.0/example_config.html))
 
 ``` bash
 create_report test/data/variants/variants.vcf.gz \
@@ -168,7 +167,7 @@ create_report test/data/variants/variants.vcf.gz \
 --output examples/example_config.html
 ```
 
-#### Create a variant report with custom ID link urls: ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_idlink.html))
+#### Create a variant report with custom ID link urls: ([Example output](https://igv.org/igv-reports/examples/1.9.0/example_idlink.html))
 
 ```bash
 
@@ -181,7 +180,7 @@ create_report test/data/variants/1kg_phase3_sites.vcf.gz \
 
 ```
 
-#### Create a junction report from a splice-junction bed file: ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_junctions.html))
+#### Create a junction report from a splice-junction bed file: ([Example output](https://igv.org/igv-reports/examples/1.9.0/example_junctions.html))
 
 ```bash
 create_report test/data/junctions/Introns.38.bed \
@@ -214,7 +213,7 @@ create_report test/data/wig/regions.bed \
 
 ```
 
-#### Use of ```info-columns-prefixes``` option.  Variant track only, no alignments. ([Example output](https://igv.org/igv-reports/examples/1.8.1/example_ann.html))
+#### Use of ```info-columns-prefixes``` option.  Variant track only, no alignments. ([Example output](https://igv.org/igv-reports/examples/1.9.0/example_ann.html))
 
 
 ```bash
