@@ -47,8 +47,8 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * __--end__ INT.  Column of end chromosomal position for __sites__.  Used for generic tab delimited input.
     * __--sequence__ INT.   Column of sequence (chromosome) name.
     
-* Optional for generic tab delimited __sites__ file
-    * __--zero-based__  Specify that the position in the __sites__ file is 0-based (e.g. UCSC files) rather than 1-based.  Default is ```false```.
+* Optional coordinate system flag for generic tab delimited __sites__ file only
+    * __--zero_based__  Specify that the position in the __sites__ file is 0-based (e.g. UCSC files) rather than 1-based.  Default is ```false```.
 
 * Optional
     * __--ideogram__ FILE. Ideogram file in UCSC cytoIdeo format.  Useful when __fasta__ is used to specify the reference.
