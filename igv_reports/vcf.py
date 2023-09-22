@@ -58,7 +58,7 @@ class VcfReader:
         vcf = self.file
         if vcf.index is not None:
             try:
-                return vcf.fetch(chr, start, end)
+                return list(vcf.fetch(chr, start, end))
             except ValueError:
 
                 # Possible chr alias error (e.g. 1 vs chr1)
