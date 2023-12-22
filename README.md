@@ -137,7 +137,7 @@ create_report test/data/variants/test.maflite.tsv \
 ```
 
 
-####  Create a structural variant report from a vcf file with CHR2 and END info fields: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_sv.html))
+####  Create a structural variant report from a vcf file with CHR2 and END info fields: ([Example output](https://igvteam.github.io/igv-reports/examples/example_sv.html))
 
 ```bash
 create_report test/data/variants/SKBR3_Sniffles_sv.vcf \
