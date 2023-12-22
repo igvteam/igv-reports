@@ -14,11 +14,13 @@ class BamReader:
         self.aliastable = build_aliastable(seqnames)
 
     # add sam flag for unit tests
-    def slice(self, region=None, region2=None,  sam=False):
-        if sam:
-            samargs = ["-h", self.filename]
-        else:
-            samargs = ["-b", "-h", self.filename]
+    def slice(self, region=None, region2=None,  args=None):
+
+        samargs = ["-b", "-h", self.filename]
+
+        if args is not None and args.subsample is not None:
+            samargs.append("--subsample " + args.subsample)
+
         if self.filtetype == "cram" and self.args is not None:
             samargs.append("-T")
             samargs.append(self.args.fasta)

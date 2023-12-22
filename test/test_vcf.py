@@ -97,6 +97,7 @@ class VcfTest(unittest.TestCase):
         count = count_variants(data)
         self.assertEqual(count, 0)
 
+
 def count_variants(data):
 
     lines = data.split('\n')

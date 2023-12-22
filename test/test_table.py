@@ -1,6 +1,8 @@
 import unittest
 import pathlib
 from igv_reports import varianttable, bedtable, generictable
+from igv_reports.vcf import VcfReader
+
 
 class TableTest(unittest.TestCase):
 
@@ -9,6 +11,25 @@ class TableTest(unittest.TestCase):
         vcf_path = str((pathlib.Path(__file__).parent / "data/minigenome/variants.vcf").resolve())
         table = varianttable.VariantTable(vcf_path)
         self.assertEqual(len(table.variants), 28)
+
+# 1	564466	26582	N	<TRA>	.	PASS	PRECISE;SVMETHOD=Snifflesv1.0.2;CHR2=MT;END=3916;STD_quant_start=198.695999;STD_quant_stop=234.736235;Kurtosis_quant_start=0.913054;Kurtosis_quant_stop=-0.183504;SVTYPE=TRA;SUPTYPE=SR;SVLEN=-1199826434;STRANDS=-+;STRANDS2=2,9,2,9;RE=11	GT:DR:DV	./.:.:11
+    def test_large_del(self):
+        path = str((pathlib.Path(__file__).parent / "../test/data/variants/SKBR3_Sniffles_del.vcf").resolve())
+        table = varianttable.VariantTable(path)
+        self.assertEqual(len(table.variants), 3)
+
+
+    def test_small_del(self):
+        path = str((pathlib.Path(__file__).parent / "../test/data/variants/small_deletion.vcf").resolve())
+        table = varianttable.VariantTable(path)
+        self.assertEqual(len(table.variants), 1)
+
+    def test_tra_sv(self):
+        path = str((pathlib.Path(__file__).parent / "../test/data/variants/SKBR3_Sniffles_variants_tra.vcf").resolve())
+        table = varianttable.VariantTable(path)
+        self.assertEqual(len(table.variants), 140)
+
+
 
     def test_bedtable(self):
 
@@ -25,6 +46,7 @@ class TableTest(unittest.TestCase):
         json = table.to_JSON()
         self.assertEqual(len(table.features), 9)
         self.assertTrue(json)
+
 
     def test_gfftable(self):
 

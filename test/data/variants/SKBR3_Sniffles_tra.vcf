@@ -1,0 +1,29 @@
+##fileformat=VCFv4.2
+##source=Sniffles
+##fileDate=20170117
+##ALT=<ID=DEL,Description="Deletion">
+##ALT=<ID=DUP,Description="Duplication">
+##ALT=<ID=INV,Description="Inversion">
+##ALT=<ID=INVDUP,Description="InvertedDUP with unknown boundaries">
+##ALT=<ID=TRA,Description="Translocation">
+##ALT=<ID=INS,Description="Insertion">
+##INFO=<ID=CHR2,Number=1,Type=String,Description="Chromosome for END coordinate in case of a translocation">
+##INFO=<ID=END,Number=1,Type=Integer,Description="End position of the structural variant">
+##INFO=<ID=MAPQ,Number=1,Type=Integer,Description="Median mapping quality of paired-ends">
+##INFO=<ID=RE,Number=1,Type=Integer,Description="read support">
+##INFO=<ID=IMPRECISE,Number=0,Type=Flag,Description="Imprecise structural variation">
+##INFO=<ID=PRECISE,Number=0,Type=Flag,Description="Precise structural variation">
+##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Length of the SV">
+##INFO=<ID=SVMETHOD,Number=1,Type=String,Description="Type of approach used to detect SV">
+##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of structural variant">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=DR,Number=1,Type=Integer,Description="# high-quality reference reads">
+##FORMAT=<ID=DV,Number=1,Type=Integer,Description="# high-quality variant reads">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	/seq/schatz/fritz/sv-paper/real/Pac_skbr3/mapped/reads_lr_skbr3.fa.ngmlr-0.2.1_mapped.bam
+8	77706277	27286	N	<TRA>	.	PASS	PRECISE;SVMETHOD=Snifflesv1.0.2;CHR2=14;END=57041014;STD_quant_start=1.643168;STD_quant_stop=1.897367;Kurtosis_quant_start=0.371692;Kurtosis_quant_stop=11.965725;SVTYPE=TRA;SUPTYPE=SR;SVLEN=786481226;STRANDS=--;STRANDS2=0,15,15,0;RE=15	GT:DR:DV	./.:.:15
+8	78454701	27287	N	<TRA>	.	PASS	PRECISE;SVMETHOD=Snifflesv1.0.2;CHR2=17;END=78166081;STD_quant_start=0.567962;STD_quant_stop=0.595683;Kurtosis_quant_start=33.090396;Kurtosis_quant_stop=53.094175;SVTYPE=TRA;SUPTYPE=SR;SVLEN=1107096554;STRANDS=++;STRANDS2=63,0,0,63;RE=63	GT:DR:DV	./.:.:63
+8	79165476	27288	N	<TRA>	.	PASS	PRECISE;SVMETHOD=Snifflesv1.0.2;CHR2=14;END=52222851;STD_quant_start=0.929320;STD_quant_stop=1.279204;Kurtosis_quant_start=35.146499;Kurtosis_quant_stop=20.019637;SVTYPE=TRA;SUPTYPE=SR;SVLEN=780203864;STRANDS=+-;STRANDS2=17,28,17,28;RE=45	GT:DR:DV	./.:.:45
+8	79475426	27289	N	<TRA>	.	PASS	PRECISE;SVMETHOD=Snifflesv1.0.2;CHR2=17;END=38474391;STD_quant_start=0.812636;STD_quant_stop=2.064982;Kurtosis_quant_start=42.159083;Kurtosis_quant_stop=19.868554;SVTYPE=TRA;SUPTYPE=SR;SVLEN=1066384139;STRANDS=-+;STRANDS2=58,49,58,49;RE=107	GT:DR:DV	./.:.:107
+8	80012981	27290	N	<TRA>	.	PASS	PRECISE;SVMETHOD=Snifflesv1.0.2;CHR2=X;END=93874349;STD_quant_start=0.447214;STD_quant_stop=0.000000;Kurtosis_quant_start=3.590737;Kurtosis_quant_stop=1.580161;SVTYPE=TRA;SUPTYPE=SR;SVLEN=1502113964;STRANDS=--;STRANDS2=0,19,19,0;RE=19	GT:DR:DV	./.:.:19
+8	80084495	27291	N	<TRA>	.	PASS	PRECISE;SVMETHOD=Snifflesv1.0.2;CHR2=17;END=39542194;STD_quant_start=58.574739;STD_quant_stop=0.316228;Kurtosis_quant_start=3.455862;Kurtosis_quant_stop=12.692169;SVTYPE=TRA;SUPTYPE=SR;SVLEN=1066842873;STRANDS=++;STRANDS2=16,0,0,16;RE=16	GT:DR:DV	./.:.:16
+8	80086763	27292	N	<TRA>	.	PASS	PRECISE;SVMETHOD=Snifflesv1.0.2;CHR2=17;END=39542193;STD_quant_start=7.424621;STD_quant_stop=0.530330;Kurtosis_quant_start=-0.145276;Kurtosis_quant_stop=19.808637;SVTYPE=TRA;SUPTYPE=SR;SVLEN=1066840604;STRANDS=++;STRANDS2=64,0,0,64;RE=64	GT:DR:DV	./.:.:64

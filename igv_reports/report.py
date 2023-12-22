@@ -30,8 +30,7 @@ def create_report(args):
     variants_file = args.sites
 
     if variants_file.endswith(".bcf") or variants_file.endswith(".vcf") or variants_file.endswith(".vcf.gz"):
-        table = VariantTable(variants_file, args.info_columns, args.info_columns_prefixes, args.samples,
-                             args.sample_columns, args.idlink)
+        table = VariantTable(variants_file, args)
 
     elif variants_file.endswith(".bed") or variants_file.endswith(".bed.gz"):
         if args.type is not None and args.type == "junction":
@@ -165,8 +164,9 @@ def create_report(args):
                 o.write(line)
 
 
-# Create a dictionary of igv.js session objects, one for each variant
 def create_session_dict(args, table, trackjson):
+
+    ''' Create a dictionary of igv.js session objects, one for each variant '''
 
     session_dict = {}
 
@@ -495,6 +495,9 @@ def main():
     parser.add_argument("--exclude-flags", type=int,
                         help="Passed to samtools to filter alignments.  For BAM and CRAM files.", default=1536)
     parser.add_argument("--no-embed", help="Do not embed fasta or track data.  This is not common", action="store_true")
+    parser.add_argument("--subsample", type=float,  help="Subsample bam files, keeping fraction of input alignments as indicated by input value in the range of 0.0 - 1.0")
+    parser.add_argument("--maxlen", type=int, default=10000, help="Maximum length of variant for single  view. Variants exceeding this lenght will be presented in split-screen (multilocus) view")
+
     args = parser.parse_args()
 
     # For backward compatibility with 'fasta' positional argument

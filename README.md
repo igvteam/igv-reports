@@ -66,7 +66,9 @@ Although _--tracks_ is optional, a typical report will include at least an align
     * __--sort__ Applies to alignment tracks only.  If specified alignments are initally sorted by the specified option. Supported values include  ```BASE, STRAND, INSERT_SIZE, MATE_CHR, and NONE```. Default value is ```BASE``` for single nucleotide variants, ```NONE``` (no sorting) otherwise.  See the igv.js documentation for more information.
     * __--exclude-flags__  INT. Value is passed to samtools as "-F" flag.  Used to filter alignments.  Default value is 1536 which filters alignments marked "duplicate" or "vendor failed". To include all alignments use ```--exclude-flags 0```.  See [samtools documentation](http://www.htslib.org/doc/samtools-view.html) for more details.
     * __--idlink__ URL tempate for information link for VCF ID values.  The token $$ will be substituted with the ID value.  Example: ```--idlink 'https://www.ncbi.nlm.nih.gov/snp/?term=$$'```
-    * __--no-encode__ Don't embed data.  Fasta and track URLs are embedded unchanged.  The resulting report is depedendent on the original data files, which must be specified as URLs.  Local files are not supported with this option.
+    * __--no-embed__ Don't embed data.  Fasta and track URLs are referenced unchanged.  The resulting report is dependent on the original data files, which must be specified as URLs.  Local files are not supported with this option.
+    * __--subsample__ FLOAT.  Output only a portion of input alignments (0.0 -> 1.0).  See `samtools view` documentation for more details
+    * __--maxlen__ INT. Maximum length of a variant (SV) to show in a single view.  Variants exceeding this length will be shown in a split-screen (multilocus) view.   default = 10000
 
 **Track file formats:**
 
@@ -133,6 +135,21 @@ create_report test/data/variants/test.maflite.tsv \
 --output examples/example_tab.html
 
 ```
+
+
+####  Create a structural variant report from a vcf file with CHR2 and END info fields: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_sv.html))
+
+```bash
+create_report test/data/variants/SKBR3_Sniffles_sv.vcf \
+--genome hg19 \
+--flanking 1000 \
+--maxlen 10500 \
+--info-columns SVLEN \
+--tracks test/data/variants/SKBR3_Sniffles_sv.vcf https://igv-genepattern-org.s3.amazonaws.com/test/bam/reads_lr_skbr3.sampled.bam \
+--output examples/example_sv.html 
+
+```
+
 ####  Create a structural variant report from a bedpe file with two locations (BEDPE format): ([Example output](https://igv.org/igv-reports/examples/1.9.0/example_bedpe.html))
 
 ```bash

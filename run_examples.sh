@@ -58,6 +58,14 @@ python igv_reports/report.py test/data/variants/test.maflite.tsv \
 --info-columns chr start end ref_allele alt_allele \
 --output examples/example_tab.html
 
+####  Create a structural variant report for translocations from a vcf file with CHR2 and END info fields: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_tra_sv.html))
+echo sv
+python igv_reports/report.py test/data/variants/SKBR3_Sniffles_tra.vcf \
+--genome hg19 \
+--flanking 1000 \
+--tracks test/data/variants/SKBR3_Sniffles_tra.vcf test/data/variants/SKBR3.ill.bam \
+--output examples/example_tra_sv.html
+
 ####  Create a structural variant report from a bedpe file with two locations (BEDPE format): ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_bedpe.html))
 echo bedpe
 python igv_reports/report.py test/data/variants/SKBR3_Sniffles_tra.bedpe \

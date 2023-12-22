@@ -4,27 +4,38 @@ import html
 from .feature import Feature
 
 
+
+
 class VariantTable:
 
-    # Always remember the *self* argument
-    def __init__(self, vcfFile, info_columns=None, info_columns_prefixes=None, samples=None, sample_columns=None, idlink=None):
+    '''
+    Class represents the variant selection table backed by a VCF file.
+    '''
+
+    def __init__(self, vcfFile, args):
 
         vcf = pysam.VariantFile(vcfFile)
 
-        self.info_fields = info_columns or []
-        self.idlink = idlink
-        self.sample_fields = sample_columns or []
+       # args.info_columns, args.info_columns_prefixes, args.samples,
+      #  args.sample_columns, args.idlink
+
+        self.info_fields = args.info_columns or []
+        self.idlink = args.idlink
+        self.sample_fields = args.sample_columns or []
         self.variants = []
         self.features = []  # Bed-like features
 
-        if info_columns_prefixes is not None:
-            for p in info_columns_prefixes:
+        self.chr2_present = False  # Until proven otherwise
+        self.chr2_dict = {}
+
+        if args.info_columns_prefixes is not None:
+            for p in args.info_columns_prefixes:
                 for info in vcf.header.info:
                     if info.startswith(p):
                         self.info_fields.append(info)
 
-        if samples is not None:
-            self.samples = samples
+        if args.samples is not None:
+            self.samples = args.samples
         else :
             self.samples = []
             for s in vcf.header.samples:
@@ -33,9 +44,29 @@ class VariantTable:
         for unique_id, var in enumerate(vcf.fetch()):
             self.variants.append((var, unique_id))
             chr = var.chrom
-            start = var.pos - 1
-            end = start + 1  # TODO -- handle structure variants and deletions > 1 base
-            self.features.append((Feature(chr, start, end, ''), unique_id))
+            start = var.start
+            end = var.stop
+
+            # Check for large variant (i.e. large deletion).  If too large use multilocus view
+            multilocus = (end - start) > args.maxlen
+
+            # Check for inter-chr structural variant
+            chr2 = chr
+            pos2 = end
+            if "CHR2" in var.info:
+                info = parse_info_fields(str(var))
+                if "END" in info:
+                    pos2 = int(info["END"])  # This is an out-of-spec use of "END", but commonly used for inter-chr SVs
+                    chr2 = var.info["CHR2"]
+                    if chr2 != chr:
+                        self.chr2_dict[str(var)] = (chr2, pos2)
+                        self.chr2_present = True
+                        multilocus = True
+
+            if multilocus:
+                self.features.append((Feature(chr, start, start + 1, '', '', chr2, pos2-1, pos2), unique_id))
+            else:
+                self.features.append((Feature(chr, start, end, ''), unique_id))
 
     def to_JSON(self):
 
@@ -47,14 +78,27 @@ class VariantTable:
             for alt in variant.alts:
                 escaped_alts.append(html.escape(alt))
 
-            obj = {
-                'unique_id': unique_id,
-                'CHROM': variant.chrom,
-                'POSITION': variant.pos,
-                'REF': html.escape(variant.ref),
-                'ALT': ','.join(escaped_alts),
-                'ID': ''
-            }
+            if self.chr2_present:
+                var_key = str(variant)
+                obj = {
+                    'unique_id': unique_id,
+                    'CHROM': variant.chrom,
+                    'POSITION': variant.pos,
+                    'CHROM2': self.chr2_dict[var_key][0] if var_key in self.chr2_dict else '',
+                    'POSITION2': self.chr2_dict[var_key][1] if var_key in self.chr2_dict else '',
+                    'REF': html.escape(variant.ref),
+                    'ALT': ','.join(escaped_alts),
+                    'ID': ''
+                }
+            else:
+                obj = {
+                    'unique_id': unique_id,
+                    'CHROM': variant.chrom,
+                    'POSITION': variant.pos,
+                    'REF': html.escape(variant.ref),
+                    'ALT': ','.join(escaped_alts),
+                    'ID': ''
+                }
 
             if variant.id is not None:
                 obj['ID'] = render_ids(variant.id, self.idlink)
@@ -111,7 +155,7 @@ class VariantTable:
 
     def normalize_json(self, json_array):
 
-        headers = ['unique_id', 'CHROM', 'POSITION', 'REF', 'ALT', 'ID']
+        headers =  ['unique_id', 'CHROM', 'POSITION', 'CHROM2', 'POSITION2', 'REF', 'ALT', 'ID'] if self.chr2_present else ['unique_id', 'CHROM', 'POSITION', 'REF', 'ALT', 'ID']
         if self.info_fields is not None:
             for h in self.info_fields:
                 if h == 'ANN':
@@ -219,3 +263,16 @@ def decode_ann(variant):
 def create_link(url):
     """Create an html link for the given url"""
     return (f'<a href = "{url}" target="_blank">{url}</a>')
+
+
+#1	564466	26582	N	<TRA>	.	PASS	PRECISE;SVMETHOD=Snifflesv1.0.2;CHR2=MT;END=3916;STD_quant_start=198.695999;STD_quant_stop=234.736235;Kurtosis_quant_start=0.913054;Kurtosis_quant_stop=-0.183504;SVTYPE=TRA;SUPTYPE=SR;SVLEN=-1199826434;STRANDS=-+;STRANDS2=2,9,2,9;RE=11	GT:DR:DV	./.:.:11
+def parse_info_fields(record):
+    tokens = record.split('\t')
+    info_fields = tokens[7].split(';')
+    info = {}
+    for ifield in info_fields:
+        key_value = ifield.split("=")
+        if len(key_value) == 2:
+            info[key_value[0]] = key_value[1]
+    return info
+
