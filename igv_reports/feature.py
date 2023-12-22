@@ -103,6 +103,7 @@ class FeatureReader:
         self.file = file
         self.tree = None
         self.aliastable = {}
+        self.headerLines = []
 
     def slice(self, region=None, region2=None):
 
@@ -144,6 +145,8 @@ class FeatureReader:
                         features.append(i.data)
 
         content = ''
+        for h in self.headerLines:
+            content += h
         if hasattr(self, "trackline") and self.trackline is not None:
             content += self.trackline
         for f in features:
@@ -320,8 +323,8 @@ def parse_bedpe(f, reader=None):
 def parse_gff(f, reader=None):
     features = []
     for line in f:
-        if line.startswith("#track") and reader is not None:
-            reader.trackline = line
+        if line.startswith("##") and reader is not None:
+            reader.headerLines.append(line)
         elif not (line.startswith('#') or line.startswith('track') or line.startswith('browser')):
             tokens = line.rstrip('\n').rstrip('\r').split('\t')
             # if we encounter a blank or malformed line (no start and end coords), skip it
