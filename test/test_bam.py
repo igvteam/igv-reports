@@ -40,6 +40,7 @@ class BAMTest(unittest.TestCase):
 
         args =  types.SimpleNamespace()
         args.fasta = ref_file_path
+        args.subsample = None
         reader = BamReader("cram", bam_file_path, args);
         data = reader.slice(region, sam=True)
         self.assertEqual(count_alignments(data), 923)
@@ -103,6 +104,7 @@ class BAMTest(unittest.TestCase):
 
         args =  types.SimpleNamespace()
         args.exclude_flags = 1536
+        args.subsample = None
         bam_file_path = str((pathlib.Path(__file__).parent / "data/dups/dups.bam").resolve())
         bamreader = BamReader("bam", bam_file_path, args)
         region = {

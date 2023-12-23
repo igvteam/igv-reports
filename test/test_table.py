@@ -1,7 +1,7 @@
 import unittest
 import pathlib
 from igv_reports import varianttable, bedtable, generictable
-from igv_reports.vcf import VcfReader
+import types
 
 
 class TableTest(unittest.TestCase):
@@ -9,27 +9,21 @@ class TableTest(unittest.TestCase):
     def test_get_header(self):
 
         vcf_path = str((pathlib.Path(__file__).parent / "data/minigenome/variants.vcf").resolve())
-        table = varianttable.VariantTable(vcf_path)
+        args = self.mock_args()
+        table = varianttable.VariantTable(vcf_path, args)
         self.assertEqual(len(table.variants), 28)
-
-# 1	564466	26582	N	<TRA>	.	PASS	PRECISE;SVMETHOD=Snifflesv1.0.2;CHR2=MT;END=3916;STD_quant_start=198.695999;STD_quant_stop=234.736235;Kurtosis_quant_start=0.913054;Kurtosis_quant_stop=-0.183504;SVTYPE=TRA;SUPTYPE=SR;SVLEN=-1199826434;STRANDS=-+;STRANDS2=2,9,2,9;RE=11	GT:DR:DV	./.:.:11
-    def test_large_del(self):
-        path = str((pathlib.Path(__file__).parent / "../test/data/variants/SKBR3_Sniffles_del.vcf").resolve())
-        table = varianttable.VariantTable(path)
-        self.assertEqual(len(table.variants), 3)
-
 
     def test_small_del(self):
         path = str((pathlib.Path(__file__).parent / "../test/data/variants/small_deletion.vcf").resolve())
-        table = varianttable.VariantTable(path)
+        args = self.mock_args()
+        table = varianttable.VariantTable(path, args)
         self.assertEqual(len(table.variants), 1)
 
-    def test_tra_sv(self):
-        path = str((pathlib.Path(__file__).parent / "../test/data/variants/SKBR3_Sniffles_variants_tra.vcf").resolve())
-        table = varianttable.VariantTable(path)
-        self.assertEqual(len(table.variants), 140)
-
-
+    def test_sv(self):
+        path = str((pathlib.Path(__file__).parent / "../test/data/variants/SKBR3_Sniffles_sv.vcf").resolve())
+        args = self.mock_args()
+        table = varianttable.VariantTable(path,args)
+        self.assertEqual(len(table.variants), 12)
 
     def test_bedtable(self):
 
@@ -87,13 +81,24 @@ class TableTest(unittest.TestCase):
         vcf_file = str((pathlib.Path(__file__).parent / "data/annotated_vcf/test.jannovar.vcf").resolve())
 
         #ANN=A|synonymous_variant|LOW|EGFR|1956|transcript|NM_001346897.1|Coding|19/26|c.2226G>A|p.(%3D)|2483/184056|2226/3276|742/1092||,A|synonymous_variant|LOW|EGFR|1956|transcript|NM_001346898.1|Coding|20/27|c.2361G>A|p.(%3D)|2618/184056|2361/3411|787/1137||,A|synonymous_variant|LOW|EGFR|1956|transcript|NM_001346899.1|Coding|19/27|c.2226G>A|p.(%3D)|2483/189060|2226/3498|742/1166||,A|synonymous_variant|LOW|EGFR|1956|transcript|NM_001346900.1|Coding|20/28|c.2202G>A|p.(%3D)|2415/98264|2202/3474|734/1158||,A|synonymous_variant|LOW|EGFR|1956|transcript|NM_001346941.1|Coding|14/22|c.1560G>A|p.(%3D)|1817/189060|1560/2832|520/944||,A|synonymous_variant|LOW|EGFR|1956|transcript|NM_005228.4|Coding|20/28|c.2361G>A|p.(%3D)|2618/189060|2361/3633|787/1211||;PROB_ABSENT=6086.16;PROB_ALT=0;PROB_ARTIFACT=3093.24;PROB_VERY_RARE=2789.3;SVLEN=.	DP:AF:OBS:SB	221:0.990543:116V-101V+2S-2N+:.
+        args = self.mock_args()
 
-        table = varianttable.VariantTable(vcf_file, info_columns=["ANN"])
+        table = varianttable.VariantTable(vcf_file, args)
         json = table.to_JSON()
         self.assertTrue(json is not None)
 
+    def mock_args(self):
+        args = types.SimpleNamespace()
+        args.info_columns = ["ANN"]
+        args.idlink = None
+        args.sample_columns = None
+        args.info_columns_prefixes = None
+        args.samples = None
+        args.maxlen = 10000
+        return args
+
     def test_fusions(self):
 
-        fusions_file = str((pathlib.Path(__file__).parent / "data/fusion/fusions.json").resolve())
+        fusions_file = str((pathlib.Path(__file__).parent / "data/fusion/igv.fusion_inspector_web.json").resolve())
         table = generictable.GenericTable.from_fusionjson(fusions_file)
         self.assertTrue(table is not None)
