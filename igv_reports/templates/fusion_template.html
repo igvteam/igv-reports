@@ -124,14 +124,12 @@
 
         const dataTable = new DataTable('#fusionTable', {
             columnDefs: [{target: 0, visible: false}],    // Hide the unique_id column
-            'order': [[1, 'asc']],
             'scrollX': true
 
         })
 
         $('#fusionTable tbody').on('click', 'tr', function () {
             const unique_id = dataTable.row(this).data()[0]
-            console.log(unique_id)
             const session = sessionDictionary[unique_id]
             loadSession(session)
         })//#fusionTable
