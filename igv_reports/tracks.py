@@ -57,4 +57,10 @@ def get_track_type(format):
         "bedgraph": "wig",
         "maf": "mut"
     }
-    return dict[format]
+    return dict[format] if format in dict else None
+
+def is_format_supported(format):
+    return get_track_type(format) is not None
+
+
+

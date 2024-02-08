@@ -14,7 +14,7 @@ from igv_reports.regions import parse_region
 from igv_reports.fasta import FastaReader
 from igv_reports.ideogram import IdeogramReader
 from igv_reports.genome import get_genome
-from igv_reports.tracks import get_track_type
+from igv_reports.tracks import get_track_type, is_format_supported
 from igv_reports.stream import resource_exists
 from igv_reports.utils import resolve_relative_path
 
@@ -62,9 +62,12 @@ def create_report(args):
             for config in genome["tracks"]:
                 if "format" not in config and "url in c":
                     config["format"] = feature.infer_format(config["url"])
-                if "type" not in config:
-                    config["type"] = get_track_type(config["format"])
-                trackjson.append(config)
+                if is_format_supported(config["format"]):
+                    if "type" not in config:
+                        config["type"] = get_track_type(config["format"])
+                    trackjson.append(config)
+                else:
+                    print("File format: " + config["format"] + " is not supported. Skipping track '" + config["name"] + "'.")
 
     # --tracks argument
     if args.tracks is not None:
