@@ -95,6 +95,7 @@ are described below. Although _--tracks_ is optional, a typical report will incl
       for more details
     * __--maxlen__ INT. Maximum length of a variant (SV) to show in a single view. Variants exceeding this length will
       be shown in a split-screen (multilocus) view. default = 10000
+    * __--translate-sequence-track__ Three-frame Translate sequence track
 
 **Track file formats:**
 
