@@ -266,6 +266,8 @@ def create_session_dict(args, table, trackjson):
 
             # Loop through track configs
             tracks = []
+            if args.translate_sequence_track:
+                tracks.append({ "type":"sequence", "frameTranslate": True })
             roi = []
             track_order = 1
             idx = 0
@@ -500,6 +502,7 @@ def main():
     parser.add_argument("--no-embed", help="Do not embed fasta or track data.  This is not common", action="store_true")
     parser.add_argument("--subsample", type=float,  help="Subsample bam files, keeping fraction of input alignments as indicated by input value in the range of 0.0 - 1.0")
     parser.add_argument("--maxlen", type=int, default=10000, help="Maximum length of variant for single  view. Variants exceeding this lenght will be presented in split-screen (multilocus) view")
+    parser.add_argument("--translate-sequence-track", help="Three-frame Translate sequence track", action="store_true")
 
     args = parser.parse_args()
 
