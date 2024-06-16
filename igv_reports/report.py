@@ -104,7 +104,7 @@ def create_report(args):
 
     if args.no_embed == True:
         igv_config = json.dumps(create_noembed_session(args, trackjson))
-        locus_dict = json.dumps(create_locus_dict(table))
+        locus_dict = json.dumps(create_locus_dict(table, args.zoom))
 
     # Create the session dictionary json, containing a session object for each variant
     else:
@@ -259,9 +259,9 @@ def create_session_dict(args, table, trackjson):
             if (hasattr(feature, "viewport")):
                 initial_locus = feature.viewport
             else:
-                initial_locus = locus_string(feature.chr, feature.start, feature.end)
+                initial_locus = locus_string(feature.chr, feature.start, feature.end, args.zoom)
                 if region2 is not None:
-                    initial_locus += f' {locus_string(feature.chr2, feature.start2, feature.end2)}'
+                    initial_locus += f' {locus_string(feature.chr2, feature.start2, feature.end2, args.zoom)}'
 
 
             # Loop through track configs
@@ -360,7 +360,7 @@ def create_noembed_session(args, trackjson):
     return session
 
 
-def create_locus_dict(table):
+def create_locus_dict(table, zoom):
     locus_dict = {}
 
     # loop through regions defined from variant, annotation, or bedpe files,  creating  locus for each one
@@ -378,9 +378,9 @@ def create_locus_dict(table):
         if (hasattr(feature, "viewport")):
             locus = feature.viewport
         else:
-            locus = locus_string(feature.chr, feature.start + 1, feature.end)
+            locus = locus_string(feature.chr, feature.start + 1, feature.end, zoom)
             if hasattr(feature, 'chr2') and feature.chr2 is not None:
-                locus += f' {locus_string(feature.chr2, feature.start2, feature.end2)}'
+                locus += f' {locus_string(feature.chr2, feature.start2, feature.end2, zoom)}'
 
         locus_dict[session_id] = locus
 
@@ -414,14 +414,12 @@ def inline_script(line, o, source_type):
         raise ValueError("No file path in {l} for inline script.".format(l=line))
 
 
-def locus_string(chr, start, end):
+def locus_string(chr, start, end, zoom):
     if start is None:
         return chr
 
-    if (end - start) == 1:
-        return f'{chr}:{start + 1}'
-    else:
-        return f'{chr}:{start + 1}-{end}'
+    zoom = int(zoom)
+    return f'{chr}:{start + 1 - zoom/2}-{end+zoom/2}'
 
 
 # Potentially add an index URL to a track config.  The "format" field must be set before calling this function
@@ -487,6 +485,7 @@ def main():
     parser.add_argument("--sample-columns", nargs="+",
                         help="list of VCF sample (genomtype) FORMAT field names to include in variant table")
     parser.add_argument("--flanking", help="genomic region to include either side of variant", default=1000)
+    parser.add_argument("--zoom", help="initial zoom level of genomic region", default=40)
     parser.add_argument("--standalone", help="embed javascript as well as data in output html", action='store_true')
     parser.add_argument("--title", help="optional title string")
     parser.add_argument("--sequence", help="Column of sequence (chromosome) name.  For tab-delimited sites file.",
