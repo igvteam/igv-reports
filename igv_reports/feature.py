@@ -422,7 +422,7 @@ def infer_format(filename):
         return "maf"
     elif filename.endswith(".mut"):
         return "mut"
-    elif filename.find("refgene"):
+    elif filename.find("refgene") >= 0:
         return "refgene"
     else:
         idx = filename.rfind(".")
