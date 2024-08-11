@@ -491,7 +491,7 @@ def main():
     parser.add_argument("--sample-columns", nargs="+",
                         help="list of VCF sample (genomtype) FORMAT field names to include in variant table")
     parser.add_argument("--flanking", help="genomic region to include either side of variant", default=1000)
-    parser.add_argument("--window", help="initial window zoom level of genomic region", default=None)
+    parser.add_argument("--window", help="initial visible window size (genomic region) in bp.  If not supplied igv.js default applies (40 bp).", default=None)
     parser.add_argument("--standalone", help="embed javascript as well as data in output html", action='store_true')
     parser.add_argument("--title", help="optional title string")
     parser.add_argument("--sequence", help="Column of sequence (chromosome) name.  For tab-delimited sites file.",
