@@ -424,6 +424,8 @@ def infer_format(filename):
         return "mut"
     elif filename.find("refgene") >= 0:
         return "refgene"
+    elif filename.find("refseq") >= 0:
+        return "refgene"
     else:
         idx = filename.rfind(".")
         if idx > 0:
