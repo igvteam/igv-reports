@@ -1,8 +1,8 @@
 
 
-**Bump version number**
+**Bump version number in setup.py**
 
-**Add version tag**
+**Add git version tag**
 
 **Build the archive**
 
