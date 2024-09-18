@@ -117,7 +117,7 @@ examples directory.
 ```bash
 
 create_report test/data/variants/variants.vcf.gz \
---fasta https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa \
+--fasta https://igv.org/genomes/data/hg38/hg38.fa \
 --ideogram test/data/hg38/cytoBandIdeo.txt \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
@@ -135,9 +135,8 @@ echo bed
 create_report test/data/variants/variants.bed \
 --genome hg38 \
 --flanking 1000 \
---info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
 --tracks test/data/variants/variants.bed test/data/variants/recalibrated.bam \
---output example_genome.html
+--output example_bed.html
 ```
 
 #### Create a variant report from a TCGA MAF file: ([Example output](https://igvteam.github.io/igv-reports/examples/example_maf.html))
@@ -205,7 +204,7 @@ create_report test/data/variants/variants.vcf.gz \
 
 ``` bash
 create_report test/data/variants/variants.vcf.gz \
---fasta https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa \
+--fasta https://igv.org/genomes/data/hg38/hg38.fa \
 --ideogram test/data/hg38/cytoBandIdeo.txt \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \

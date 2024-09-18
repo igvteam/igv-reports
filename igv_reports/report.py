@@ -17,6 +17,7 @@ from igv_reports.genome import get_genome
 from igv_reports.tracks import get_track_type, is_format_supported
 from igv_reports.stream import resource_exists
 from igv_reports.utils import resolve_relative_path
+import requests
 
 '''
 Create an html report.  This is the main function for the application.
@@ -24,6 +25,8 @@ Create an html report.  This is the main function for the application.
 
 
 def create_report(args):
+
+
 
     # Read the variant data -- this populates the variant table and defines the corresponding regions
 
@@ -463,6 +466,16 @@ def add_index(config):
 
     if indexURL is not None:
         config["indexURL"] = indexURL
+
+def igv_user_agent():
+    """
+    Identify igv-reports via user agent.
+
+    :rtype: str
+    """
+    return 'IGV'
+
+requests.utils.default_user_agent = igv_user_agent
 
 
 def main():
