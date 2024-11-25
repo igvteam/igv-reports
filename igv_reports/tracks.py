@@ -19,6 +19,10 @@ def get_track_json_dict(url):
         trackobj["height"] = 50
         trackobj["color"] = "rgb(0,0,150)"
 
+    # To respect --exclude-flags, show all reads which are already filtered by
+    # pysam in bam.py. igv.js defaults duplicate and vendorFailed to True.
+    if format == "bam" or format == "cram":
+        trackobj["filter"] = {"duplicate": False, "vendorFailed": False}
     return trackobj
 
 def get_name(filename):
@@ -61,6 +65,3 @@ def get_track_type(format):
 
 def is_format_supported(format):
     return get_track_type(format) is not None
-
-
-
