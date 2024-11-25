@@ -432,8 +432,3 @@ def infer_format(filename):
             return filename[idx + 1:]
         else:
             return None
-        idx = filename.rfind(".")
-        if idx > 0:
-            return filename[idx + 1:]
-        else:
-            return None
