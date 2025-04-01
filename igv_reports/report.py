@@ -92,15 +92,14 @@ def create_report(args):
     if args.track_config is not None:
         for trackobj in args.track_config:
             with open(trackobj) as f:
-                j = json.load(f)
-                for config in j:
-                    if "url" in config:
-                        config["url"] = resolve_relative_path(trackobj, config["url"])
-                    if "format" not in config and "url" in config:
-                        config["format"] = feature.infer_format(config["url"])
-                    if "type" not in config:
-                        config["type"] = get_track_type(config["format"])
-                    trackjson.append(config)
+                config = json.load(f)
+                if "url" in config:
+                    config["url"] = resolve_relative_path(trackobj, config["url"])
+                if "format" not in config and "url" in config:
+                    config["format"] = feature.infer_format(config["url"])
+                if "type" not in config:
+                    config["type"] = get_track_type(config["format"])
+                trackjson.append(config)
 
     if args.no_embed == True:
         igv_config = json.dumps(create_noembed_session(args, trackjson))
