@@ -1,0 +1,44 @@
+columns:
+  GENE:
+    type: string
+    filter: contains
+    label: "Gene Name"
+    case_sensitive: false
+
+  TISSUE:
+    type: string
+    filter: list
+    label: "Tissue Type"
+    headerFilter: "list"
+    headerFilterParams:
+      valuesLookup: true
+      clearable: true
+
+  TUMOR:
+    type: string
+    filter: exact
+    label: "Tumor"
+
+  COSMIC_ID:
+    type: string
+    filter: contains
+    label: "COSMIC ID"
+    formatter: "html"
+
+  SOMATIC:
+    type: string
+    filter: exact
+    label: "Somatic"
+
+  reads_1_fastq:DP:
+    type: number
+    filter: range
+    label: "Depth"
+    min: 0
+    max: 1000
+
+  reads_1_fastq:GQ:
+    type: number
+    filter: threshold
+    label: "Genotype Quality"
+    threshold: 30 
