@@ -22,7 +22,7 @@ setuptools.setup(name='igv-reports',
                      'Topic :: Scientific/Engineering :: Bio-Informatics '
                  ],
                  install_requires=[
-                     'pysam', 'intervalTree', 'requests', 'pyTwobit'
+                     'pysam', 'intervalTree', 'requests', 'pytwobit'
                  ],
                  entry_points={
                      'console_scripts': [
