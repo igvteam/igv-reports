@@ -281,7 +281,7 @@ def create_session_dict(args, table, trackjson):
                     config["format"] = "bam"
 
                 if config["format"] == "bcf":
-                    config["format"] == "vcf"
+                    config["format"] = "vcf"
 
                 # Indexes are not used with data URIs
                 if "indexURL" in config:
