@@ -1,6 +1,9 @@
 from . import regions
 import pysam
 
+from .chr_alias import get_chromosome_alias
+
+
 def get_data(fasta_file,region=None):
 
     if None == region:
@@ -50,7 +53,7 @@ class FastaReader:
 
 
             except KeyError:
-                chr = "chr" + chr
+                chr = get_chromosome_alias(chr)
                 seq = self.fasta.fetch(chr, start, end)
 
             return seq

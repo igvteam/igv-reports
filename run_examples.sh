@@ -6,6 +6,19 @@ python igv_reports/report.py test/data/variants/variants.vcf.gz \
 --tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam \
 --output docs/examples/example_genome.html
 
+echo twobit
+#### Create a variant report from a VCF file: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_vcf.html))
+python igv_reports/report.py test/data/variants/variants.vcf.gz \
+--twobit https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit \
+--ideogram test/data/hg38/cytoBandIdeo.txt \
+--flanking 1000 \
+--info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
+--samples reads_1_fastq \
+--sample-columns DP GQ \
+--tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam test/data/hg38/refGene.txt.gz \
+--output docs/examples/example_vcf.html
+
+
 echo fasta
 #### Create a variant report from a VCF file: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_vcf.html))
 python igv_reports/report.py test/data/variants/variants.vcf.gz \
@@ -22,7 +35,7 @@ python igv_reports/report.py test/data/variants/variants.vcf.gz \
 echo config
 #### Create a variant report with tracks defined in an [igv.js track config json file](https://github.com/igvteam/igv-reports/tree/master/test/data/variants/trackConfigs.json): ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_config.html))
 python igv_reports/report.py test/data/variants/variants.vcf.gz \
---fasta https://igv.org/genomes/data/hg38/hg38.fa \
+--twobit https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit \
 --ideogram test/data/hg38/cytoBandIdeo.txt \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
@@ -32,7 +45,7 @@ python igv_reports/report.py test/data/variants/variants.vcf.gz \
 #### Create a variant report from a BED  file: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_bed.html))
 echo bed
 python igv_reports/report.py test/data/variants/variants.bed \
---genome hg38 \
+--fasta https://igv.org/genomes/data/hg38/hg38.fa \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
 --tracks test/data/variants/variants.bed test/data/variants/recalibrated.bam \
@@ -102,7 +115,7 @@ python igv_reports/report.py test/data/junctions/Introns.38.bed \
 
 echo fusion
 python igv_reports/report.py test/data/fusion/igv.fusion_inspector_web.json \
---fasta test/data/fusion/igv.genome.fa  \
+--twobit test/data/fusion/igv.genome.2bit  \
 --template igv_reports/templates/fusion_template.html  \
 --track-config test/data/fusion/tracks.json  \
 --output docs/examples/example_fusions.html

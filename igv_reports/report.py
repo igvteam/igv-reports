@@ -17,6 +17,7 @@ from igv_reports.genome import get_genome
 from igv_reports.tracks import get_track_type, is_format_supported
 from igv_reports.stream import resource_exists
 from igv_reports.utils import resolve_relative_path
+from igv_reports.twobit import TwoBitReader
 import requests
 
 '''
@@ -54,13 +55,21 @@ def create_report(args):
     # Track json array.  Tracks can come from (1) --tracks argument, (2) --genome  argument, and (3) --track_config argument
     trackjson = []
 
-    # Check for optional genome argument.  If supplied an igv.js genome json definition is used in lieu of a fasta file
+    # Check for optional genome argument.
     if args.genome is not None:
         genome = get_genome(args.genome)
-        if args.fasta is None:
+
+        # Sequence - prefer twobit if defined
+        if args.twobit is None and "twoBitURL" in genome:
+            args.twobit = genome["twoBitURL"]
+        elif args.fasta is None and "fastaURL" in genome:
             args.fasta = genome["fastaURL"]
+
+        # Ideogram
         if args.ideogram is None and "cytobandURL" in genome:
             args.ideogram = genome["cytobandURL"]
+
+        # Tracks
         if "tracks" in genome:
             for config in genome["tracks"]:
                 if "format" not in config and "url in c":
@@ -182,8 +191,14 @@ def create_session_dict(args, table, trackjson):
         readers.append(utils.getreader(config, None, args))
 
     # Other readers
-    fasta_reader = FastaReader(args.fasta)
-    if (args.ideogram):
+    if args.fasta is not None:
+        sequence_reader = FastaReader(args.fasta)
+    elif args.twobit is not None:
+        sequence_reader = TwoBitReader(args.twobit)
+    else:
+        raise 'Must specify either fasta or twobit'
+
+    if args.ideogram is not None:
         ideogram_reader = IdeogramReader(args.ideogram)
     else:
         ideogram_reader = None
@@ -237,12 +252,12 @@ def create_session_dict(args, table, trackjson):
                     end2 = int(math.ceil(feature.end2 + flanking / 2))
                     region2 = {"chr": chr2, "start": start2, "end": end2}
 
-            # Fasta
-            data = fasta_reader.slice(region)
+            # Sequence
+            data = sequence_reader.slice(region)
             fa = '>' + chr + ':' + str(start) + '-' + str(end) + '\n' + data
 
             if region2 is not None:
-                data2 = fasta_reader.slice(region2)
+                data2 = sequence_reader.slice(region2)
                 fa += '\n' + '>' + chr2 + ':' + str(start2) + '-' + str(end2) + '\n' + data2
 
             fasta_uri = datauri.get_data_uri(fa)
@@ -251,7 +266,7 @@ def create_session_dict(args, table, trackjson):
             }
 
             # Ideogram
-            if (args.ideogram):
+            if args.ideogram is not None:
                 ideo_string = ideogram_reader.get_data(region["chr"])
                 if region2 is not None:
                     ideo_string += ideogram_reader.get_data(region2["chr"])
@@ -337,11 +352,21 @@ def create_session_dict(args, table, trackjson):
 
 # Create an igv session config object.  This is used for no-embed reports
 def create_noembed_session(args, trackjson):
-    reference = {
-        "fastaURL": args.fasta,
-    }
-    if resource_exists(args.fasta + ".fai"):
-        reference["indexURL"] = args.fasta + ".fai"
+
+    if args.fasta is not None:
+        reference = {
+            "fastaURL": args.fasta
+        }
+        if resource_exists(args.fasta + ".fai"):
+            reference["indexURL"] = args.fasta + ".fai"
+
+    elif args.twobit is not None:
+        reference = {
+            "twoBitURL": args.twobit
+        }
+    else:
+        raise 'Must specify either fasta or twobit'
+
 
     if args.ideogram is not None:
         reference["cytobandURL"] = args.ideogram
@@ -484,7 +509,9 @@ def main():
     parser.add_argument("fasta_", nargs="?", default=None,
                         help="reference fasta file.  Deprecated positional argument,  use --fasta")
     parser.add_argument("--fasta", nargs="?", default=None,
-                        help="reference fasta file, required if --genome is not specified")
+                        help="reference fasta file. One of either --fasta, --twobit, or --genome is required.")
+    parser.add_argument("--twobit", nargs="?", default=None,
+                        help="reference twobit file. One of either --fasta, --twobit, or --genome is required.")
     parser.add_argument("--genome", help="igv.js genome id (e.g. hg38)")
 
     parser.add_argument("--type", help="Report type.  Possible values are mutation, junction, and fusion.  Default is mutation")
