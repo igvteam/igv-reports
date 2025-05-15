@@ -96,6 +96,8 @@ are described below. Although _--tracks_ is optional, a typical report will incl
     * __--maxlen__ INT. Maximum length of a variant (SV) to show in a single view. Variants exceeding this length will
       be shown in a split-screen (multilocus) view. default = 10000
     * __--translate-sequence-track__ Three-frame Translate sequence track
+    * __--tabulator__ Use the tabulator template for the table
+    * __--filter-config__ YAML config file for column setup for tabulator.
 
 **Track file formats:**
 
@@ -268,6 +270,40 @@ python igv_reports/report.py test/data/annotated_vcf/consensus.filtered.ann.vcf 
 --info-columns-prefixes clinvar \
 --tracks test/data/annotated_vcf/consensus.filtered.ann.vcf \
 --output example_ann.html 
+```
+
+
+#### Create a variant report from a VCF file with Tabulator Template: ([Example output](https://igvteam.github.io/igv-reports/examples/example_vcf_tabulator.html))
+
+```bash
+create_report test/data/variants/variants.vcf.gz \
+--fasta https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa \
+--ideogram test/data/hg38/cytoBandIdeo.txt \
+--flanking 1000 \
+--info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
+--samples reads_1_fastq \
+--sample-columns DP GQ \
+--tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam test/data/hg38/refGene.txt.gz \
+--tabulator \
+--filter-config test/data/variants/filter_config.yaml
+--output example_vcf_tabulator.html
+```
+
+filter-config file contains the column options that's passed to the [tabulator's column setup](https://tabulator.info/docs/6.3/columns#definition).
+The main purpose of this is to define more fitting filters for the columns. Consult the [header filters part of the tabulator documantation](https://tabulator.info/docs/6.3/filter#header) for possible header filters.
+
+İ.e. dropdown filter can be defined like so:
+
+``` yaml
+columns:
+  TISSUE:
+    type: string
+    filter: list
+    label: "Tissue Type"
+    headerFilter: "list"
+    headerFilterParams:
+      valuesLookup: true
+      clearable: true
 ```
 
 #### Use ```--exclude-flags``` option to include duplicate alignments in report by specifying a samtools `--exclude-flags` value. Default value is 1536 which filters duplicates and vendor-failed reads.

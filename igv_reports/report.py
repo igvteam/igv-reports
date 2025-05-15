@@ -3,6 +3,7 @@ import sys
 import json
 import math
 import argparse
+import yaml
 from urllib.request import urlopen
 from igv_reports import datauri, tracks, utils, feature
 from igv_reports.varianttable import VariantTable
@@ -27,6 +28,14 @@ Create an html report.  This is the main function for the application.
 
 def create_report(args):
 
+    # Read filter config if provided
+    filter_config = None
+    if args.tabulator and args.filter_config:
+        try:
+            with open(args.filter_config, 'r') as f:
+                filter_config = yaml.safe_load(f)
+        except Exception as e:
+            print(f"Error reading filter config: {e}")
 
 
     # Read the variant data -- this populates the variant table and defines the corresponding regions
@@ -125,13 +134,15 @@ def create_report(args):
     # Generate the HTML
     template_file = args.template
     if None == template_file:
-        if 'junction' == args.type:
+        if args.type == "junction":
             template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/junction_template.html'
-        elif 'fusion' == args.type:
+        elif args.type == "fusion":
             template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/fusion_template.html'
-        elif args.no_embed == True:
+        elif args.no_embed:
             template_file = os.path.dirname(
                 sys.modules['igv_reports'].__file__) + '/templates/variant_template-noembed.html'
+        elif args.tabulator:
+            template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/variant_template_tabulator.html'
         else:
             template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/variant_template.html'
 
@@ -162,6 +173,11 @@ def create_report(args):
                 j = line.find('"@SESSION_DICTIONARY@"')
                 if j >= 0:
                     line = line.replace('"@SESSION_DICTIONARY@"', session_dict)
+
+                j = line.find('"@FILTER_CONFIG@"')
+                if j >= 0:
+                    filter_config_json = json.dumps(filter_config) if filter_config else "null"
+                    line = line.replace('"@FILTER_CONFIG@"', filter_config_json)
 
                 j = line.find('"@LOCUS_DICTIONARY@"')
                 if j >= 0:
@@ -300,7 +316,7 @@ def create_session_dict(args, table, trackjson):
                     config["format"] = "bam"
 
                 if config["format"] == "bcf":
-                    config["format"] == "vcf"
+                    config["format"] = "vcf"
 
                 # Indexes are not used with data URIs
                 if "indexURL" in config:
@@ -549,6 +565,8 @@ def main():
     parser.add_argument("--subsample", type=float,  help="Subsample bam files, keeping fraction of input alignments as indicated by input value in the range of 0.0 - 1.0")
     parser.add_argument("--maxlen", type=int, default=10000, help="Maximum length of variant for single  view. Variants exceeding this lenght will be presented in split-screen (multilocus) view")
     parser.add_argument("--translate-sequence-track", help="Three-frame Translate sequence track", action="store_true")
+    parser.add_argument("--tabulator", help="Enable Tabulator table with advanced filtering", action="store_true")
+    parser.add_argument("--filter-config", help="YAML configuration file for column-specific filtering")
 
     args = parser.parse_args()
 

@@ -1,0 +1,249 @@
+<html>
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>IGV Variant Inspector </title>
+
+    <!-- Tabulator -->
+    <link href="https://unpkg.com/tabulator-tables@6.3.0/dist/css/tabulator.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.3.0/dist/js/tabulator.min.js"></script>
+
+    <!-- igv -->
+    <script src="https://cdn.jsdelivr.net/npm/igv@3.0.5/dist/igv.min.js"></script>
+
+    <style type="text/css">
+        body {
+            font-size: 80%;
+            font-family: 'Lucida Grande', Verdana, Arial, Sans-Serif;
+        }
+
+
+    </style>
+
+    <!-- selector table style -->
+    <style>
+
+        thead {
+            position: sticky;
+            top: 0;
+        }
+
+        tr {
+            cursor: default;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: lightblue;
+        }
+
+        th {
+            background-color: lightskyblue;
+            color: white;
+            cursor: pointer;
+        }
+
+        .selected {
+            background-color: lightblue !important;
+            outline: solid thin darkblue !important;
+        }
+    </style>
+
+    <!-- accordian style,  ref: https://alligator.io/css/collapsible/ -->
+    <style type="text/css">
+        .wrap-collabsible {
+            margin-bottom: 1.2rem;
+        }
+
+        input[type='checkbox'] {
+            display: none;
+        }
+
+        .lbl-toggle {
+            display: block;
+
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            text-align: left;
+
+            padding: 1rem;
+
+            color: black;
+            background: #dddddd;
+
+            cursor: pointer;
+
+            border-radius: 7px;
+            transition: all 0.25s ease-out;
+        }
+
+        .lbl-toggle:hover {
+            color: blue;
+        }
+
+        .lbl-toggle::before {
+            content: ' ';
+            display: inline-block;
+
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 5px solid currentColor;
+            vertical-align: middle;
+            margin-right: .7rem;
+            transform: translateY(-2px);
+
+            transition: transform .2s ease-out;
+        }
+
+        .toggle:checked + .lbl-toggle::before {
+            transform: rotate(90deg) translateX(-3px);
+        }
+
+        .collapsible-content {
+            max-height: 0px;
+            overflow: auto;
+            transition: max-height .25s ease-in-out;
+        }
+
+        .toggle:checked + .lbl-toggle + .collapsible-content {
+            max-height: 350px;
+        }
+
+        .toggle:checked + .lbl-toggle {
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .collapsible-content .content-inner {
+            background: rgba(250, 224, 66, .2);
+            border-bottom: 1px solid rgba(250, 224, 66, .45);
+            border-bottom-left-radius: 7px;
+            border-bottom-right-radius: 7px;
+            padding: .5rem 1rem;
+        }
+    </style>
+
+</head>
+
+<body>
+
+
+<div id="container" style="display: flex; flex-direction: column">
+    <div id="tableContainer" class="wrap-collabsible">
+        <input id="collapsible" class="toggle" type="checkbox" checked>
+        <label for="collapsible" class="lbl-toggle">Variants</label>
+        <div class="collapsible-content">
+            <div style="margin-bottom: 10px;">
+                <button id="clearFilters" style="padding: 5px 10px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Clear Filters</button>
+            </div>
+            <div id="tableSelectorDiv"></div>
+        </div>
+    </div>
+
+    <div id="igvContainer">
+        <div id="igvDiv"></div>
+    </div>
+</div>
+
+<!--
+Remove igv.js script tag in header and uncomment for local debugging.  "igv.js" is the root directory of a  local
+igv.js repository.  Adjust path as neccessary
+
+
+<script type="module">
+      import igv from "./igv.js/js/index.js";
+-->
+
+<script type="text/javascript">
+    const tableJson = "@TABLE_JSON@"
+    const sessionDictionary = "@SESSION_DICTIONARY@"
+    const filterConfig = "@FILTER_CONFIG@"
+    let igvBrowser
+    let table
+
+    document.addEventListener("DOMContentLoaded", function () {
+        initIGV()
+    })
+
+    function initIGV() {
+        const igvDiv = document.getElementById("igvDiv")
+        const options = {
+            sessionURL: sessionDictionary["0"],
+            showChromosomeWidget: false,
+            showCenterGuide: true,
+            search: false
+        }
+
+        igv.createBrowser(igvDiv, options)
+            .then(function (b) {
+                igvBrowser = b
+                initTable()
+            })
+    }
+
+    function initTable() {
+        // Create columns for all headers except unique_id
+        const columnConfig = tableJson.headers
+            .filter(header => header !== "unique_id")
+            .map(header => {
+                // Get filter settings if they exist
+                const settings = filterConfig?.columns?.[header] || {}
+                
+                return {
+                    title: settings.label || header,
+                    field: header,
+                    sorter: settings.type === "number" ? "number" : "string",
+                    headerFilter: settings.headerFilter || (settings.type === "number" ? "number" : "input"),
+                    headerFilterPlaceholder: `Filter ${settings.label || header}`,
+                    headerFilterParams: settings.headerFilterParams || {},
+                    formatter: settings.formatter,
+                    ...settings
+                }
+            })
+
+        // Initialize Tabulator
+        table = new Tabulator("#tableSelectorDiv", {
+            data: tableJson.rows.map(row => {
+                const obj = {}
+                tableJson.headers.forEach((header, i) => {
+                    obj[header] = row[i]
+                })
+                return obj
+            }),
+            columns: columnConfig,
+            layout: "fitDataTable",
+            pagination: true,
+            paginationSize: 25,
+            paginationSizeSelector: [10, 25, 50, 100],
+        })
+
+        // Add clear filters functionality
+        document.getElementById("clearFilters").addEventListener("click", function() {
+            table.clearFilter(true);
+        });
+
+        table.on("rowClick", function(e, row) {
+                const uniqueId = row.getData()["unique_id"]
+                const session = sessionDictionary[uniqueId]
+                igvBrowser.loadSession({
+                    url: session
+                })
+            })
+    }
+
+
+</script>
+</body>
+</html>

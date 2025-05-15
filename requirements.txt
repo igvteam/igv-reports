@@ -2,3 +2,4 @@ pysam >= 0.22
 intervalTree
 requests
 pytwobit
+pyyaml
