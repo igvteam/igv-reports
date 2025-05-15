@@ -212,7 +212,7 @@ def create_session_dict(args, table, trackjson):
     elif args.twobit is not None:
         sequence_reader = TwoBitReader(args.twobit)
     else:
-        raise 'Must specify either fasta or twobit'
+        raise ValueError('Must specify either fasta or twobit')
 
     if args.ideogram is not None:
         ideogram_reader = IdeogramReader(args.ideogram)
