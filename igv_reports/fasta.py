@@ -28,6 +28,7 @@ def get_data(fasta_file,region=None):
 
         return slice_seq
 
+
 class FastaReader:
 
     def __init__(self, file):
@@ -57,5 +58,16 @@ class FastaReader:
                 seq = self.fasta.fetch(chr, start, end)
 
             return seq
+
+    def get_reference_length(self, chr):
+        """
+        Returns the length of the reference sequence.
+        """
+        try:
+            return self.fasta.get_reference_length(chr)
+
+        except KeyError:
+            chr = get_chromosome_alias(chr)
+            return self.fasta.get_reference_length(chr)
 
 

@@ -254,7 +254,8 @@ def create_session_dict(args, table, trackjson):
 
             # Sequence
             data = sequence_reader.slice(region)
-            fa = '>' + chr + ':' + str(start) + '-' + str(end) + '\n' + data
+            length = sequence_reader.get_reference_length(chr)
+            fa = '>' + chr + ':' + str(start) + '-' + str(end) + ' @len=' + str(length) + '\n' + data
 
             if region2 is not None:
                 data2 = sequence_reader.slice(region2)

@@ -30,4 +30,23 @@ class TwoBitReader:
         return data
 
 
+    def get_reference_length(self, chr):
+        """
+        Get the length of the reference sequence for a given chromosome.
+
+        Args:
+            chr (str): The chromosome name.
+
+        Returns:
+            int: The length of the reference sequence.
+        """
+        length = self.twobit.get_reference_length(chr)
+
+        if length is None:
+            chr = get_chromosome_alias(chr)
+            length = self.twobit.get_reference_length(chr)
+
+        return length
+
+
 
