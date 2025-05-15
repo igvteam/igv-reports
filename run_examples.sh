@@ -6,23 +6,10 @@ python igv_reports/report.py test/data/variants/variants.vcf.gz \
 --tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam \
 --output docs/examples/example_genome.html
 
-echo twobit
-#### Create a variant report from a VCF file: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_vcf.html))
-python igv_reports/report.py test/data/variants/variants.vcf.gz \
---twobit https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit \
---ideogram test/data/hg38/cytoBandIdeo.txt \
---flanking 1000 \
---info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
---samples reads_1_fastq \
---sample-columns DP GQ \
---tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam test/data/hg38/refGene.txt.gz \
---output docs/examples/example_vcf.html
-
-
 echo fasta
 #### Create a variant report from a VCF file: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_vcf.html))
 python igv_reports/report.py test/data/variants/variants.vcf.gz \
---fasta https://igv.org/genomes/data/hg38/hg38.fa \
+--fasta https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa \
 --ideogram test/data/hg38/cytoBandIdeo.txt \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
@@ -45,7 +32,7 @@ python igv_reports/report.py test/data/variants/variants.vcf.gz \
 #### Create a variant report from a BED  file: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_bed.html))
 echo bed
 python igv_reports/report.py test/data/variants/variants.bed \
---fasta https://igv.org/genomes/data/hg38/hg38.fa \
+--genome hg38 \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
 --tracks test/data/variants/variants.bed test/data/variants/recalibrated.bam \
