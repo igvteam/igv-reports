@@ -382,7 +382,7 @@ def create_noembed_session(args, trackjson):
             "twoBitURL": args.twobit
         }
     else:
-        raise 'Must specify either fasta or twobit'
+        raise ValueError('Must specify either fasta or twobit')
 
 
     if args.ideogram is not None:
