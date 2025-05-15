@@ -18,9 +18,12 @@ class Feature:
 '''
 Return an appropriate reader for the given path
 '''
-def get_featurereader(path):
+def get_featurereader(config):
 
-    if path.endswith(".gz"):
+    path = config["url"]
+    indexed = config["indexed"] if "indexed" in config else "indexURL" in config
+
+    if path.endswith(".gz") and indexed is True:
         # Might be a tabix file
         try:
             return TabixFeatureReader(pysam.TabixFile(path))

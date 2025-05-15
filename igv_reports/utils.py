@@ -4,6 +4,7 @@ from os import path
 def getreader(config, filetype=None, args = None):
 
     path = config["url"]
+    indexed = config["indexed"] if "indexed" in config else True    # Assume true until proven otherwise
 
     if not filetype:
         filetype = feature.infer_format(path)
@@ -20,7 +21,7 @@ def getreader(config, filetype=None, args = None):
         return wig.WigReader(path)
 
     else:
-        return feature.get_featurereader(path)
+        return feature.get_featurereader(config)
 
 
 

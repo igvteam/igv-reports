@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(name='igv-reports',
                  packages=['igv_reports'],
-                 version='1.14.0',
+                 version='1.15.0',
                  description='Creates self-contained html pages for visual variant review with IGV (igv.js).',
                  long_description=long_description,
                  long_description_content_type="text/markdown",
@@ -22,7 +22,7 @@ setuptools.setup(name='igv-reports',
                      'Topic :: Scientific/Engineering :: Bio-Informatics '
                  ],
                  install_requires=[
-                     'pysam', 'intervalTree', 'requests'
+                     'pysam', 'intervalTree', 'requests', 'pytwobit'
                  ],
                  entry_points={
                      'console_scripts': [

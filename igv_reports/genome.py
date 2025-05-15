@@ -5,7 +5,7 @@ import json
 
 def get_genome(id):
 
-    genomes_url = "https://igv.org/genomes/genomes.json"
+    genomes_url = "https://igv.org/genomes/genomes3.json"
     r = requests.get(genomes_url)
 
     if r.status_code == 200:

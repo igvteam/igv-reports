@@ -42,9 +42,9 @@ are described below. Although _--tracks_ is optional, a typical report will incl
 * Required
     * __sites__   VCF, BED, MAF, BEDPE, or generic tab delimited file of genomic variant sites. Tabix indexed files are
       supported and strongly recommended for large files.
-    * __--fasta__   Reference fasta file; must be indexed. This argument should be ommited if --genome is used,
-      otherwise it is required.
-    * __--genome__  An igv.js genome identifier (e.g. hg38). If supplied fasta, ideogram, and the default annotation
+    * __--fasta__   Reference fasta file; must be indexed. One of either --fasta, --twobit, or --genome is required.
+    * __--twobit__  Reference twobit sequence file.  
+    * __--genome__  An igv.js genome identifier (e.g. hg38). If supplied sequence, ideogram, and the default annotation
       track for the specified genome will be used.*
 
 * The arguments _begin_, _end_, and _sequence_ are required for a generic tab delimited __sites__ file.
@@ -119,7 +119,7 @@ examples directory.
 ```bash
 
 create_report test/data/variants/variants.vcf.gz \
---fasta https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa \
+--twobit https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit \
 --ideogram test/data/hg38/cytoBandIdeo.txt \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
@@ -137,9 +137,8 @@ echo bed
 create_report test/data/variants/variants.bed \
 --genome hg38 \
 --flanking 1000 \
---info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
 --tracks test/data/variants/variants.bed test/data/variants/recalibrated.bam \
---output example_genome.html
+--output example_bed.html
 ```
 
 #### Create a variant report from a TCGA MAF file: ([Example output](https://igvteam.github.io/igv-reports/examples/example_maf.html))
@@ -207,7 +206,7 @@ create_report test/data/variants/variants.vcf.gz \
 
 ``` bash
 create_report test/data/variants/variants.vcf.gz \
---fasta https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa \
+--twobit --twobit https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit \
 --ideogram test/data/hg38/cytoBandIdeo.txt \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \

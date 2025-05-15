@@ -1,6 +1,9 @@
 from . import regions
 import pysam
 
+from .chr_alias import get_chromosome_alias
+
+
 def get_data(fasta_file,region=None):
 
     if None == region:
@@ -24,6 +27,7 @@ def get_data(fasta_file,region=None):
         fasta.close()
 
         return slice_seq
+
 
 class FastaReader:
 
@@ -50,9 +54,20 @@ class FastaReader:
 
 
             except KeyError:
-                chr = "chr" + chr
+                chr = get_chromosome_alias(chr)
                 seq = self.fasta.fetch(chr, start, end)
 
             return seq
+
+    def get_reference_length(self, chr):
+        """
+        Returns the length of the reference sequence.
+        """
+        try:
+            return self.fasta.get_reference_length(chr)
+
+        except KeyError:
+            chr = get_chromosome_alias(chr)
+            return self.fasta.get_reference_length(chr)
 
 
