@@ -8,11 +8,11 @@ class StreamTest(unittest.TestCase):
     def test_resource_exists(self):
 
         # File exists
-        exists = resource_exists("https://igv-genepattern-org.s3.amazonaws.com/test/reports/recalibrated.bam.bai")
+        exists = resource_exists("https://raw.githubusercontent.com/igvteam/igv-data/refs/heads/main/data/test/bam/small/gstt1_sample.bam.bai")
         self.assertTrue(exists)
 
         # File does not exist
-        exists = resource_exists("https://igv-genepattern-org.s3.amazonaws.com/test/reports/recalibrated.bai")
+        exists = resource_exists("https://raw.githubusercontent.com/igvteam/igv-data/refs/heads/main/data/test/bam/small/recalibrated.bai")
         self.assertFalse(exists)
 
         # Host does not exist

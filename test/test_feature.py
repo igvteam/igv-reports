@@ -120,16 +120,6 @@ class FeatureFileTest(unittest.TestCase):
         data = feature_reader.slice(region)
         self.assertEqual(0, count_features(data))
 
-    # Note: the following test is slow
-    # def test_remote_tabix(self):
-    #     path = "https://s3.amazonaws.com/igv.org.genomes/hg38/annotations/gencode.v28.basic.annotation.sorted.gtf.gz"
-    #     feature_reader = FeatureReader(path)
-    #     region = {"chr": "5", "start": 470454, "end": 480892}
-    #     region2 = {"chr": "7", "start": 55019020, "end": 55019277}
-    #     data = feature_reader.slice(region, region2)
-    #     print(data)
-    #     self.assertEqual(count_features(data), 101)
-
 
 def count_features(data):
     lines = data.split('\n')

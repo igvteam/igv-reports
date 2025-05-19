@@ -1,658 +1,329 @@
 <html>
-
 <head>
-
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
-
     <meta http-equiv="Pragma" content="no-cache"/>
-
     <meta http-equiv="Expires" content="0"/>
-
     <meta charset="utf-8">
-
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
     <meta name="description" content="">
-
     <meta name="author" content="">
-
-
 
     <title>IGV Variant Inspector </title>
 
-
-
     <!-- igv -->
-
-
 
     <script src="https://cdn.jsdelivr.net/npm/igv@3.3.0/dist/igv.min.js"></script>
 
 
-
-
-
     <style type="text/css">
-
         body {
-
             font-size: 80%;
-
             font-family: 'Lucida Grande', Verdana, Arial, Sans-Serif;
-
         }
 
 
-
-
-
     </style>
-
-
 
     <!-- selector table style -->
-
     <style>
 
-
-
         thead {
-
             position: sticky;
-
             top: 0;
-
         }
-
-
 
         tr {
-
             cursor: default;
-
         }
-
-
 
         tr:nth-child(even) {
-
             background-color: #f2f2f2;
-
         }
-
-
 
         tr:hover {
-
             background-color: lightblue;
-
         }
-
-
 
         th {
-
             background-color: lightskyblue;
-
             color: white;
-
             cursor: pointer;
-
         }
-
-
 
         .selected {
-
             background-color: lightblue !important;
-
             outline: solid thin darkblue !important;
-
         }
-
     </style>
 
-
-
     <!-- accordian style,  ref: https://alligator.io/css/collapsible/ -->
-
     <style type="text/css">
-
         .wrap-collabsible {
-
             margin-bottom: 1.2rem;
-
         }
-
-
 
         input[type='checkbox'] {
-
             display: none;
-
         }
 
-
-
         .lbl-toggle {
-
             display: block;
 
-
-
             font-weight: bold;
-
             font-family: monospace;
-
             font-size: 1.2rem;
-
             text-transform: uppercase;
-
             text-align: left;
-
-
 
             padding: 1rem;
 
-
-
             color: black;
-
             background: #dddddd;
-
-
 
             cursor: pointer;
 
-
-
             border-radius: 7px;
-
             transition: all 0.25s ease-out;
-
         }
-
-
 
         .lbl-toggle:hover {
-
             color: blue;
-
         }
-
-
 
         .lbl-toggle::before {
-
             content: ' ';
-
             display: inline-block;
 
-
-
             border-top: 5px solid transparent;
-
             border-bottom: 5px solid transparent;
-
             border-left: 5px solid currentColor;
-
             vertical-align: middle;
-
             margin-right: .7rem;
-
             transform: translateY(-2px);
 
-
-
             transition: transform .2s ease-out;
-
         }
-
-
 
         .toggle:checked + .lbl-toggle::before {
-
             transform: rotate(90deg) translateX(-3px);
-
         }
-
-
 
         .collapsible-content {
-
             max-height: 0px;
-
             overflow: auto;
-
             transition: max-height .25s ease-in-out;
-
         }
-
-
 
         .toggle:checked + .lbl-toggle + .collapsible-content {
-
             max-height: 350px;
-
         }
-
-
 
         .toggle:checked + .lbl-toggle {
-
             border-bottom-right-radius: 0;
-
             border-bottom-left-radius: 0;
-
         }
-
-
 
         .collapsible-content .content-inner {
-
             background: rgba(250, 224, 66, .2);
-
             border-bottom: 1px solid rgba(250, 224, 66, .45);
-
             border-bottom-left-radius: 7px;
-
             border-bottom-right-radius: 7px;
-
             padding: .5rem 1rem;
-
         }
-
     </style>
-
-
 
 </head>
 
-
-
 <body>
 
-
-
 <div id="container" style="display: flex; flex-direction: column">
-
     <div id="tableContainer" class="wrap-collabsible">
-
         <input id="collapsible" class="toggle" type="checkbox" checked>
-
         <label for="collapsible" class="lbl-toggle">Variants</label>
-
         <div class="collapsible-content">
-
             <div id="tableSelectorDiv"></div>
-
         </div>
-
     </div>
-
 </div>
-
-
 
 <div id="igvContainer">
-
     <div id="igvDiv"></div>
-
 </div>
-
-
-
 
 
 <script type="text/javascript">
 
-
-
     const tableJson = {"headers": ["unique_id", "CHROM", "POSITION", "REF", "ALT", "ID"], "rows": [[0, "chr5", 474989, "A", "G", ""], [1, "chr5", 181224474, "G", "A", ""], [2, "chr8", 143923759, "G", "A", ""], [3, "chr12", 56420869, "G", "A", ""], [4, "chr17", 7673767, "C", "T", ""], [5, "chr17", 7676154, "G", "C", ""], [6, "chr17", 43071077, "T", "C", ""], [7, "chr17", 43091983, "T", "C", ""], [8, "chr17", 43092919, "G", "A", ""], [9, "chr17", 43093454, "C", "T", ""], [10, "chr19", 39177761, "G", "C", ""], [11, "chr19", 47271515, "T", "C", ""], [12, "chr20", 46687147, "C", "T", ""]]}
-
     const locusDictionary = {"0": "chr5:474990-474989", "1": "chr5:181224475-181224474", "2": "chr8:143923760-143923759", "3": "chr12:56420870-56420869", "4": "chr17:7673768-7673767", "5": "chr17:7676155-7676154", "6": "chr17:43071078-43071077", "7": "chr17:43091984-43091983", "8": "chr17:43092920-43092919", "9": "chr17:43093455-43093454", "10": "chr19:39177762-39177761", "11": "chr19:47271516-47271515", "12": "chr20:46687148-46687147"}
-
     let sortOption = "BASE"
-
     let igvBrowser
 
-
-
     document.addEventListener("DOMContentLoaded", function () {
-
         initIGV()
-
     })
-
-
-
 
 
     function initIGV() {
 
-
-
         var igvDiv
 
-
-
         igvDiv = document.getElementById("igvDiv")
-
         var options = {"reference": {"twoBitURL": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit", "cytobandURL": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/cytoBandIdeo.txt.gz"}, "tracks": [{"id": "refseqSelect", "name": "Refseq Select", "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/ncbiRefSeqSelect.txt.gz", "format": "refgene", "html": "https://www.ncbi.nlm.nih.gov/refseq/refseq_select/", "order": 100000, "type": "annotation"}, {"name": "variants.vcf", "url": "https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/master/test/data/variants/variants.vcf.gz", "type": "variant", "format": "vcf", "indexURL": "https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/master/test/data/variants/variants.vcf.gz.tbi"}, {"name": "recalibrated", "url": "https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/master/test/data/variants/recalibrated.bam", "type": "alignment", "format": "bam", "height": 500, "filter": {"duplicate": false, "vendorFailed": false}, "indexURL": "https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/master/test/data/variants/recalibrated.bam.bai"}]}
 
-
-
         igv.createBrowser(igvDiv, options)
-
             .then(function (b) {
-
                 if (sortOption === "BASE") sortOption = "NONE"
-
                 initTable(b)
-
                 searchAndSort(b, locusDictionary["0"])
-
             })
-
     }
-
-
 
     function initTable(igvBrowser) {
 
-
-
         const table = document.createElement("table")
-
         table.id = "variant_table"
-
         table.style.width = "100%"
-
-
 
         document.getElementById("tableSelectorDiv").appendChild(table)
 
-
-
         const thead = document.createElement('thead')
-
         table.appendChild(thead)
-
         const headerRow = thead.insertRow(0)
 
-
-
         const headers = tableJson.headers
-
         for (let j = 1; j < headers.length; j++) {
-
             var cell = document.createElement("th")
-
             headerRow.appendChild(cell)
-
             cell.innerHTML = headers[j]
-
         }
 
-
-
         const tbody = document.createElement('tbody')
-
         table.appendChild(tbody)
-
         const tableRows = tableJson.rows
-
         for (let i = 0; i < tableRows.length; i++) {
 
-
-
             const json = tableRows[i]
-
             const unique_id = json[0]
-
             const row = document.createElement("tr")
-
             row.id = "row_" + unique_id
-
             tbody.appendChild(row)
 
-
-
             // First row selected by default
-
             if (i === 0) row.classList.add("selected")
 
-
-
             row.onclick = function (event) {
-
                 const list = document.getElementById("variant_table").getElementsByTagName("tr")
-
                 for (let i = 0; i < list.length; i++) {
-
                     list[i].classList.remove("selected")
-
                 }
-
                 const rowID = event.target.parentElement.id
-
                 const row = document.getElementById(rowID)
-
                 row.classList.add("selected")
-
                 const uniqueId = rowID.substring(4)
-
                 const locus = locusDictionary[uniqueId]
-
                 searchAndSort(igvBrowser, locus)
-
             }
-
-
 
             for (let j = 1; j < headers.length; j++) {
 
-
-
                 var value = json[j]
-
                 cell = document.createElement("td")
-
                 cell.rowID = i
-
                 row.appendChild(cell)
-
                 cell.innerHTML = value
-
             }
-
         }
 
-
-
         // Add sorting.  Adapted from https://stackoverflow.com/questions/14267781/sorting-html-table-with-javascript/49041392
-
         Array.prototype.slice.call(document.querySelectorAll('th')).forEach(function (th) {
-
             th.addEventListener('click', function () {
-
                 //var table = th.parentNode
-
                 //while (table.tagName.toUpperCase() != 'TABLE') table = table.parentNode;
-
                 Array.prototype.slice.call(table.querySelectorAll('tr:nth-child(n+1)'), 1)
-
                     .sort(comparer(Array.prototype.slice.call(th.parentNode.children).indexOf(th), this.asc = !this.asc))
-
                     .forEach(function (tr) {
-
                         table.appendChild(tr)
-
                     })
-
             })
-
         })
 
 
-
-
-
         function getCellValue(tr, idx) {
-
             return tr.children[idx].innerText || tr.children[idx].textContent
-
         }
-
-
 
         function comparer(idx, asc) {
-
             return function (a, b) {
-
                 return function (v1, v2, asc) {
-
                     // Special case for chromosome coloumn
-
                     if (idx === 0 && v1.startsWith('chr') && v2.startsWith('chr')) {
-
                         v1 = v1.substr(3)
-
                         v2 = v2.substr(3)
-
                     }
-
                     // always put empty columns at end of table when sorting
-
                     if (v1 == '' && v2 != '') {
-
                         return 1
-
                     }
-
                     if (v2 == '' && v1 != '') {
-
                         return -1
-
                     }
-
-
 
                     var isNumber = v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2)
-
                     ret = isNumber ? v1 - v2 : v1.toString().localeCompare(v2)
 
-
-
                     // reverse ordering if not ascending order
-
                     if (!asc) {
-
                         ret = -1 * ret
-
                     }
-
                     return (ret)
 
-
-
                 }(getCellValue(a, idx), getCellValue(b, idx), asc)
-
             }
-
         }
 
-
-
     }
-
-
-
 
 
     function searchAndSort(igvBrowser, locus) {
-
         igvBrowser.search(locus)
-
             .then(function (ignore) {
-
                 const locusObject = parseLocus(locus)
-
                 const isSNV = locusObject && locusObject.start === locusObject.end
-
                 if (sortOption !== "NONE" || isSNV) {
-
                     const option = sortOption === "NONE" ? "BASE" : sortOption
-
                     const position = Math.floor((locusObject.start + locusObject.end) / 2)
-
                     const sortObject = {
-
                         chr: locusObject.chr,
-
                         position: position,
-
                         option: option,
-
                         direction: true
-
                     }
-
                     const alignmentTracks = igvBrowser.findTracks("type", "alignment")
-
                     for (let t of alignmentTracks) {
-
                         t.sort(sortObject)
-
                     }
-
                 }
-
-
 
             })
 
-
-
     }
-
-
 
     function parseLocus(locus) {
-
         const a = locus.split(":")
-
         if (a.length === 2) {
-
             const b = a[1].split("-")
-
             if (b.length === 2) {
-
                 return {
-
                     chr: a[0],
-
                     start: Number.parseInt(b[0]) - 1,
-
                     end: Number.parseInt(b[1])
-
                 }
-
             }
-
         }
-
         return undefined
-
     }
 
-
-
 </script>
-
 </body>
-
 </html>
-

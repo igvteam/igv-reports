@@ -32,7 +32,7 @@ class VcfTest(unittest.TestCase):
 
     def test_remote(self):
 
-        path = "https://s3.amazonaws.com/igv.org.test/reports/variants/cancer.vcf.gz"
+        path = "https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/main/reports/variants/cancer.vcf.gz"
         region = {"chr": "chr17", "start": 7673767, "end": 43071077}
         data = get_data(path, region)
         count = count_variants(data)
