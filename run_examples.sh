@@ -37,7 +37,6 @@ echo bed
 python igv_reports/report.py test/data/variants/variants.bed \
 --genome hg38 \
 --flanking 1000 \
---info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
 --tracks test/data/variants/variants.bed test/data/variants/recalibrated.bam \
 --output docs/examples/example_bed.html
 
