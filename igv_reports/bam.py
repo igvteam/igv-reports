@@ -23,6 +23,8 @@ class BamReader:
             samargs.append(str(self.args.subsample))
 
         if self.filtetype == "cram" and self.args is not None:
+            if self.args.fasta is None:
+                raise ValueError("Cram file requires a reference fasta file")
             samargs.append("-T")
             samargs.append(self.args.fasta)
 
