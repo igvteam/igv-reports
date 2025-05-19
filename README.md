@@ -114,7 +114,7 @@ here [https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip](http
 It is assumed that the examples are run from the root directory of the repository. Output html is written to the
 examples directory.
 
-#### Create a variant report from a VCF file: ([Example output](https://igvteam.github.io/igv-reports/examples/example_vcf.html))
+#### Create a variant report from a VCF file: ([Example output](https://igvteam.github.io/igv-reports/examples/example_vcf.html)) with title, header, and footer
 
 ```bash
 
@@ -126,6 +126,9 @@ create_report test/data/variants/variants.vcf.gz \
 --samples reads_1_fastq \
 --sample-columns DP GQ \
 --tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam test/data/hg38/refGene.txt.gz \
+--title "IGV Variant Inspector"
+--header test/example_header.html
+--footer test/example_footer.html
 --output example_vcf.html
 
 ```
@@ -170,12 +173,12 @@ create_report test/data/variants/test.maflite.tsv \
 #### Create a structural variant report from a vcf file with CHR2 and END info fields: ([Example output](https://igvteam.github.io/igv-reports/examples/example_sv.html))
 
 ```bash
-create_report test/data/variants/SKBR3_Sniffles_sv.vcf \
+create_report test/data/variants/SKBR3_Sniffles_tra.vcf \
 --genome hg19 \
 --flanking 1000 \
 --maxlen 10500 \
 --info-columns SVLEN \
---tracks test/data/variants/SKBR3_Sniffles_sv.vcf https://igv-genepattern-org.s3.amazonaws.com/test/bam/reads_lr_skbr3.sampled.bam \
+--tracks test/data/variants/SKBR3_Sniffles_sv.vcf test/data/variants/SKBR3_translocations.ill.bam \
 --output example_sv.html 
 
 ```
@@ -191,16 +194,6 @@ create_report test/data/variants/SKBR3_Sniffles_tra.bedpe \
 --output example_bedpe.html
 ```
 
-#### Create a report using a genome identifier: ([Example output](https://igvteam.github.io/igv-reports/examples/example_genome.html)\)
-
-```bash
-create_report test/data/variants/variants.vcf.gz \
---genome hg38 \
---flanking 1000 \
---info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
---tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam \
---output example_genome.html
-```
 
 #### Create a variant report with tracks defined in an [igv.js track config json file](https://github.com/igvteam/igv-reports/tree/master/test/data/variants/trackConfigs.json): ([Example output](https://igvteam.github.io/igv-reports/examples/example_config.html))
 
@@ -322,8 +315,8 @@ create_report test/data/dups/dups.bed \
 create_report test/data/variants/variants.vcf.gz \
 --genome hg38 \
 --no-embed \
---tracks https://igv-genepattern-org.s3.amazonaws.com/test/reports/variants.vcf.gz https://igv-genepattern-org.s3.amazonaws.com/test/reports/recalibrated.bam \
---output example_noembed.html
+--tracks https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/master/test/data/variants/variants.vcf.gz https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/master/test/data/variants/recalibrated.bam \
+--output docs/examples/example_noembed.html
 
 ```
 

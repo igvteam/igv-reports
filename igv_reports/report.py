@@ -27,7 +27,6 @@ Create an html report.  This is the main function for the application.
 
 
 def create_report(args):
-
     # Read filter config if provided
     filter_config = None
     if args.tabulator and args.filter_config:
@@ -36,7 +35,6 @@ def create_report(args):
                 filter_config = yaml.safe_load(f)
         except Exception as e:
             print(f"Error reading filter config: {e}")
-
 
     # Read the variant data -- this populates the variant table and defines the corresponding regions
 
@@ -56,7 +54,8 @@ def create_report(args):
 
     elif variants_file.endswith(".maf") or variants_file.endswith(".maf.gz") or (
             args.sequence is not None and args.begin is not None and args.end is not None):
-        table = GenericTable.from_tabfile(variants_file, args.info_columns, args.sequence, args.begin, args.end, args.zero_based)
+        table = GenericTable.from_tabfile(variants_file, args.info_columns, args.sequence, args.begin, args.end,
+                                          args.zero_based)
 
     elif variants_file.endswith(".json"):
         table = GenericTable.from_fusionjson(variants_file)
@@ -88,7 +87,8 @@ def create_report(args):
                         config["type"] = get_track_type(config["format"])
                     trackjson.append(config)
                 else:
-                    print("File format: " + config["format"] + " is not supported. Skipping track '" + config["name"] + "'.")
+                    print("File format: " + config["format"] + " is not supported. Skipping track '" + config[
+                        "name"] + "'.")
 
     # --tracks argument
     if args.tracks is not None:
@@ -142,7 +142,8 @@ def create_report(args):
             template_file = os.path.dirname(
                 sys.modules['igv_reports'].__file__) + '/templates/variant_template-noembed.html'
         elif args.tabulator:
-            template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/variant_template_tabulator.html'
+            template_file = os.path.dirname(
+                sys.modules['igv_reports'].__file__) + '/templates/variant_template_tabulator.html'
         else:
             template_file = os.path.dirname(sys.modules['igv_reports'].__file__) + '/templates/variant_template.html'
 
@@ -156,9 +157,6 @@ def create_report(args):
 
             for i, line in enumerate(data):
 
-                if args.title is not None and line.startswith("<!--title-->"):
-                    o.write("<h1>" + args.title + "</h1>")
-
                 if standalone:
                     if line.strip().startswith("<script") and ".js\"" in line:
                         inline_script(line, o, "js")
@@ -166,6 +164,16 @@ def create_report(args):
                     elif line.strip().startswith("<link") and line.strip().endswith("css\">"):
                         inline_script(line, o, "css")
                         continue
+
+                if args.title and line.strip().startswith("<title>"):
+                    line = "<title>" + args.title + "</title>"
+
+                if args.header and line.strip().startswith("<!--header-->"):
+                    line = "<div>" + read_contents(args.header) + "</div>"
+
+                if args.footer and line.strip().startswith("<!--footer-->"):
+                    line = "<div>" + read_contents(args.footer) + "</div>"
+
                 j = line.find('"@TABLE_JSON@"')
                 if j >= 0:
                     line = line.replace('"@TABLE_JSON@"', table.to_JSON())
@@ -192,11 +200,10 @@ def create_report(args):
                 if j >= 0:
                     line = line.replace('"@SORT@"', '"' + sort_option + '"')
 
-                o.write(line)
+                o.write(f"{line}\n")
 
 
 def create_session_dict(args, table, trackjson):
-
     ''' Create a dictionary of igv.js session objects, one for each variant '''
 
     session_dict = {}
@@ -275,7 +282,8 @@ def create_session_dict(args, table, trackjson):
 
             if region2 is not None:
                 data2 = sequence_reader.slice(region2)
-                fa += '\n' + '>' + chr2 + ':' + str(start2) + '-' + str(end2) + '\n' + data2
+                length2 = sequence_reader.get_reference_length(chr2)
+                fa += '\n' + '>' + chr2 + ':' + str(start2) + '-' + str(end2) + ' @len=' + str(length2) + '\n' + data2
 
             fasta_uri = datauri.get_data_uri(fa)
             fastaJson = {
@@ -298,11 +306,10 @@ def create_session_dict(args, table, trackjson):
                 if region2 is not None:
                     initial_locus += f' {locus_string(feature.chr2, feature.start2, feature.end2, args.window)}'
 
-
             # Loop through track configs
             tracks = []
             if args.translate_sequence_track:
-                tracks.append({ "type":"sequence", "frameTranslate": True })
+                tracks.append({"type": "sequence", "frameTranslate": True})
             roi = []
             track_order = 1
             idx = 0
@@ -330,9 +337,9 @@ def create_session_dict(args, table, trackjson):
                 if (config["type"] == "alignment"):
                     if "height" not in config:
                         config["height"] = 500
-                        
+
                     is_snv = feature.end is not None and feature.end - feature.start == 1
-                    
+
                     if (config["type"]) == "alignment" and (args.sort is not None or is_snv) and (
                             args.sort != 'NONE'):
                         sort_option = 'BASE' if args.sort is None else args.sort.upper()
@@ -369,7 +376,6 @@ def create_session_dict(args, table, trackjson):
 
 # Create an igv session config object.  This is used for no-embed reports
 def create_noembed_session(args, trackjson):
-
     if args.fasta is not None:
         reference = {
             "fastaURL": args.fasta
@@ -383,7 +389,6 @@ def create_noembed_session(args, trackjson):
         }
     else:
         raise ValueError('Must specify either fasta or twobit')
-
 
     if args.ideogram is not None:
         reference["cytobandURL"] = args.ideogram
@@ -465,7 +470,7 @@ def locus_string(chr, start, end, window):
 
     if window is not None:
         window = int(window)
-        return f'{chr}:{start + 1 - window/2}-{end+window/2}'
+        return f'{chr}:{start + 1 - window / 2}-{end + window / 2}'
     else:
         if (end - start) == 1:
             return f'{chr}:{start + 1}'
@@ -475,7 +480,6 @@ def locus_string(chr, start, end, window):
 
 # Potentially add an index URL to a track config.  The "format" field must be set before calling this function
 def add_index(config):
-
     if "url" not in config or "indexURL" in config:
         return
 
@@ -509,6 +513,7 @@ def add_index(config):
     if indexURL is not None:
         config["indexURL"] = indexURL
 
+
 def igv_user_agent():
     """
     Identify igv-reports via user agent.
@@ -517,8 +522,15 @@ def igv_user_agent():
     """
     return 'IGV'
 
+
 requests.utils.default_user_agent = igv_user_agent
 
+def read_contents(file_path):
+    """Reads the contents of a file and returns it as a string."""
+    if not os.path.exists(file_path):
+        raise FileNotFoundError("File not found: " + file_path)
+    with open(file_path, 'r') as file:
+        return file.read()
 
 def main():
     parser = argparse.ArgumentParser()
@@ -531,7 +543,8 @@ def main():
                         help="reference twobit file. One of either --fasta, --twobit, or --genome is required.")
     parser.add_argument("--genome", help="igv.js genome id (e.g. hg38)")
 
-    parser.add_argument("--type", help="Report type.  Possible values are mutation, junction, and fusion.  Default is mutation")
+    parser.add_argument("--type",
+                        help="Report type.  Possible values are mutation, junction, and fusion.  Default is mutation")
     parser.add_argument("--ideogram", help="ideogram file in UCSC cytoIdeo format")
     parser.add_argument("--tracks", nargs="+", help="list of track files")
     parser.add_argument("--track-config", nargs="+", help="track json file")
@@ -548,9 +561,13 @@ def main():
     parser.add_argument("--sample-columns", nargs="+",
                         help="list of VCF sample (genomtype) FORMAT field names to include in variant table")
     parser.add_argument("--flanking", help="genomic region to include either side of variant", default=1000)
-    parser.add_argument("--window", help="initial visible window size (genomic region) in bp.  If not supplied igv.js default applies (41 bp).", default=None)
+    parser.add_argument("--window",
+                        help="initial visible window size (genomic region) in bp.  If not supplied igv.js default applies (41 bp).",
+                        default=None)
     parser.add_argument("--standalone", help="embed javascript as well as data in output html", action='store_true')
-    parser.add_argument("--title", help="optional title string")
+    parser.add_argument("--title", help="optional title string.  Inserted into the html title tag")
+    parser.add_argument("--header", help="optional header html string.  Inserted into the document before the variant table")
+    parser.add_argument("--footer", help="optional footer html string.  Inserted into the document below the igv.js viewer")
     parser.add_argument("--sequence", help="Column of sequence (chromosome) name.  For tab-delimited sites file.",
                         default=None)
     parser.add_argument("--begin", help="Column of start position.  For tab-delimited sites file.", default=None)
@@ -562,8 +579,10 @@ def main():
     parser.add_argument("--exclude-flags", type=int,
                         help="Passed to samtools to filter alignments.  For BAM and CRAM files.", default=1536)
     parser.add_argument("--no-embed", help="Do not embed fasta or track data.  This is not common", action="store_true")
-    parser.add_argument("--subsample", type=float,  help="Subsample bam files, keeping fraction of input alignments as indicated by input value in the range of 0.0 - 1.0")
-    parser.add_argument("--maxlen", type=int, default=10000, help="Maximum length of variant for single  view. Variants exceeding this lenght will be presented in split-screen (multilocus) view")
+    parser.add_argument("--subsample", type=float,
+                        help="Subsample bam files, keeping fraction of input alignments as indicated by input value in the range of 0.0 - 1.0")
+    parser.add_argument("--maxlen", type=int, default=10000,
+                        help="Maximum length of variant for single  view. Variants exceeding this lenght will be presented in split-screen (multilocus) view")
     parser.add_argument("--translate-sequence-track", help="Three-frame Translate sequence track", action="store_true")
     parser.add_argument("--tabulator", help="Enable Tabulator table with advanced filtering", action="store_true")
     parser.add_argument("--filter-config", help="YAML configuration file for column-specific filtering")

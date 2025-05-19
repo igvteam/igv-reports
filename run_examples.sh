@@ -1,21 +1,16 @@
-echo genome
-python igv_reports/report.py test/data/variants/variants.vcf.gz \
---genome hg38 \
---flanking 1000 \
---info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
---tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam \
---output docs/examples/example_genome.html
 
 echo fasta
 #### Create a variant report from a VCF file: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_vcf.html))
 python igv_reports/report.py test/data/variants/variants.vcf.gz \
---fasta https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa \
---ideogram test/data/hg38/cytoBandIdeo.txt \
+--genome hg38
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
 --samples reads_1_fastq \
 --sample-columns DP GQ \
 --tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam test/data/hg38/refGene.txt.gz \
+--title "IGV Variant Inspector" \
+--header test/data/example_header.html \
+--footer test/data/example_footer.html
 --output docs/examples/example_vcf.html
 
 
@@ -63,8 +58,10 @@ echo sv
 python igv_reports/report.py test/data/variants/SKBR3_Sniffles_tra.vcf \
 --genome hg19 \
 --flanking 1000 \
---tracks test/data/variants/SKBR3_Sniffles_tra.vcf test/data/variants/SKBR3.ill.bam \
---output docs/examples/example_tra_sv.html
+--maxlen 10500 \
+--info-columns SVLEN \
+--tracks test/data/variants/SKBR3_Sniffles_sv.vcf test/data/variants/SKBR3_translocations.ill.bam \
+--output example_sv.html
 
 ####  Create a structural variant report from a bedpe file with two locations (BEDPE format): ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_bedpe.html))
 echo bedpe
@@ -146,5 +143,5 @@ echo no-embed
 python igv_reports/report.py test/data/variants/variants.vcf.gz \
 --genome hg38 \
 --no-embed \
---tracks https://igv-genepattern-org.s3.amazonaws.com/test/reports/variants.vcf.gz https://igv-genepattern-org.s3.amazonaws.com/test/reports/recalibrated.bam \
+--tracks https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/master/test/data/variants/variants.vcf.gz https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/master/test/data/variants/recalibrated.bam \
 --output docs/examples/example_noembed.html
