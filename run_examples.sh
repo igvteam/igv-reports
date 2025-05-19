@@ -1,8 +1,8 @@
 
-echo fasta
+
 #### Create a variant report from a VCF file: ([Example output](https://igv.org/igv-reports/examples/1.5.1/example_vcf.html))
 python igv_reports/report.py test/data/variants/variants.vcf.gz \
---genome hg38
+--genome hg38 \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
 --samples reads_1_fastq \
@@ -10,8 +10,16 @@ python igv_reports/report.py test/data/variants/variants.vcf.gz \
 --tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam test/data/hg38/refGene.txt.gz \
 --title "IGV Variant Inspector" \
 --header test/data/example_header.html \
---footer test/data/example_footer.html
---output docs/examples/example_vcf.html
+--footer test/data/example_footer.html \
+--output docs/examples/example_vcf.html \
+
+#### VCF with genotypes and sample information
+python igv_reports/report.py test/data/variants/1kg_genotypes.vcf \
+--genome hg19 \
+--sampleinfo test/data/variants/1kg_sampleinfo.txt \
+--tracks test/data/variants/1kg_genotypes.vcf \
+--output docs/examples/example_sampleinfo.html
+
 
 
 echo config
@@ -68,7 +76,7 @@ echo bedpe
 python igv_reports/report.py test/data/variants/SKBR3_Sniffles_tra.bedpe \
 --genome hg19 \
 --flanking 1000 \
---tracks test/data/variants/SKBR3_Sniffles_variants_tra.vcf test/data/variants/SKBR3.ill.bam \
+--tracks test/data/variants/SKBR3_Sniffles_variants_tra.vcf test/data/variants/SKBR3_translocations.ill.bam \
 --output docs/examples/example_bedpe.html
 
 

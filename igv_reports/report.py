@@ -129,7 +129,7 @@ def create_report(args):
 
     # Create the session dictionary json, containing a session object for each variant
     else:
-        session_dict = json.dumps(create_session_dict(args, table, trackjson))
+        session_dict = json.dumps(create_session_dict(args, table, trackjson, args.sampleinfo))
 
     # Generate the HTML
     template_file = args.template
@@ -200,10 +200,10 @@ def create_report(args):
                 if j >= 0:
                     line = line.replace('"@SORT@"', '"' + sort_option + '"')
 
-                o.write(f"{line}\n")
+                o.write(line)
 
 
-def create_session_dict(args, table, trackjson):
+def create_session_dict(args, table, trackjson, sampleinfo):
     ''' Create a dictionary of igv.js session objects, one for each variant '''
 
     session_dict = {}
@@ -366,6 +366,14 @@ def create_session_dict(args, table, trackjson):
             if len(roi) > 0:
                 session_json["roi"] = roi
 
+            # --sampleinfo argument
+            if args.sampleinfo is not None:
+                sampleinfoJson = []
+                for si in args.sampleinfo:
+                    data = utils.get_content_as_utf8(si)
+                    sampleinfoJson.append({"url": datauri.get_data_uri(data)})
+                session_json["sampleinfo"] = sampleinfoJson
+
             # Build the session data URI
             session_string = json.dumps(session_json)
             session_uri = datauri.get_data_uri(session_string)
@@ -406,6 +414,12 @@ def create_noembed_session(args, trackjson):
     }
     if len(roi) > 0:
         session["roi"] = roi
+
+    if args.sampleinfo is not None:
+        sampleinfoJson = []
+        for si in args.sampleinfo:
+            sampleinfoJson.append({"url": si})
+        session["sampleinfo"] = sampleinfoJson
 
     return session
 
@@ -556,6 +570,7 @@ def main():
     parser.add_argument("--info-columns", nargs="+", help="list of VCF info field names to include in variant table")
     parser.add_argument("--info-columns-prefixes", nargs="+",
                         help="list of prefixes of VCF info field names to include in variant table")
+    parser.add_argument("--sampleinfo", nargs="+", help="list of sample information files")
     parser.add_argument("--samples", nargs="+",
                         help="Space delimited list of sample (i.e. genotypes) names.  Used in conjunction with --sample-columns")
     parser.add_argument("--sample-columns", nargs="+",

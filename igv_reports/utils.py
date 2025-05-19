@@ -1,5 +1,6 @@
-from . import feature, bam, vcf, wig
 from os import path
+from build.lib.igv_reports.stream import getstream
+from . import feature, bam, vcf, wig
 
 def getreader(config, filetype=None, args = None):
 
@@ -43,3 +44,17 @@ def resolve_relative_path(path1, path2):
         else:
             dir = path.dirname(path1)
             return path.join(dir, path2)
+
+
+def get_content_as_utf8(source):
+    """
+    Reads the content from a local file or a URL and returns it as a UTF-8 string.
+
+    Args:
+        source (str): The local file path or URL.
+
+    Returns:
+        str: The content as a UTF-8 string.
+    """
+    f = getstream(source)
+    return f.read()

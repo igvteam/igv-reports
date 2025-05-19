@@ -62,11 +62,11 @@ are described below. Although _--tracks_ is optional, a typical report will incl
     * __--tracks__ LIST. Space-delimited list of track files, see below for supported formats. If both *tracks* and
       *track-config* are specified *tracks* will appear first by default.
     * __--track-config__  FILE. File containing array of json configuration objects for igv.js tracks. See
-      the [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details. This option allows
+      the [igv.js documentation](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details. This option allows
       customization of track parameters. When using this option, the track ```url``` and ```indexURL``` properties
       should be set to the paths of the respective files.
-    * __--roi__ LIST. Space-delimited list of region-of-interest (ROI) files.
-      See [igv.js wiki](https://github.com/igvteam/igv.js/wiki/Regions-of-Interest).
+    * __--roi__ LIST. Space-delimited list of region-of-interest (ROI) files. See the [igv.js documentation](https://igv.org/doc/igvjs/#Regions-of-Interest/).
+    * __--sampleinfo__ LIST. Space delimited list of sample information files. See the [igv.js documentation](https://igv.org/doc/igvjs/#SampleInfo/).
     * __--template__ FILE. HTML template file.
     * __--output__ FILE. Output file name; default="igvjs_viewer.html".
     * __--info-columns__ LIST. Space delimited list of info field names to include in the variant table. If __sites__ is
@@ -133,6 +133,20 @@ create_report test/data/variants/variants.vcf.gz \
 
 ```
 
+#### Create a variant report from a VCF file with genotypes and sample information
+
+```bash
+#### VCF with genotypes and sample information
+create_report test/data/variants/1kg_genotypes.vcf \
+--genome hg19 \
+--sampleinfo test/data/variants/1kg_sampleinfo.txt \
+--tracks test/data/variants/1kg_genotypes.vcf \
+--output docs/examples/example_sampleinfo.html
+
+
+```
+
+
 #### Create a variant report from a BED  file: ([Example output](https://igvteam.github.io/igv-reports/examples/example_bed.html))
 
 ```bash
@@ -190,7 +204,7 @@ create_report test/data/variants/SKBR3_Sniffles_tra.vcf \
 create_report test/data/variants/SKBR3_Sniffles_tra.bedpe \
 --genome hg19 \
 --flanking 1000 \
---tracks test/data/variants/SKBR3_Sniffles_variants_tra.vcf test/data/variants/SKBR3.ill.bam \
+--tracks test/data/variants/SKBR3_Sniffles_variants_tra.vcf test/data/variants/SKBR3_translocations.ill.bam \
 --output example_bedpe.html
 ```
 

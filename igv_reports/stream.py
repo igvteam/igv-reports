@@ -1,7 +1,6 @@
 import gzip
 import io
 import requests
-from os.path import exists
 
 def getstream(file):
     # TODO -- gcs
