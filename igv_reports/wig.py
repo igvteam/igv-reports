@@ -77,42 +77,42 @@ def parse_wig(path):
     seq_names = []
     current_type = None
     fixed_index = 0
-    for s in f:
-        if s.startswith('#'):
+    for line in f:
+        if line.startswith('#'):
             continue
-        elif s.startswith('track') and track_header is None:
+        elif line.startswith('track') and track_header is None:
             # this should only be on one (the first) line
             # ignores if it is redefined later in the file
-            track_header = s
+            track_header = line
             continue
-        elif s.startswith('fixedStep'):
+        elif line.startswith('fixedStep'):
             # chrom, start, step, span
-            step_header_string = s
+            step_header_string = line
             step_header = parse_wig_header(step_header_string)
             current_type = 'fixed'
             seq_features[step_header_string] = []
             fixed_index = 0
             seq_names.append(step_header['chrom'])
             continue
-        elif s.startswith('variableStep'):
+        elif line.startswith('variableStep'):
             # need to get chrom and span (optional, default to 1)
             # positions are inferred from 
-            step_header_string = s
+            step_header_string = line
             step_header = parse_wig_header(step_header_string)
             current_type = 'variable'
             seq_features[step_header_string] = []
             seq_names.append(step_header['chrom'])
             continue
-        s_fields = s.strip().split()
+        s_fields = line.strip().split()
         if current_type == 'fixed':
             start = int(step_header['start']) + (fixed_index * int(step_header['step']))
             fixed_index += 1
             end = start + int(step_header['span'])
-            seq_features[step_header_string].append(Feature(step_header['chrom'], start, end, s, ''))
+            seq_features[step_header_string].append(Feature(step_header['chrom'], start, end, line, ''))
         elif current_type == 'variable':
             start = int(s_fields[0])
             end = start + int(step_header['span'])
-            seq_features[step_header_string].append(Feature(step_header['chrom'], start, end, s, ''))
+            seq_features[step_header_string].append(Feature(step_header['chrom'], start, end, line, ''))
     #igv.js does not enforce the UCSC track line requirement for wig tracks
     if not track_header:
         track_header = ''
