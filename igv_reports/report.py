@@ -528,17 +528,6 @@ def add_index(config):
         config["indexURL"] = indexURL
 
 
-def igv_user_agent():
-    """
-    Identify igv-reports via user agent.
-
-    :rtype: str
-    """
-    return 'IGV'
-
-
-requests.utils.default_user_agent = igv_user_agent
-
 def read_contents(file_path):
     """Reads the contents of a file and returns it as a string."""
     if not os.path.exists(file_path):

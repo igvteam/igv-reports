@@ -116,3 +116,7 @@ venv.bak/
 
 /publish_examples.sh
 /issue_82/
+/test/data/variants/recalibrated.cram
+/test/data/variants/recalibrated.cram.crai
+/test/data/variants/hg38.fa.fai
+/test/data/variants/hg38.fa

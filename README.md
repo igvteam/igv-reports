@@ -284,7 +284,7 @@ python igv_reports/report.py test/data/annotated_vcf/consensus.filtered.ann.vcf 
 
 ```bash
 create_report test/data/variants/variants.vcf.gz \
---fasta https://igv-genepattern-org.s3.amazonaws.com/genomes/seq/hg38/hg38.fa \
+--fasta  https://igv.org/genomes/data/hg38/hg38.fa  \
 --ideogram test/data/hg38/cytoBandIdeo.txt \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
