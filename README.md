@@ -253,7 +253,7 @@ create_report test/data/fusion/igv.fusion_inspector_web.json \
 --fasta test/data/fusion/igv.genome.fa  \
 --template igv_reports/templates/fusion_template.html  \  
 --track-config test/data/fusion/tracks.json  \
---output example_fusion.html
+--output example_fusions.html
 ```
 
 #### Create a report containing wig and bedgraph files
@@ -284,15 +284,15 @@ python igv_reports/report.py test/data/annotated_vcf/consensus.filtered.ann.vcf 
 
 ```bash
 create_report test/data/variants/variants.vcf.gz \
---fasta  https://igv.org/genomes/data/hg38/hg38.fa  \
+--genome  hg38  \
 --ideogram test/data/hg38/cytoBandIdeo.txt \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
 --samples reads_1_fastq \
 --sample-columns DP GQ \
---tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam test/data/hg38/refGene.txt.gz \
+--tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam \
 --tabulator \
---filter-config test/data/variants/filter_config.yaml
+--filter-config test/data/variants/filter_config.yaml \
 --output example_vcf_tabulator.html
 ```
 
