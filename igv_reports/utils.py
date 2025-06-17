@@ -1,5 +1,5 @@
 from os import path
-from build.lib.igv_reports.stream import getstream
+from .stream import getstream
 from . import feature, bam, vcf, wig
 
 def getreader(config, filetype=None, args = None):
