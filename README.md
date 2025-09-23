@@ -43,7 +43,7 @@ are described below. Although _--tracks_ is optional, a typical report will incl
     * __sites__   VCF, BED, MAF, BEDPE, or generic tab delimited file of genomic variant sites. Tabix indexed files are
       supported and strongly recommended for large files.
     * __--fasta__   Reference fasta file; must be indexed. One of either --fasta, --twobit, or --genome is required.
-    * __--twobit__  Reference twobit sequence file.  
+    * __--twobit__  Reference twobit sequence file.
     * __--genome__  An igv.js genome identifier (e.g. hg38). If supplied sequence, ideogram, and the default annotation
       track for the specified genome will be used.*
 
@@ -65,8 +65,10 @@ are described below. Although _--tracks_ is optional, a typical report will incl
       the [igv.js documentation](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details. This option allows
       customization of track parameters. When using this option, the track ```url``` and ```indexURL``` properties
       should be set to the paths of the respective files.
-    * __--roi__ LIST. Space-delimited list of region-of-interest (ROI) files. See the [igv.js documentation](https://igv.org/doc/igvjs/#Regions-of-Interest/).
-    * __--sampleinfo__ LIST. Space delimited list of sample information files. See the [igv.js documentation](https://igv.org/doc/igvjs/#SampleInfo/).
+    * __--roi__ LIST. Space-delimited list of region-of-interest (ROI) files. See
+      the [igv.js documentation](https://igv.org/doc/igvjs/#Regions-of-Interest/).
+    * __--sampleinfo__ LIST. Space delimited list of sample information files. See
+      the [igv.js documentation](https://igv.org/doc/igvjs/#SampleInfo/).
     * __--template__ FILE. HTML template file.
     * __--output__ FILE. Output file name; default="igvjs_viewer.html".
     * __--info-columns__ LIST. Space delimited list of info field names to include in the variant table. If __sites__ is
@@ -98,6 +100,8 @@ are described below. Although _--tracks_ is optional, a typical report will incl
     * __--translate-sequence-track__ Three-frame Translate sequence track
     * __--tabulator__ Use the tabulator template for the table
     * __--filter-config__ YAML config file for column setup for tabulator.
+    * __--merge-overlaps__ Merge overlapping intervals in multi-locus files such as bedpe. If set bedpe features with
+      overlapping regions will be presented in a single locus view. Default is false.
 
 **Track file formats:**
 
@@ -145,7 +149,6 @@ create_report test/data/variants/1kg_genotypes.vcf \
 
 
 ```
-
 
 #### Create a variant report from a BED  file: ([Example output](https://igvteam.github.io/igv-reports/examples/example_bed.html))
 
@@ -208,7 +211,6 @@ create_report test/data/variants/SKBR3_Sniffles_tra.bedpe \
 --output example_bedpe.html
 ```
 
-
 #### Create a variant report with tracks defined in an [igv.js track config json file](https://github.com/igvteam/igv-reports/tree/master/test/data/variants/trackConfigs.json): ([Example output](https://igvteam.github.io/igv-reports/examples/example_config.html))
 
 ``` bash
@@ -267,7 +269,8 @@ create_report test/data/wig/regions.bed \
 
 ```
 
-#### Use of ```info-columns-prefixes``` option. Variant track only, no alignments. ([Example output](https://igvteam.github.io/igv-reports/examples/example_ann.html))
+#### Use of
+```info-columns-prefixes``` option. Variant track only, no alignments. ([Example output](https://igvteam.github.io/igv-reports/examples/example_ann.html))
 
 ```bash
 python igv_reports/report.py test/data/annotated_vcf/consensus.filtered.ann.vcf \
@@ -278,7 +281,6 @@ python igv_reports/report.py test/data/annotated_vcf/consensus.filtered.ann.vcf 
 --tracks test/data/annotated_vcf/consensus.filtered.ann.vcf \
 --output example_ann.html 
 ```
-
 
 #### Create a variant report from a VCF file with Tabulator Template: ([Example output](https://igvteam.github.io/igv-reports/examples/example_vcf_tabulator.html))
 
@@ -296,8 +298,11 @@ create_report test/data/variants/variants.vcf.gz \
 --output example_vcf_tabulator.html
 ```
 
-filter-config file contains the column options that's passed to the [tabulator's column setup](https://tabulator.info/docs/6.3/columns#definition).
-The main purpose of this is to define more fitting filters for the columns. Consult the [header filters part of the tabulator documantation](https://tabulator.info/docs/6.3/filter#header) for possible header filters.
+filter-config file contains the column options that's passed to
+the [tabulator's column setup](https://tabulator.info/docs/6.3/columns#definition).
+The main purpose of this is to define more fitting filters for the columns. Consult
+the [header filters part of the tabulator documantation](https://tabulator.info/docs/6.3/filter#header) for possible
+header filters.
 
 İ.e. dropdown filter can be defined like so:
 
@@ -313,7 +318,8 @@ columns:
       clearable: true
 ```
 
-#### Use ```--exclude-flags``` option to include duplicate alignments in report by specifying a samtools `--exclude-flags` value. Default value is 1536 which filters duplicates and vendor-failed reads.
+#### Use ```--exclude-flags``` option to include duplicate alignments in report by specifying a samtools
+`--exclude-flags` value. Default value is 1536 which filters duplicates and vendor-failed reads.
 
 ```bash
 create_report test/data/dups/dups.bed \
@@ -360,4 +366,4 @@ create_datauri --region chr5:474,969-475,009 test/data/variants/recalibrated.bam
 create_datauri --region chr5:474,969-475,009 https://1000genomes.s3.amazonaws.com/phase3/data/NA12878/alignment/NA12878.mapped.ILLUMINA.bwa.CEU.low_coverage.20121211.bam
 ```
 
-## [_Release Notes_](https://github.com/igvteam/igv-reports/releases)
+## [_Release Notes_](source venv/bin/activatehttps://github.com/igvteam/igv-reports/releases)

@@ -1,25 +1,26 @@
-import os
-import sys
+import argparse
 import json
 import math
-import argparse
-import yaml
+import os
+import sys
 from urllib.request import urlopen
+
+import yaml
+
 from igv_reports import datauri, tracks, utils, feature
-from igv_reports.varianttable import VariantTable
 from igv_reports.bedtable import BedTable
 from igv_reports.bedtable import BedpeTable
 from igv_reports.bedtable import JunctionBedTable
-from igv_reports.generictable import GenericTable
-from igv_reports.regions import parse_region
 from igv_reports.fasta import FastaReader
-from igv_reports.ideogram import IdeogramReader
+from igv_reports.generictable import GenericTable
 from igv_reports.genome import get_genome
-from igv_reports.tracks import get_track_type, is_format_supported
+from igv_reports.ideogram import IdeogramReader
+from igv_reports.regions import parse_region
 from igv_reports.stream import resource_exists
-from igv_reports.utils import resolve_relative_path
+from igv_reports.tracks import get_track_type, is_format_supported
 from igv_reports.twobit import TwoBitReader
-import requests
+from igv_reports.utils import resolve_relative_path
+from igv_reports.varianttable import VariantTable
 
 '''
 Create an html report.  This is the main function for the application.
@@ -227,7 +228,7 @@ def create_session_dict(args, table, trackjson, sampleinfo):
         ideogram_reader = None
 
     # loop through regions defined from variant, annotation, or bedpe files,  creating an igv.js session for each one
-    flanking = 0
+    flanking = 1000
     if args.flanking is not None:
         flanking = float(args.flanking)
     i = 0
@@ -258,22 +259,24 @@ def create_session_dict(args, table, trackjson, sampleinfo):
             else:
                 chr = feature.chr
 
-                if feature.start is not None:
-                    start = int(math.floor(feature.start - flanking / 2))
-                    start = max(start, 1)  # bound start to 1
-                else:
-                    start = None
+                start = max(1, int(math.floor(feature.start - flanking / 2))) if feature.start is not None else None
                 end = int(math.ceil(feature.end + flanking / 2)) if feature.end is not None else None
 
                 region = {"chr": chr, "start": start, "end": end}
+                region2 = None
 
                 # If feature has a second locus (bedpe file) create the region here.
                 if hasattr(feature, 'chr2') and feature.chr2 is not None:
                     chr2 = feature.chr2
-                    start2 = int(math.floor(feature.start2 - flanking / 2))
-                    start2 = max(start2, 1)  # bound start to 1
-                    end2 = int(math.ceil(feature.end2 + flanking / 2))
-                    region2 = {"chr": chr2, "start": start2, "end": end2}
+                    start2 = max(1, int(math.floor(feature.start2 - flanking / 2))) if feature.start2 is not None else None
+                    end2 = int(math.ceil(feature.end2 + flanking / 2)) if feature.end2 is not None else None
+
+                    # If regions are on the same chromosome and overlap, merge them.  This is for data storage, initial locus is set elsewhere.
+                    if chr2 == chr and all(v is not None for v in [start, end, start2, end2]) and start <= end2 and end >= start2:
+                        start, end = min(start, start2), max(end, end2)
+                        region = {"chr": chr, "start": start, "end": end}
+                    else:
+                        region2 = {"chr": chr2, "start": start2, "end": end2}
 
             # Sequence
             data = sequence_reader.slice(region)
@@ -298,13 +301,26 @@ def create_session_dict(args, table, trackjson, sampleinfo):
                 ideo_uri = datauri.get_data_uri(ideo_string)
                 fastaJson["cytobandURL"] = ideo_uri
 
-            # Initial locus
+            # Initial locus  -- ths is based on the feature or viewport, not the region which includes flanking sequence
             if (hasattr(feature, "viewport")):
                 initial_locus = feature.viewport
             else:
-                initial_locus = locus_string(feature.chr, feature.start, feature.end, args.window)
-                if region2 is not None:
-                    initial_locus += f' {locus_string(feature.chr2, feature.start2, feature.end2, args.window)}'
+                if not hasattr(feature, 'chr2') or feature.chr2 is None:
+                    # Single locus feature
+                    initial_locus = locus_string(feature.chr, feature.start, feature.end, args.window)
+                else:
+                    # Bedpe feature with two loci
+                    locus1 = locus_string(feature.chr, feature.start, feature.end, args.window)
+                    locus2 = locus_string(feature.chr2, feature.start2, feature.end2, args.window)
+
+                    # Check for overlap to determine if loci should be merged or concatenated
+                    if args.merge_overlaps and feature.chr2 == feature.chr and feature.start <= feature.end2 and feature.end >= feature.start2:
+                        merged_start = min(feature.start, feature.start2)
+                        merged_end = max(feature.end, feature.end2)
+                        initial_locus = locus_string(feature.chr, merged_start, merged_end, args.window)
+                    else:
+                        initial_locus = f'{locus1} {locus2}'
+
 
             # Loop through track configs
             tracks = []
@@ -535,6 +551,7 @@ def read_contents(file_path):
     with open(file_path, 'r') as file:
         return file.read()
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("sites", help="vcf file defining variants, required")
@@ -570,8 +587,10 @@ def main():
                         default=None)
     parser.add_argument("--standalone", help="embed javascript as well as data in output html", action='store_true')
     parser.add_argument("--title", help="optional title string.  Inserted into the html title tag")
-    parser.add_argument("--header", help="optional header html string.  Inserted into the document before the variant table")
-    parser.add_argument("--footer", help="optional footer html string.  Inserted into the document below the igv.js viewer")
+    parser.add_argument("--header",
+                        help="optional header html string.  Inserted into the document before the variant table")
+    parser.add_argument("--footer",
+                        help="optional footer html string.  Inserted into the document below the igv.js viewer")
     parser.add_argument("--sequence", help="Column of sequence (chromosome) name.  For tab-delimited sites file.",
                         default=None)
     parser.add_argument("--begin", help="Column of start position.  For tab-delimited sites file.", default=None)
@@ -590,6 +609,7 @@ def main():
     parser.add_argument("--translate-sequence-track", help="Three-frame Translate sequence track", action="store_true")
     parser.add_argument("--tabulator", help="Enable Tabulator table with advanced filtering", action="store_true")
     parser.add_argument("--filter-config", help="YAML configuration file for column-specific filtering")
+    parser.add_argument("--merge-overlaps", help="Merge overlapping regions for multi-locus features (e.g. bedpe)", action="store_true")
 
     args = parser.parse_args()
 
