@@ -1,4 +1,7 @@
+import os
+
 import pysam
+import tempfile
 from igv_reports.chralias import build_aliastable
 
 class BamReader:
@@ -16,7 +19,7 @@ class BamReader:
     # sam flag supports unit tests
     def slice(self, region=None, region2=None, sam = False):
 
-        samargs = ["-h", self.filename] if sam else ["-b", "-h", self.filename]
+        samargs = ["-h", self.filename] #if sam else ["-b", "-h", self.filename]
 
         if self.args is not None and self.args.subsample is not None:
             samargs.append("--subsample")
@@ -46,7 +49,42 @@ class BamReader:
             range_string = self.get_chrname(region2['chr']) + ":" + str(region2['start']) + "-" + str(region2['end'])
             samargs.append(range_string)
 
-        return pysam.view(*samargs)
+        sam_string = pysam.view(*samargs)
+
+        # Rewrite sam header removing all unnecessary lines
+        lines = sam_string.split('\n')
+        newlines = []
+        for line in lines:
+            if line.startswith('@HD') or line.startswith('@RG'):
+                newlines.append(line)
+            elif line.startswith('@SQ'):
+                idx1 = line.find("SN:")
+                if idx1 > 0:
+                    idx2 = line.find("\t", idx1)
+                    sn = line[idx1+3:idx2]
+                    if (region and sn == self.get_chrname(region['chr'])) or \
+                       (region2 and sn == self.get_chrname(region2['chr'])):
+                        newlines.append(line)
+            elif not line.startswith('@'):
+                newlines.append(line)
+
+        sam_string = '\n'.join(newlines)
+
+        if sam:
+            return sam_string
+
+         # convert to bam bytes
+        with tempfile.NamedTemporaryFile(mode='w+', suffix='.sam', delete=False) as sam_file:
+            sam_file.write(sam_string)
+            sam_file.flush()
+            sam_filename = sam_file.name
+        try:
+            bam_bytes = pysam.view('-b', sam_filename, catch_stdout=True)
+        finally:
+            os.remove(sam_filename)
+        return bam_bytes
+
+
 
     def get_chrname(self, c):
         if c in self.aliastable:
