@@ -19,7 +19,7 @@ class BamReader:
     # sam flag supports unit tests
     def slice(self, region=None, region2=None, sam = False):
 
-        samargs = ["-h", self.filename] #if sam else ["-b", "-h", self.filename]
+        samargs = ["-h", self.filename]
 
         if self.args is not None and self.args.subsample is not None:
             samargs.append("--subsample")
