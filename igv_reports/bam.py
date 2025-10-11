@@ -73,7 +73,7 @@ class BamReader:
         if sam:
             return sam_string
 
-         # convert to bam bytes
+        # convert to bam bytes
         with tempfile.NamedTemporaryFile(mode='w+', suffix='.sam', delete=False) as sam_file:
             sam_file.write(sam_string)
             sam_file.flush()
