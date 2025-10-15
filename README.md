@@ -206,7 +206,7 @@ create_report test/data/variants/SKBR3_Sniffles_tra.vcf \
 
 create_report test/data/variants/SKBR3_Sniffles_tra.bedpe \
 --genome hg19 \
---flanking 1000 \
+--flanking 2000 \
 --tracks test/data/variants/SKBR3_Sniffles_variants_tra.vcf test/data/variants/SKBR3_translocations.ill.bam \
 --output example_bedpe.html
 ```
@@ -366,4 +366,4 @@ create_datauri --region chr5:474,969-475,009 test/data/variants/recalibrated.bam
 create_datauri --region chr5:474,969-475,009 https://1000genomes.s3.amazonaws.com/phase3/data/NA12878/alignment/NA12878.mapped.ILLUMINA.bwa.CEU.low_coverage.20121211.bam
 ```
 
-## [_Release Notes_](source venv/bin/activatehttps://github.com/igvteam/igv-reports/releases)
+## [_Release Notes_](https://github.com/igvteam/igv-reports/releases)

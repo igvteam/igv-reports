@@ -40,7 +40,7 @@
         }
 
         tr:hover {
-            background-color: lightblue;
+            background-color: #e0e0e0;;
         }
 
         th {
@@ -150,15 +150,6 @@
     </div>
 </div>
 
-<!--
-Remove igv.js script tag in header and uncomment for local debugging.  "igv.js" is the root directory of a  local
-igv.js repository.  Adjust path as neccessary
-
-
-<script type="module">
-      import igv from "./igv.js/js/index.js";
--->
-
 <script type="text/javascript">
 
     const tableJson = "@TABLE_JSON@"
@@ -221,7 +212,7 @@ igv.js repository.  Adjust path as neccessary
             const rowData = tableRows[i]
             const unique_id = rowData[0]
             const row = document.createElement("tr")
-            row.id = "row_" + unique_id
+            row.dataset.id = unique_id // Use data attribute
             tbody.appendChild(row)
 
             // First row selected by default
@@ -232,10 +223,9 @@ igv.js repository.  Adjust path as neccessary
                 for (let i = 0; i < list.length; i++) {
                     list[i].classList.remove("selected")
                 }
-                const rowID = event.target.parentElement.id
-                const row = document.getElementById(rowID)
-                row.classList.add("selected")
-                const uniqueId = rowID.substring(4)
+                const clickedRow = event.target.closest('tr')
+                clickedRow.classList.add("selected")
+                const uniqueId = clickedRow.dataset.id // Access data attribute
                 const session = sessionDictionary[uniqueId]
                 igvBrowser.loadSession({
                     url: session
@@ -244,7 +234,6 @@ igv.js repository.  Adjust path as neccessary
 
             for (let j = 1; j < headers.length; j++) {
                 cell = document.createElement("td")
-                //cell.rowID = i;
                 row.appendChild(cell)
                 cell.innerHTML = rowData[j]
             }
@@ -276,7 +265,7 @@ igv.js repository.  Adjust path as neccessary
                         v1 = v1.substr(3)
                         v2 = v2.substr(3)
                     }
-                    // always put empty columns at end of table when sorting            
+                    // always put empty columns at end of table when sorting
                     if (v1 == '' && v2 != '') {
                         return 1
                     }
@@ -287,7 +276,7 @@ igv.js repository.  Adjust path as neccessary
                     var isNumber = v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2)
                     ret = isNumber ? v1 - v2 : v1.toString().localeCompare(v2)
 
-                    // reverse ordering if not ascending order            
+                    // reverse ordering if not ascending order
                     if (!asc) {
                         ret = -1 * ret
                     }
@@ -298,6 +287,25 @@ igv.js repository.  Adjust path as neccessary
         }
 
     }
+
+    document.addEventListener('keydown', function (event) {
+        const selectedRow = document.querySelector('#variant_table tr.selected')
+        if (!selectedRow) {
+            return
+        }
+
+        if (event.key === 'ArrowLeft') {
+            const previousRow = selectedRow.previousElementSibling
+            if (previousRow) {
+                previousRow.click()
+            }
+        } else if (event.key === 'ArrowRight') {
+            const nextRow = selectedRow.nextElementSibling
+            if (nextRow) {
+                nextRow.click()
+            }
+        }
+    })
 
 
 </script>

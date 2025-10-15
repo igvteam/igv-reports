@@ -130,7 +130,7 @@ def create_report(args):
 
     # Create the session dictionary json, containing a session object for each variant
     else:
-        session_dict = json.dumps(create_session_dict(args, table, trackjson, args.sampleinfo))
+        session_dict = json.dumps(create_session_dict(args, table, trackjson))
 
     # Generate the HTML
     template_file = args.template
@@ -204,7 +204,7 @@ def create_report(args):
                 o.write(line)
 
 
-def create_session_dict(args, table, trackjson, sampleinfo):
+def create_session_dict(args, table, trackjson):
     ''' Create a dictionary of igv.js session objects, one for each variant '''
 
     session_dict = {}
@@ -596,7 +596,7 @@ def main():
     parser.add_argument("--begin", help="Column of start position.  For tab-delimited sites file.", default=None)
     parser.add_argument("--end", help="column of end position. For tab-delimited sites file.", default=None)
     parser.add_argument("--zero_based",
-                        help="Specify that the position in the data file is 0-based (e.g. UCSC files) rather than 1-based.",
+                        help="Specify that the position in the tab-delimited sites file is 0-based (e.g. UCSC files) rather than 1-based.",
                         default=None)
     parser.add_argument("--idlink", type=str, help="url link template for the VCF ID column")
     parser.add_argument("--exclude-flags", type=int,
@@ -605,7 +605,7 @@ def main():
     parser.add_argument("--subsample", type=float,
                         help="Subsample bam files, keeping fraction of input alignments as indicated by input value in the range of 0.0 - 1.0")
     parser.add_argument("--maxlen", type=int, default=10000,
-                        help="Maximum length of variant for single  view. Variants exceeding this lenght will be presented in split-screen (multilocus) view")
+                        help="Maximum length of variant for single  view. Variants exceeding this length will be presented in split-screen (multilocus) view")
     parser.add_argument("--translate-sequence-track", help="Three-frame Translate sequence track", action="store_true")
     parser.add_argument("--tabulator", help="Enable Tabulator table with advanced filtering", action="store_true")
     parser.add_argument("--filter-config", help="YAML configuration file for column-specific filtering")
