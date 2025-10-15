@@ -27,8 +27,13 @@ class VcfReader:
         vcf = self.file
 
         header = vcf.header
-
         fileString = str(header)
+
+        # Remove lines starting with '##Contig' or '##Alt'.  igv.js does not use these.
+        fileString = '\n'.join(
+            line for line in fileString.splitlines()
+            if not line.startswith(('##Contig', '##Alt'))
+        )
 
         if region == None:
             records = vcf.fetch()
