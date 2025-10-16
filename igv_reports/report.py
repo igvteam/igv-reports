@@ -279,14 +279,17 @@ def create_session_dict(args, table, trackjson):
                         region2 = {"chr": chr2, "start": start2, "end": end2}
 
             # Sequence
-            data = sequence_reader.slice(region)
+            # Expand sequence region to cover alignments overlapping ends.
+            regionSeq = {"chr": region["chr"], "start": max(0, region["start"] - 500), "end": region["end"] + 500}
+            data = sequence_reader.slice(regionSeq)
             length = sequence_reader.get_reference_length(chr)
-            fa = '>' + chr + ':' + str(start) + '-' + str(end) + ' @len=' + str(length) + '\n' + data
+            fa = '>' + chr + ':' + str(regionSeq["start"]) + '-' + str(regionSeq["end"]) + ' @len=' + str(length) + '\n' + data
 
             if region2 is not None:
+                regionSeq2 = {"chr": region2["chr"], "start": max(0, region2["start"] - 500), "end": region2["end"] + 500}
                 data2 = sequence_reader.slice(region2)
                 length2 = sequence_reader.get_reference_length(chr2)
-                fa += '\n' + '>' + chr2 + ':' + str(start2) + '-' + str(end2) + ' @len=' + str(length2) + '\n' + data2
+                fa += '\n' + '>' + chr2 + ':' + str(regionSeq2["start"]) + '-' + str(regionSeq2["end"]) + ' @len=' + str(length2) + '\n' + data2
 
             fasta_uri = datauri.get_data_uri(fa)
             fastaJson = {

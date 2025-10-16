@@ -116,7 +116,7 @@ repository [https://github.com/igvteam/igv-reports](https://github.com/igvteam/i
 downloaded as a zip archive
 here [https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip](https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip).
 It is assumed that the examples are run from the root directory of the repository. Output html is written to the
-examples directory.
+docs/examples directory.
 
 #### Create a variant report from a VCF file: ([Example output](https://igvteam.github.io/igv-reports/examples/example_vcf.html)) with title, header, and footer
 
