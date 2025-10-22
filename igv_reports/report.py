@@ -169,11 +169,11 @@ def create_report(args):
                 if args.title and line.strip().startswith("<title>"):
                     line = "<title>" + args.title + "</title>"
 
-                if args.header and line.strip().startswith("<!--header-->"):
-                    line = "<div>" + read_contents(args.header) + "</div>"
+                if args.header and line.strip().startswith("<body>"):
+                    line = "<body>" + read_contents(args.header)
 
-                if args.footer and line.strip().startswith("<!--footer-->"):
-                    line = "<div>" + read_contents(args.footer) + "</div>"
+                if args.footer and line.strip().startswith("</body>"):
+                    line = "</body>" + read_contents(args.footer)
 
                 j = line.find('"@TABLE_JSON@"')
                 if j >= 0:

@@ -1,5 +1,9 @@
 
-## Examples
+# Examples
+
+Below are examples of using the `create_reports` command line tool to create variant reports. The examples
+cover a variety of input file formats and options. For more information on command line arguments see the
+[IGV Reports documentation](https://igv.org/doc/igv-reports/).
 
 Data for the examples are available in the github repository [https://github.com/igvteam/igv-reports](https://github.com/igvteam/igv-reports). The repository can be
 downloaded as a zip archive here [https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip](https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip).
@@ -9,13 +13,11 @@ docs/examples directory.
 #### Create a variant report from a VCF file: ([Example output](examples/example_vcf.html)) with title, header, and footer
 
 create_reports test/data/variants/variants.vcf.gz \
---twobit https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit \
---ideogram test/data/hg38/cytoBandIdeo.txt \
+--genome hg38  \
 --flanking 1000 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
---samples reads_1_fastq \
 --sample-columns DP GQ \
---tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam test/data/hg38/refGene.txt.gz \
+--tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam \
 --title "IGV Variant Inspector" \
 --header test/example_header.html \
 --footer test/example_footer.html \
