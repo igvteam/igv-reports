@@ -1,16 +1,15 @@
 
-# Examples
 
-Below are examples of using the `create_reports` command line tool to create variant reports. The examples
+Below are examples of using  [IGV-Reports](https://github.com/igv-team/igv-reports) to create variant reports. The examples
 cover a variety of input file formats and options. For more information on command line arguments see the
-[IGV Reports documentation](https://igv.org/doc/igv-reports/).
+[IGV Reports documentation](https://github.com/igv-team/igv-reports).
 
 Data for the examples are available in the github repository [https://github.com/igvteam/igv-reports](https://github.com/igvteam/igv-reports). The repository can be
 downloaded as a zip archive here [https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip](https://github.com/igvteam/igv-reports/archive/refs/heads/master.zip).
 It is assumed that the examples are run from the root directory of the repository. Output html is written to the
 docs/examples directory.
 
-#### Create a variant report from a VCF file: ([Example output](examples/example_vcf.html)) with title, header, and footer
+#### Create a variant report from a VCF file with title, header, and footer.  ([Example output](examples/example_vcf.html))
 
 create_reports test/data/variants/variants.vcf.gz \
 --genome hg38  \
@@ -23,9 +22,8 @@ create_reports test/data/variants/variants.vcf.gz \
 --footer test/example_footer.html \
 --output docs/examples/example_vcf.html
 
-#### Create a variant report from a VCF file with genotypes and sample information
+#### Create a variant report from a VCF file with genotypes and sample information. ([Example output](examples/example_sampleinfo.html))
 
-#### VCF with genotypes and sample information
 create_reports test/data/variants/1kg_genotypes.vcf \
 --genome hg19 \
 --sampleinfo test/data/variants/1kg_sampleinfo.txt \
@@ -33,7 +31,7 @@ create_reports test/data/variants/1kg_genotypes.vcf \
 --output docs/examples/example_sampleinfo.html
 
 
-#### Create a variant report from a BED  file: ([Example output](examples/example_bed.html))
+#### Create a variant report from a BED  file. ([Example output](examples/example_bed.html))
 create_reports test/data/variants/variants.bed \
 --genome hg38 \
 --flanking 1000 \
@@ -41,7 +39,7 @@ create_reports test/data/variants/variants.bed \
 --output docs/examples/example_bed.html
 
 
-#### Create a variant report from a TCGA MAF file: ([Example output](examples/example_maf.html))
+#### Create a variant report from a TCGA MAF file. ([Example output](examples/example_maf.html))
 
 create_reports test/data/variants/tcga_test.maf \
 --genome hg19 \
@@ -50,7 +48,7 @@ create_reports test/data/variants/tcga_test.maf \
 --tracks test/data/variants/tcga_test.maf \
 --output docs/examples/example_maf.html
 
-#### Create a variant report from a generic tab-delimited file: ([Example output](examples/example_tab.html))
+#### Create a variant report from a generic tab-delimited file. ([Example output](examples/example_tab.html))
 
 create_reports test/data/variants/test.maflite.tsv \
 --genome hg19 \
@@ -59,7 +57,7 @@ create_reports test/data/variants/test.maflite.tsv \
 --info-columns chr start end ref_allele alt_allele \
 --output docs/examples/example_tab.html
 
-#### Create a structural variant report from a vcf file with CHR2 and END info fields: ([Example output](examples/example_sv.html))
+#### Create a structural variant report from a vcf file with CHR2 and END info fields. ([Example output](examples/example_sv.html))
 
 create_reports test/data/variants/SKBR3_Sniffles_tra.vcf \
 --genome hg19 \
@@ -70,7 +68,7 @@ create_reports test/data/variants/SKBR3_Sniffles_tra.vcf \
 --output docs/examples/example_sv.html
 
 
-#### Create a structural variant report from a bedpe file with two locations (BEDPE format): ([Example output](examples/example_bedpe.html))
+#### Create a structural variant report from a bedpe file with two locations (BEDPE format). ([Example output](examples/example_bedpe.html))
 
 create_reports test/data/variants/SKBR3_Sniffles_tra.bedpe \
 --genome hg19 \
@@ -78,7 +76,7 @@ create_reports test/data/variants/SKBR3_Sniffles_tra.bedpe \
 --tracks test/data/variants/SKBR3_Sniffles_variants_tra.vcf test/data/variants/SKBR3_translocations.ill.bam \
 --output docs/examples/example_bedpe.html
 
-#### Create a variant report with tracks defined in an [igv.js track config json file](https://github.com/igvteam/igv-reports/tree/master/test/data/variants/trackConfigs.json): ([Example output](examples/example_config.html))
+#### Create a variant report with tracks defined in an [igv.js track config json file](https://github.com/igvteam/igv-reports/tree/master/test/data/variants/trackConfigs.json). ([Example output](examples/example_config.html))
 
 create_reports test/data/variants/variants.vcf.gz \
 --twobit --twobit https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit \
@@ -88,7 +86,7 @@ create_reports test/data/variants/variants.vcf.gz \
 --track-config test/data/variants/trackConfigs.json \
 --output docs/examples/example_config.html
 
-#### Create a variant report with custom ID link urls: ([Example output](examples/example_idlink.html))
+#### Create a variant report with custom ID link urls. ([Example output](examples/example_idlink.html))
 
 create_reports test/data/variants/1kg_phase3_sites.vcf.gz \
 --genome hg19 \
@@ -98,7 +96,7 @@ create_reports test/data/variants/1kg_phase3_sites.vcf.gz \
 --output docs/examples/example_idlink.html
 
 
-#### Create a junction report from a splice-junction bed file: ([Example output](examples/example_junctions.html))
+#### Create a junction report from a splice-junction bed file. [Example output](examples/example_junctions.html)
 
 create_reports test/data/junctions/Introns.38.bed \
 --genome hg38 \
@@ -108,7 +106,7 @@ create_reports test/data/junctions/Introns.38.bed \
 --title "Sample A" \
 --output docs/examples/example_junctions.html
 
-#### Create a fusion report from a Trinity fusion json file:
+#### Create a fusion report from a Trinity fusion json file. [Example output](examples/example_fusions.html)
 
 create_reports test/data/fusion/igv.fusion_inspector_web.json \
 --fasta test/data/fusion/igv.genome.fa  \
@@ -116,7 +114,7 @@ create_reports test/data/fusion/igv.fusion_inspector_web.json \
 --track-config test/data/fusion/tracks.json  \
 --output docs/examples/example_fusions.html
 
-#### Create a report containing wig and bedgraph files
+#### Create a report containing wig and bedgraph files. [Example output](examples/example_wig.html)
 
 create_reports test/data/wig/regions.bed \
 --genome hg19 \
@@ -124,7 +122,7 @@ create_reports test/data/wig/regions.bed \
 --tracks test/data/wig/ucsc.bedgraph test/data/wig/mixed_step.wig test/data/wig/variable_step.wig \
 --output docs/examples/example_wig.html
 
-#### Use of ```info-columns-prefixes``` option. Variant track only, no alignments. ([Example output](examples/example_ann.html))
+#### Example use of ```info-columns-prefixes``` option. Variant track only, no alignments. ([Example output](examples/example_ann.html))
 
 create_reports test/data/annotated_vcf/consensus.filtered.ann.vcf \
 --genome hg19 \
@@ -135,7 +133,7 @@ create_reports test/data/annotated_vcf/consensus.filtered.ann.vcf \
 --output docs/examples/example_ann.html
 
 
-#### Create a variant report from a VCF file with Tabulator Template: ([Example output](examples/example_vcf_tabulator.html))
+#### Create a variant report from a VCF file with Tabulator Template. ([Example output](examples/example_vcf_tabulator.html))
 
 create_reports test/data/variants/variants.vcf.gz \
 --genome  hg38  \
@@ -149,7 +147,10 @@ create_reports test/data/variants/variants.vcf.gz \
 --filter-config test/data/variants/filter_config.yaml \
 --output docs/examples/example_vcf_tabulator.html
 
-#### Use ```--exclude-flags``` option to include duplicate alignments in report by specifying a samtools `--exclude-flags` value. Default value is 1536 which filters duplicates and vendor-failed reads.
+#### Example use of samtools ```--exclude-flags``` option 
+
+Use `--exclude-flags` value of 512 to include duplicate alignments in report by specifying a samtools `--exclude-flags` value. 
+Default value is 1536 which filters duplicates and vendor-failed reads.
 
 create_reports test/data/dups/dups.bed \
 --genome hg19 \
@@ -157,7 +158,11 @@ create_reports test/data/dups/dups.bed \
 --tracks test/data/dups/dups.bam \
 --output docs/examples/example_dups.html
 
-### Use ```-no-embed``` option to use external URL references for tracks in the report.
+### Example use of ```-no-embed``` option to use external URL references for tracks in the report.
+
+In this example the `--no-embed` option is used to prevent embedding of the data in the report.  Instead the data files 
+are referenced as URLs.  This is an unusual usage pattern for IGV Reports, but may be useful in some situations.  Note that when using 
+`--no-embed` local files are not supported, only URLs.
 
 create_reports test/data/variants/variants.vcf.gz \
 --genome hg38 \
