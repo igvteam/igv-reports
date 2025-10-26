@@ -280,14 +280,22 @@ def create_session_dict(args, table, trackjson):
 
             # Sequence
             # Expand sequence region to cover alignments overlapping ends.
-            regionSeq = {"chr": region["chr"], "start": max(0, region["start"] - 500), "end": region["end"] + 500}
+            regionSeq = (
+                {"chr": region["chr"], "start": max(0, region["start"] - 500), "end": region["end"] + 500}
+                if region.get("start") is not None
+                else region
+            )
             data = sequence_reader.slice(regionSeq)
             length = sequence_reader.get_reference_length(chr)
             fa = '>' + chr + ':' + str(regionSeq["start"]) + '-' + str(regionSeq["end"]) + ' @len=' + str(length) + '\n' + data
 
             if region2 is not None:
-                regionSeq2 = {"chr": region2["chr"], "start": max(0, region2["start"] - 500), "end": region2["end"] + 500}
-                data2 = sequence_reader.slice(region2)
+                regionSeq2 = (
+                    {"chr": region2["chr"], "start": max(0, region2["start"] - 500), "end": region2["end"] + 500}
+                    if region2.get("start") is not None
+                    else region2
+                )
+                data2 = sequence_reader.slice(regionSeq2)
                 length2 = sequence_reader.get_reference_length(chr2)
                 fa += '\n' + '>' + chr2 + ':' + str(regionSeq2["start"]) + '-' + str(regionSeq2["end"]) + ' @len=' + str(length2) + '\n' + data2
 
