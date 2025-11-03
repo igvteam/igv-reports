@@ -124,7 +124,7 @@ create_report test/data/variants/variants.vcf.gz \
 --genome hg38 \
 --info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \
 --tracks test/data/variants/variants.vcf.gz test/data/variants/recalibrated.bam \
---title "IGV Variant Inspector"
+--title "IGV Variant Inspector" \
 --output example_vcf.html
 
 ```
