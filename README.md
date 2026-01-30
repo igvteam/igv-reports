@@ -64,7 +64,7 @@ are described below. Although _--tracks_ is optional, a typical report will incl
     * __--track-config__  FILE. File containing array of json configuration objects for igv.js tracks. See
       the [igv.js documentation](https://github.com/igvteam/igv.js/wiki/Tracks-2.0) for more details. This option allows
       customization of track parameters. When using this option, the track ```url``` and ```indexURL``` properties
-      should be set to the paths of the respective files.
+      should be set to the absolute paths or urls of the respective input files.
     * __--roi__ LIST. Space-delimited list of region-of-interest (ROI) files. See
       the [igv.js documentation](https://igv.org/doc/igvjs/#Regions-of-Interest/).
     * __--sampleinfo__ LIST. Space delimited list of sample information files. See
@@ -157,6 +157,50 @@ create_datauri --region chr5:474,969-475,009 test/data/variants/recalibrated.bam
 
 ```bash
 create_datauri --region chr5:474,969-475,009 https://1000genomes.s3.amazonaws.com/phase3/data/NA12878/alignment/NA12878.mapped.ILLUMINA.bwa.CEU.low_coverage.20121211.bam
+```
+
+## Track Customization
+
+Tracks can be customized by specifying a track configuration file using the --track-config option. The file should
+contain an array of json configuration objects for igv.js tracks.  Configuration objects are described in the 
+[igv.js dcoumentation](https://igv.org/doc/igvjs/#tracks/Tracks/).   At a minimum they contain  ```name``` and ```url```
+properties.  Most VCF and BAM files will also require an ```indexURL``` property.  Other properties can be specified to
+customize the track appearance and behavior.
+
+The URLs specified in the configuration file should be absolute paths or URLs to the respective input files.  These
+URLS are converted to embedded data URIs when the report is created.
+
+Below is an example track configuration file containing a variant track and an alignment track.  The variant track
+specifies only name an url properties, while the alignment track includes several additional properties to customize the
+color and grouping of alignments.  Assuming this file is named ```trackConfigs.json```, the report can be created as follows:
+
+```bash
+create_reports test/data/variants/variants.vcf.gz \
+--genome hg38 \
+--flanking 1000 \
+--info-columns GENE TISSUE TUMOR COSMIC_ID GENE SOMATIC \   
+--track-config trackConfigs.json \
+--output example_config.html
+```
+
+**trackConfigs.json:**
+
+```json
+[
+  {
+    "name": "Variants",
+    "url": "test/data/variants/variants.vcf.gz",
+    "indexURL": "test/data/variants/variants.vcf.gz.tbi"
+  },
+  {
+    "name": "Alignments",
+    "url": "test/data/variants/recalibrated.bam",
+    "indexURL": "test/data/variants/recalibrated.bam.bai",
+    "samplingDepth": 500,
+    "colorBy": "strand",
+    "groupBy": "strand"
+  }
+]
 ```
 
 ## [_Release Notes_](https://github.com/igvteam/igv-reports/releases)

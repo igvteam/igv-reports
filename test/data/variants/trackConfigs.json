@@ -1,18 +1,15 @@
 [
   {
     "name": "Variants",
-    "url": "test/data/variants/variants.vcf.gz"
+    "url": "test/data/variants/variants.vcf.gz",
+    "indexURL": "test/data/variants/variants.vcf.gz.tbi"
   },
   {
     "name": "Alignments",
     "url": "test/data/variants/recalibrated.bam",
+    "indexURL": "test/data/variants/recalibrated.bam.bai",
     "samplingDepth": 500,
-    "color": "rgb(0,150,150)"
-  },
-  {
-    "name": "Genes",
-    "type": "",
-    "url": "test/data/hg38/refGene.txt.gz",
-    "indexURL": "test/data/hg38/refGene.txt.gz.tbi"
+    "colorBy": "strand",
+    "groupBy": "strand"
   }
 ]
