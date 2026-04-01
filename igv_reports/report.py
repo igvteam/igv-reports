@@ -281,7 +281,7 @@ def create_session_dict(args, table, trackjson):
             # Sequence
             # Expand sequence region to cover alignments overlapping ends.
             regionSeq = (
-                {"chr": region["chr"], "start": max(0, region["start"] - 500), "end": region["end"] + 500}
+                {"chr": region["chr"], "start": max(1, region["start"] - 500), "end": region["end"] + 500}
                 if region.get("start") is not None
                 else region
             )
@@ -291,7 +291,7 @@ def create_session_dict(args, table, trackjson):
 
             if region2 is not None:
                 regionSeq2 = (
-                    {"chr": region2["chr"], "start": max(0, region2["start"] - 500), "end": region2["end"] + 500}
+                    {"chr": region2["chr"], "start": max(1, region2["start"] - 500), "end": region2["end"] + 500}
                     if region2.get("start") is not None
                     else region2
                 )
