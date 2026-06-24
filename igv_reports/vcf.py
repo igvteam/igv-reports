@@ -33,7 +33,7 @@ class VcfReader:
         fileString = '\n'.join(
             line for line in fileString.splitlines()
             if not line.startswith(('##Contig', '##Alt'))
-        )
+        ) + '\n'
 
         if region == None:
             records = vcf.fetch()
