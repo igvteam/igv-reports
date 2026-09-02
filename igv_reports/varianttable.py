@@ -118,7 +118,7 @@ class VariantTable:
                         cid = variant.info[h]
                         if cid is not None:
                             if isinstance(cid, str):
-                                return render_id([cid, self.idlink])
+                                obj[h] = render_id([cid, self.idlink])
                             elif len(cid) == 1:
                                 obj[h] = render_id([cid[0], self.idlink])
                             else:

@@ -27,21 +27,12 @@ def get_track_json_dict(url):
 
 def get_name(filename):
 
-    idx = filename.rfind("/")
-    if idx < 0:
-        idx = filename.rfind("\\")
-    period = filename.rfind(".")
-    if idx < 0:
-        if period < 0:
-            return filename
-        else:
-            return filename[:period]
-    else:
-        idx += 1
-        if period < 0:
-            return filename[idx]
-        else:
-            return filename[idx:period]
+    # Strip any directory, then any extension.  The extension is looked for in the base name,
+    # as a "." can precede the last separator (a dotted host name, a versioned directory).
+    idx = max(filename.rfind("/"), filename.rfind("\\"))
+    basename = filename[idx + 1:]
+    period = basename.rfind(".")
+    return basename[:period] if period > 0 else basename
 
 
 def get_track_type(format):

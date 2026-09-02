@@ -1,4 +1,4 @@
-
+from .chr_alias import get_chromosome_alias
 
 def build_aliastable(chrs):
 
@@ -23,13 +23,7 @@ def build_aliastable(chrs):
 
 
 def get_alias(c):
-    if c.startswith("chr"):
-        if c == 'chrM':
-            return 'chrM'
-        else :
-            return c[3:]
-    else:
-        if c == 'MT':
-            return 'MT'
-        else:
-            return f'chr{c}'
+    """
+    Return the alias for a chromosome name, e.g. chr1 <-> 1, chrM <-> MT.
+    """
+    return get_chromosome_alias(c)

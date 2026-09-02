@@ -33,16 +33,12 @@ class ChrAliasTest(unittest.TestCase):
         for name in ['chr1', '1', 'chrX', 'X']:
             self.assertEqual(name, get_alias(get_alias(name)))
 
-    @unittest.expectedFailure
     def test_get_alias_handles_mitochondria(self):
-        # BUG chralias.py:26-31 -- returns the input unchanged for both mitochondrial spellings.
-        # Observed: get_alias('chrM') == 'chrM', get_alias('MT') == 'MT'.  FeatureReader keys its
-        # alias table with get_alias(f.chr) (feature.py:126), so an 'MT' query against a file
-        # using 'chrM' silently returns no features.
+        # FeatureReader keys its alias table with get_alias(f.chr) (feature.py:126), so the two
+        # mitochondrial spellings have to map to each other for an MT query to find chrM data.
         self.assertEqual('MT', get_alias('chrM'))
         self.assertEqual('chrM', get_alias('MT'))
 
-    @unittest.expectedFailure
     def test_the_two_implementations_agree(self):
         for name in ['chr1', '1', 'chrX', 'X', 'chrM', 'MT']:
             self.assertEqual(get_chromosome_alias(name), get_alias(name), f'disagreement on {name}')

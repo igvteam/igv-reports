@@ -1,19 +1,18 @@
 import unittest
 import pathlib
-from igv_reports import fasta
-from igv_reports.fasta import FastaReader
+
 from igv_reports.twobit import TwoBitReader
 
 
 class TwobitTest(unittest.TestCase):
 
-
+    def setUp(self):
+        self.path = str((pathlib.Path(__file__).parent / 'data/twobit/foo.2bit').resolve())
 
     def test_region(self):
 
         expected = 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNACTCTATCTATCTATCTATCTATCTTTTTCCCCCCGGGGGGagagagagactc'
-        twobit_path = str((pathlib.Path(__file__).parent / 'data/twobit/foo.2bit').resolve())
-        reader = TwoBitReader(twobit_path)
+        reader = TwoBitReader(self.path)
         data = reader.slice({
             "chr": "chr1",
             "start": 5 + 1,     # 1-based start
@@ -23,23 +22,23 @@ class TwobitTest(unittest.TestCase):
         self.assertTrue(data)
         self.assertEqual(expected, data)
 
-    def test_remote(self):
+    def test_region_as_locus_string(self):
 
-        reader = FastaReader("https://igv.org/genomes/data/hg38/hg38.fa")
-        data = reader.slice({"chr": "chr1",
-                               "start": 100,
-                               "end": 200})
-        self.assertTrue(data)
+        reader = TwoBitReader(self.path)
+        self.assertEqual(reader.slice({"chr": "chr1", "start": 6, "end": 100}),
+                         reader.slice("chr1:6-100"))
 
-        size = reader.get_reference_length("chr1")
-        self.assertEqual(248956422, size)
+    def test_get_reference_length(self):
+
+        reader = TwoBitReader(self.path)
+        self.assertEqual(159, reader.get_reference_length("chr1"))
+
+    def test_get_reference_length_alias(self):
+
+        # The fixture names its sequence chr1; a query by its alias must still resolve
+        reader = TwoBitReader(self.path)
+        self.assertEqual(159, reader.get_reference_length("1"))
 
 
-
-    def test_remote_chrom(self):
-
-        data = fasta.get_data("https://igv.org/genomes/data/hg38/hg38.fa",
-                              {"chr": "chr5",
-                               "start": 474979,
-                               "end": 474998})
-        self.assertEqual("ATCAGGCGGCAGAAGGTGCC", data)
+if __name__ == '__main__':
+    unittest.main()

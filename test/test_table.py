@@ -193,12 +193,9 @@ class CosmicIdTest(unittest.TestCase):
         parsed = json.loads(table.to_JSON())
         self.assertIn('COSMIC_ID', parsed["headers"])
 
-    @unittest.expectedFailure
     def test_scalar_cosmic_id(self):
-        # BUG varianttable.py:121 -- `return render_id(...)` where every sibling branch assigns
-        # to obj[h].  When COSMIC_ID is declared Number=1 pysam yields a str, and to_JSON
-        # returns from the first variant with an HTML anchor in place of the whole table.
-        # The report template then substitutes that anchor for "@TABLE_JSON@".
+        # COSMIC_ID declared Number=1 -- pysam yields a str, which must be assigned to the
+        # column like every other branch rather than returned from to_JSON
         path = str((pathlib.Path(__file__).parent / "data/variants/cosmic_scalar.vcf").resolve())
         table = varianttable.VariantTable(path, self.mock_args(["COSMIC_ID"]))
         rendered = table.to_JSON()
