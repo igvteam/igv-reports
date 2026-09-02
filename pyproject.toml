@@ -40,3 +40,6 @@ package-data = { "igv_reports" = ["templates/*"] }
 
 [tool.setuptools.packages.find]
 where = ["."]
+# Without this the test package is discovered and installed as a top level "test",
+# shadowing the standard library package of that name.
+include = ["igv_reports*"]
