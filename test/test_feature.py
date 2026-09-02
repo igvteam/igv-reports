@@ -1,7 +1,7 @@
 import unittest
 import pathlib
 import io
-from igv_reports.feature import get_featurereader, FeatureReader, parse_gff, parse_bed
+from igv_reports.feature import get_featurereader, FeatureReader, TabixFeatureReader, parse_gff, parse_bed
 
 
 class FeatureFileTest(unittest.TestCase):
@@ -9,7 +9,7 @@ class FeatureFileTest(unittest.TestCase):
     def test_fetch(self):
 
         gff = str((pathlib.Path(__file__).parent / "data/minigenome/annotations.gtf.gz").resolve())
-        feature_file = get_featurereader(gff)
+        feature_file = get_featurereader({"url": gff})
         content = feature_file.slice()
         features = parse_gff(io.StringIO(content))
         self.assertTrue(len(features) == 2106)
@@ -17,7 +17,8 @@ class FeatureFileTest(unittest.TestCase):
     def test_tabix(self):
 
         gff = str((pathlib.Path(__file__).parent / "data/minigenome/annotations.gtf.gz").resolve())
-        feature_file = get_featurereader(gff)
+        feature_file = get_featurereader({"url": gff, "indexed": True})
+        self.assertIsInstance(feature_file, TabixFeatureReader)
         content = feature_file.slice({"chr": "minigenome", "start": 5000, "end": 6000})
         features = parse_gff(io.StringIO(content))
         self.assertEqual(len(features), 33)
@@ -52,7 +53,7 @@ class FeatureFileTest(unittest.TestCase):
     def test_nongzipped_query(self):
 
         gff = str((pathlib.Path(__file__).parent / "data/minigenome/variants.bed").resolve())
-        feature_file = get_featurereader(gff)
+        feature_file = get_featurereader({"url": gff})
         content = feature_file.slice({"chr": "minigenome", "start": 4000, "end": 7000})
         features = parse_bed(io.StringIO(content))
         self.assertEqual(len(features), 3)
@@ -70,22 +71,23 @@ class FeatureFileTest(unittest.TestCase):
             "end": 190000000
         }
         bedpe = str((pathlib.Path(__file__).parent / "data/variants.bedpe").resolve())
-        feature_file = get_featurereader(bedpe)
+        feature_file = get_featurereader({"url": bedpe})
         content = feature_file.slice(region, region2=region2)
         features = parse_bed(io.StringIO(content))
         self.assertEqual(len(content.strip().split("\n")), 2)
 
     def test_multilocus(self):
         path = str((pathlib.Path(__file__).parent / "data/hg38/refGene.txt").resolve())
-        feature_reader = get_featurereader(path)
+        feature_reader = get_featurereader({"url": path})
         region = {"chr": "chr5", "start": 470454, "end": 480892}
         region2 = {"chr": "chr7", "start": 55019020, "end": 55019277}
         data = feature_reader.slice(region, region2)
         self.assertEqual(12, count_features(data))
 
-    def test_tabix(self):
+    def test_tabix_multilocus(self):
         path = str((pathlib.Path(__file__).parent / "data/hg38/refGene.txt.gz").resolve())
-        feature_reader = get_featurereader(path)
+        feature_reader = get_featurereader({"url": path, "indexed": True})
+        self.assertIsInstance(feature_reader, TabixFeatureReader)
         region = {"chr": "5", "start": 470454, "end": 480892}
         region2 = {"chr": "7", "start": 55019020, "end": 55019277}
         data = feature_reader.slice(region, region2)
@@ -93,7 +95,7 @@ class FeatureFileTest(unittest.TestCase):
 
     def test_alias(self):
         path = str((pathlib.Path(__file__).parent / "data/hg38/refGene.txt").resolve())
-        feature_reader = get_featurereader(path)
+        feature_reader = get_featurereader({"url": path})
         region = {"chr": "8", "start": 470454, "end": 480892}
         data = feature_reader.slice(region)
         self.assertEqual(2, count_features(data))
@@ -104,7 +106,7 @@ class FeatureFileTest(unittest.TestCase):
     '''
     def test_missingchr(self):
         path = str((pathlib.Path(__file__).parent / "data/hg38/refGene.txt").resolve())
-        feature_reader = get_featurereader(path)
+        feature_reader = get_featurereader({"url": path})
         region = {"chr": "999", "start": 470454, "end": 480892}
         data = feature_reader.slice(region)
         self.assertEqual(0, count_features(data))
@@ -115,7 +117,8 @@ class FeatureFileTest(unittest.TestCase):
     '''
     def test_tabix_missingchr(self):
         path = str((pathlib.Path(__file__).parent / "data/hg38/refGene.txt.gz").resolve())
-        feature_reader = get_featurereader(path)
+        feature_reader = get_featurereader({"url": path, "indexed": True})
+        self.assertIsInstance(feature_reader, TabixFeatureReader)
         region = {"chr": "999", "start": 470454, "end": 480892}
         data = feature_reader.slice(region)
         self.assertEqual(0, count_features(data))

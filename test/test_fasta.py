@@ -20,7 +20,8 @@ class FastaTest(unittest.TestCase):
         region = 'ACACA--STAC2:61-70'
         expected = 'ACAAATATTA'
 
-        data = fasta.get_data('data/finspector.fa', region)
+        fasta_path = str((pathlib.Path(__file__).parent / 'data/finspector.fa').resolve())
+        data = fasta.get_data(fasta_path, region)
 
         self.assertTrue(data)
         self.assertEqual(expected, data)

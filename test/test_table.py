@@ -1,5 +1,6 @@
 import unittest
 import pathlib
+import json
 from igv_reports import varianttable, bedtable, generictable
 import types
 
@@ -102,3 +103,78 @@ class TableTest(unittest.TestCase):
         fusions_file = str((pathlib.Path(__file__).parent / "data/fusion/igv.fusion_inspector_web.json").resolve())
         table = generictable.GenericTable.from_fusionjson(fusions_file)
         self.assertTrue(table is not None)
+
+
+class RenderTest(unittest.TestCase):
+    '''
+    The render_* functions inline VCF content into the report's HTML.  Every value they
+    return is written into the document unparsed, so each one has to be escaped.
+    '''
+
+    def test_render_value_escapes_plain_strings(self):
+        self.assertEqual('&lt;b&gt;x&lt;/b&gt;', varianttable.render_value('<b>x</b>'))
+
+    def test_render_value_formats_floats(self):
+        self.assertEqual('1.2e-05', varianttable.render_value(0.00001234))
+
+    def test_render_value_of_none_is_empty(self):
+        self.assertEqual('', varianttable.render_value(None))
+
+    def test_render_values_joins_collections(self):
+        self.assertEqual('a,b', varianttable.render_values(('a', 'b')))
+
+    def test_render_id_links_known_id_formats(self):
+        self.assertIn('ncbi.nlm.nih.gov/snp', varianttable.render_id(['rs123', None]))
+        self.assertIn('cancer.sanger.ac.uk', varianttable.render_id(['COSM123', None]))
+
+    def test_render_ids_splits_on_semicolon(self):
+        rendered = varianttable.render_ids('rs123;rs456')
+        self.assertEqual(2, len(rendered.split(',')))
+
+    @unittest.expectedFailure
+    def test_render_id_escapes_html(self):
+        # BUG varianttable.py:214-222 -- the ID column is written into the document without
+        # escaping.  A VCF whose ID field holds markup injects it into the report verbatim.
+        self.assertNotIn('<img', varianttable.render_id(['<img src=x onerror=y>', None]))
+
+    @unittest.expectedFailure
+    def test_render_value_escapes_inside_links(self):
+        # BUG varianttable.py:199-201 -- the URL branch returns create_link(str_val) before
+        # reaching html.escape, so an INFO field beginning with http:// is inlined raw.
+        rendered = varianttable.render_value('http://x/<script>a</script>')
+        self.assertNotIn('<script>', rendered)
+
+
+class CosmicIdTest(unittest.TestCase):
+
+    def mock_args(self, info_columns):
+        args = types.SimpleNamespace()
+        args.info_columns = info_columns
+        args.idlink = None
+        args.sample_columns = None
+        args.info_columns_prefixes = None
+        args.samples = None
+        args.maxlen = 10000
+        return args
+
+    def test_multivalued_cosmic_id(self):
+        # COSMIC_ID declared Number=. -- pysam yields a tuple, which takes the working branch
+        path = str((pathlib.Path(__file__).parent / "data/variants/variants.vcf").resolve())
+        table = varianttable.VariantTable(path, self.mock_args(["COSMIC_ID"]))
+        parsed = json.loads(table.to_JSON())
+        self.assertIn('COSMIC_ID', parsed["headers"])
+
+    @unittest.expectedFailure
+    def test_scalar_cosmic_id(self):
+        # BUG varianttable.py:121 -- `return render_id(...)` where every sibling branch assigns
+        # to obj[h].  When COSMIC_ID is declared Number=1 pysam yields a str, and to_JSON
+        # returns from the first variant with an HTML anchor in place of the whole table.
+        # The report template then substitutes that anchor for "@TABLE_JSON@".
+        path = str((pathlib.Path(__file__).parent / "data/variants/cosmic_scalar.vcf").resolve())
+        table = varianttable.VariantTable(path, self.mock_args(["COSMIC_ID"]))
+        rendered = table.to_JSON()
+        try:
+            parsed = json.loads(rendered)
+        except ValueError:
+            self.fail(f'to_JSON did not return JSON: {rendered[:80]!r}')
+        self.assertEqual(2, len(parsed["rows"]))

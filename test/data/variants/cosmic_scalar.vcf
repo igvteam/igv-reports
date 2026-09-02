@@ -1,0 +1,6 @@
+##fileformat=VCFv4.2
+##contig=<ID=chr1,length=1000000>
+##INFO=<ID=COSMIC_ID,Number=1,Type=String,Description="COSMIC mutation id (unique).">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr1	100	.	A	G	50	PASS	COSMIC_ID=COSM12345
+chr1	200	.	C	T	50	PASS	COSMIC_ID=COSM67890

@@ -12,7 +12,8 @@ class TwobitTest(unittest.TestCase):
     def test_region(self):
 
         expected = 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNACTCTATCTATCTATCTATCTATCTTTTTCCCCCCGGGGGGagagagagactc'
-        reader = TwoBitReader('data/twobit/foo.2bit')
+        twobit_path = str((pathlib.Path(__file__).parent / 'data/twobit/foo.2bit').resolve())
+        reader = TwoBitReader(twobit_path)
         data = reader.slice({
             "chr": "chr1",
             "start": 5 + 1,     # 1-based start

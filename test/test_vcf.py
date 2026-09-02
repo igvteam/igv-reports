@@ -1,3 +1,6 @@
+import os
+import shutil
+import tempfile
 import unittest
 
 from igv_reports.vcf import VcfReader
@@ -30,13 +33,27 @@ class VcfTest(unittest.TestCase):
         count = count_variants(data)
         self.assertEqual(count, 1)
 
+    '''
+    Read a tabix indexed vcf over http.  The remote file is this repository's own test fixture,
+    so the query and expected count mirror test_tabix below and the two must return the same
+    records.  Requires network access.
+    '''
     def test_remote(self):
 
-        path = "https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/main/reports/variants/cancer.vcf.gz"
-        region = {"chr": "chr17", "start": 7673767, "end": 43071077}
+        # htslib downloads the remote .tbi into the working directory -- run from a temp dir
+        # so a test run does not leave the index behind in the repository.
+        tmpdir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmpdir, True)
+        self.addCleanup(os.chdir, os.getcwd())
+        os.chdir(tmpdir)
+
+        path = "https://raw.githubusercontent.com/igvteam/igv-reports/master/test/data/variants/1kg_phase3_sites.vcf.gz"
+        region = {"chr": "chr22", "start": 50173573 - 1, "end": 50173573}
         data = get_data(path, region)
-        count = count_variants(data)
-        self.assertTrue(count > 0)
+        self.assertEqual(2, count_variants(data))
+
+        local = str((pathlib.Path(__file__).parent / "data/variants/1kg_phase3_sites.vcf.gz").resolve())
+        self.assertEqual(get_data(local, region), data)
 
     def test_multilocus(self):
         path = str((pathlib.Path(__file__).parent / "../test/data/variants/SKBR3_Sniffles_variants_tra.vcf").resolve())
