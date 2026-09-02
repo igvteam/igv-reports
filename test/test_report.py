@@ -1,7 +1,13 @@
+import contextlib
+import io
 import re
+import sys
 import unittest
 import types
+from unittest import mock
 
+import igv_reports
+from igv_reports import datauri, report
 from igv_reports.feature import Feature
 from igv_reports.report import create_locus_dict, locus_string
 
@@ -110,6 +116,30 @@ class CreateLocusDictTest(unittest.TestCase):
         locus_dict = create_locus_dict(self.single_feature_table(feature), None)
         locus1, locus2 = locus_dict['0'].split(' ')
         self.assertEqual(locus1, locus2)
+
+
+class VersionFlagTest(unittest.TestCase):
+
+    def version_output(self, main, argv):
+        out = io.StringIO()
+        with mock.patch.object(sys, 'argv', argv):
+            with contextlib.redirect_stdout(out):
+                with self.assertRaises(SystemExit) as raised:
+                    main()
+        self.assertEqual(0, raised.exception.code)
+        return out.getvalue().strip()
+
+    def test_version_is_a_string(self):
+        # Derived from the installed distribution metadata; "unknown" if not installed
+        self.assertIsInstance(igv_reports.__version__, str)
+        self.assertTrue(igv_reports.__version__)
+
+    def test_create_report_version_flag(self):
+        # --version reports and exits without requiring the sites argument
+        self.assertIn(igv_reports.__version__, self.version_output(report.main, ['create_report', '--version']))
+
+    def test_create_datauri_version_flag(self):
+        self.assertIn(igv_reports.__version__, self.version_output(datauri.main, ['create_datauri', '--version']))
 
 
 if __name__ == '__main__':

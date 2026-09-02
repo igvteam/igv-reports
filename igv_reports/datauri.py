@@ -2,7 +2,7 @@
 from base64 import b64encode
 from gzip import compress
 import argparse
-from igv_reports import utils
+from igv_reports import __version__, utils
 from igv_reports.regions import parse_region
 
 
@@ -38,6 +38,7 @@ def file_to_data_uri(filename, filetype=None, region=None):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("filename", help="name of file to be converted to data uri")
     parser.add_argument("-t", "--filetype", help="type of file to be converted to data uri")
     parser.add_argument("-r", "--region" , help="genomic region to be converted in the form chr:start-stop")

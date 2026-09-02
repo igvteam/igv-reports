@@ -7,7 +7,7 @@ from urllib.request import urlopen
 
 import yaml
 
-from igv_reports import datauri, tracks, utils, feature
+from igv_reports import __version__, datauri, tracks, utils, feature
 from igv_reports.bedtable import BedTable
 from igv_reports.bedtable import BedpeTable
 from igv_reports.bedtable import JunctionBedTable
@@ -569,6 +569,7 @@ def read_contents(file_path):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("sites", help="vcf file defining variants, required")
     parser.add_argument("fasta_", nargs="?", default=None,
                         help="reference fasta file.  Deprecated positional argument,  use --fasta")

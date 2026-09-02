@@ -11,7 +11,7 @@ authors = [
 description = "Creates self-contained html pages for visual variant review with IGV (igv.js)."
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.6"
+requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Development Status :: 4 - Beta",
