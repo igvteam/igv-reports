@@ -48,4 +48,37 @@ class TrackTest(unittest.TestCase):
             self.fail('get_name raised IndexError on a trailing slash')
 
 
+class TrackConfigTest(unittest.TestCase):
+    '''
+    get_track_json_dict builds the igv.js track config for each --tracks argument.
+    '''
 
+    def test_alignment_track_shows_reads_kept_by_exclude_flags(self):
+
+        # Alignments are filtered by samtools in bam.py according to --exclude-flags.  igv.js
+        # hides duplicate and vendor failed reads by default, which would filter them a second
+        # time, so the track config has to turn that off -- otherwise --exclude-flags 512
+        # embeds the duplicates and the viewer hides them anyway.
+        for path in ['x.bam', 'x.cram']:
+            config = tracks.get_track_json_dict(path)
+            self.assertEqual({"duplicate": False, "vendorFailed": False}, config.get("filter"),
+                             f'{path} would be filtered a second time by igv.js')
+
+    def test_alignment_track_defaults(self):
+
+        config = tracks.get_track_json_dict('/data/sample.bam')
+        self.assertEqual('sample', config["name"])
+        self.assertEqual('/data/sample.bam', config["url"])
+        self.assertEqual('alignment', config["type"])
+        self.assertEqual('bam', config["format"])
+        self.assertEqual(500, config["height"])
+
+    def test_non_alignment_tracks_are_not_filtered(self):
+
+        for path in ['x.vcf.gz', 'x.bed', 'x.wig']:
+            self.assertNotIn("filter", tracks.get_track_json_dict(path))
+
+    def test_variant_and_annotation_tracks(self):
+
+        self.assertEqual('variant', tracks.get_track_json_dict('x.vcf')["type"])
+        self.assertEqual('annotation', tracks.get_track_json_dict('x.bed')["type"])

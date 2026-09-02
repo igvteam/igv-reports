@@ -130,6 +130,35 @@ class BAMTest(unittest.TestCase):
         data = bamreader.slice(region, sam=True)
         self.assertEqual(count_alignments(data), 121)
 
+    def test_exclude_flags_retains_duplicate_reads(self):
+
+        # The counts above say how many reads survive; this says which ones.  dups.bam holds
+        # duplicate flagged reads and no vendor failed ones, so 1536 (the default) drops the
+        # duplicates and 512 keeps every one of them.  This is what example_dups.html shows.
+        bam_file_path = str((pathlib.Path(__file__).parent / "data/dups/dups.bam").resolve())
+        region = {"chr": "1", "start": 658371, "end": 658460}
+
+        args = types.SimpleNamespace()
+        args.subsample = None
+
+        args.exclude_flags = 1536
+        data = BamReader("bam", bam_file_path, args).slice(region, sam=True)
+        self.assertEqual(0, count_flagged(data, 0x400), 'default kept a duplicate read')
+
+        args.exclude_flags = 512
+        data = BamReader("bam", bam_file_path, args).slice(region, sam=True)
+        self.assertEqual(count_alignments(data) - 73, count_flagged(data, 0x400))
+        self.assertGreater(count_flagged(data, 0x400), 0, 'no duplicate reads to test with')
+
+
+def count_flagged(data, mask):
+    """Count alignment records whose SAM flag has every bit of mask set."""
+    count = 0
+    for line in data.split('\n'):
+        if len(line) > 0 and not line.startswith("@"):
+            if int(line.split('\t')[1]) & mask == mask:
+                count += 1
+    return count
 
 
 def count_alignments(data):
