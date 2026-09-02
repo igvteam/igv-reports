@@ -37,20 +37,25 @@ class LocusStringTest(unittest.TestCase):
         # Features without coordinates (e.g. fusion json) yield a bare chromosome name
         self.assertEqual('chr1', locus_string('chr1', None, None, None))
 
-    @unittest.expectedFailure
     def test_window_is_integral(self):
-        # BUG report.py:511 -- `window / 2` is true division, so every --window report
-        # emits fractional coordinates.  Observed: 'chr1:80.5-121.5'
-        locus = locus_string('chr1', 100, 101, 41)
-        self.assertNotIn('.', locus, f'non-integral coordinates in {locus}')
+        # A genomic locus has whole coordinates; window / 2 must not introduce a fraction
+        for window in [41, 100, 1000]:
+            locus = locus_string('chr1', 100, 101, window)
+            self.assertNotIn('.', locus, f'non-integral coordinates in {locus}')
 
-    @unittest.expectedFailure
     def test_window_clamps_to_start_of_chromosome(self):
-        # BUG report.py:511 -- a window wider than the feature's offset runs off the
-        # left end of the chromosome.  Observed: 'chr1:-494.0-506.0'
+        # A window wider than the feature's offset must not run off the left end
         locus = locus_string('chr1', 5, 6, 1000)
         _, start, _ = parse_locus(locus)
-        self.assertGreaterEqual(float(start), 1, f'start before position 1 in {locus}')
+        self.assertGreaterEqual(int(start), 1, f'start before position 1 in {locus}')
+
+    def test_window_pads_the_feature_on_both_sides(self):
+        # The documented default: a 41bp window on a single base variant
+        self.assertEqual('chr1:81-121', locus_string('chr1', 100, 101, 41))
+
+    def test_window_accepts_a_string(self):
+        # argparse hands --window through as a string
+        self.assertEqual('chr1:81-121', locus_string('chr1', 100, 101, '41'))
 
 
 class CreateLocusDictTest(unittest.TestCase):

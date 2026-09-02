@@ -510,8 +510,10 @@ def locus_string(chr, start, end, window):
         return chr
 
     if window is not None:
-        window = int(window)
-        return f'{chr}:{start + 1 - window / 2}-{end + window / 2}'
+        # Pad the feature by half the window on each side.  Integer division keeps the
+        # coordinates whole, and the start is clamped to the start of the chromosome.
+        flank = int(window) // 2
+        return f'{chr}:{max(1, start + 1 - flank)}-{end + flank}'
     else:
         if (end - start) == 1:
             return f'{chr}:{start + 1}'
