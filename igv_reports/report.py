@@ -540,7 +540,7 @@ def add_index(config):
         if format == "bam":
             if resource_exists(url + ".bai"):
                 indexURL = url + ".bai"
-            elif resource_exists(format + ".csi"):
+            elif resource_exists(url + ".csi"):
                 indexURL = url + ".csi"
             else:
                 k = url.rfind(".")

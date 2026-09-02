@@ -2,7 +2,7 @@ import unittest
 import pathlib
 import types
 
-from igv_reports.wig import WigReader
+from igv_reports.wig import WigReader, parse_wig_header
 
 class WIGTest(unittest.TestCase):
 
@@ -89,6 +89,29 @@ class WIGTest(unittest.TestCase):
         wigreader = WigReader(wig_file_path)
         data = wigreader.slice(region, region2)
         self.assertEqual(count_lines(data), 1268)
+
+    def test_parse_wig_header(self):
+
+        expected = {'chrom': 'chr1', 'start': '1', 'step': '1', 'span': 1}
+        self.assertEqual(expected, parse_wig_header('fixedStep chrom=chr1 start=1 step=1'))
+
+    def test_parse_wig_header_extra_whitespace(self):
+
+        # A header padded with extra spaces, or delimited with tabs, still names its chromosome
+        expected = {'chrom': 'chr1', 'start': '1', 'step': '1', 'span': 1}
+        self.assertEqual(expected, parse_wig_header('fixedStep chrom=chr1  start=1 step=1'))
+        self.assertEqual(expected, parse_wig_header('fixedStep\tchrom=chr1\tstart=1\tstep=1'))
+
+    def test_parse_wig_header_ignores_tokens_that_are_not_pairs(self):
+
+        expected = {'chrom': 'chr1', 'start': '1', 'step': '1', 'span': 1}
+        self.assertEqual(expected, parse_wig_header('fixedStep chrom=chr1 start=1 step=1 stray'))
+
+    def test_parse_wig_header_span_default(self):
+
+        self.assertEqual('5', parse_wig_header('variableStep chrom=chr1 span=5')['span'])
+        self.assertEqual(1, parse_wig_header('variableStep chrom=chr1')['span'])
+
 
 def count_lines(data):
     return len([i for i in data.split('\n')])

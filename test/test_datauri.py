@@ -22,3 +22,20 @@ class FeatureFileTest(unittest.TestCase):
         self.assertIsNotNone(uri)
 
 
+    def test_media_type_of_text(self):
+
+        # Text is gzipped before encoding
+        uri = datauri.get_data_uri("hello")
+        self.assertTrue(uri.startswith("data:application/gzip;base64,"), uri[:40])
+
+
+    def test_media_type_of_gzipped_bytes(self):
+
+        uri = datauri.get_data_uri(bytes([0x1f, 0x8b, 0x08, 0x00]))
+        self.assertTrue(uri.startswith("data:application/gzip;base64,"), uri[:40])
+
+
+    def test_media_type_of_plain_bytes(self):
+
+        uri = datauri.get_data_uri(bytes([0x01, 0x02, 0x03]))
+        self.assertTrue(uri.startswith("data:application/octet-stream;base64,"), uri[:40])

@@ -1,6 +1,8 @@
 import unittest
 import pathlib
 import json
+import os
+import tempfile
 from igv_reports import varianttable, bedtable, generictable
 import types
 
@@ -103,6 +105,22 @@ class TableTest(unittest.TestCase):
         fusions_file = str((pathlib.Path(__file__).parent / "data/fusion/igv.fusion_inspector_web.json").resolve())
         table = generictable.GenericTable.from_fusionjson(fusions_file)
         self.assertTrue(table is not None)
+
+    def test_fusions_with_declared_columns(self):
+
+        # A fusion json may name its own columns rather than relying on the default list
+        with tempfile.NamedTemporaryFile('w', suffix='.json', delete=False) as f:
+            json.dump({"columns": ["Fusion", "Splice Type"],
+                       "fusions": [{"Fusion": "A--B", "Splice Type": "INCL_NON_REF_SPLICE"}]}, f)
+            path = f.name
+        try:
+            table = generictable.GenericTable.from_fusionjson(path)
+            parsed = json.loads(table.to_JSON())
+        finally:
+            os.unlink(path)
+
+        self.assertEqual(["unique_id", "Fusion", "Splice Type"], parsed["headers"])
+        self.assertEqual([[0, "A--B", "INCL_NON_REF_SPLICE"]], parsed["rows"])
 
 
 class RenderTest(unittest.TestCase):

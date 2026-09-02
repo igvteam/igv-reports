@@ -400,8 +400,20 @@ def infer_format(filename):
     :return:
     '''
     filename = filename.lower()
+
+    # A url's query string and fragment are not part of the path, and must not be mistaken
+    # for an extension (e.g. a presigned "....vcf.gz?X-Amz-Signature=...").
+    if filename.startswith("http://") or filename.startswith("https://"):
+        for delim in ('?', '#'):
+            idx = filename.find(delim)
+            if idx >= 0:
+                filename = filename[:idx]
+
     if (filename.endswith(".gz")):
         filename = filename[:-3]
+
+    # The refgene convention below names the file itself, not a directory along the path
+    basename = filename[max(filename.rfind("/"), filename.rfind("\\")) + 1:]
 
     if filename.endswith(".bam"):
         return "bam"
@@ -425,9 +437,9 @@ def infer_format(filename):
         return "maf"
     elif filename.endswith(".mut"):
         return "mut"
-    elif filename.find("refgene") >= 0:
+    elif basename.find("refgene") >= 0:
         return "refgene"
-    elif filename.find("refseq") >= 0:
+    elif basename.find("refseq") >= 0:
         return "refgene"
     else:
         idx = filename.rfind(".")

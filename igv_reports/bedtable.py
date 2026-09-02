@@ -85,10 +85,10 @@ class JunctionBedTable:
             #expand name field
             name_tokens = f.name.split(";")
             for token in name_tokens:
-                kv = token.split("=")
-                key = kv[0]
-                value = kv[1]
-                setattr(f, key, value)
+                # Ignore name tokens that are not key=value pairs, e.g. a plain bed feature name
+                key, sep, value = token.partition("=")
+                if sep:
+                    setattr(f, key, value)
 
             # Junction report variants are defined in rows with "viewport" attributes.  Its possible multiple variants
             # share the same viewport, if this is the case they can share a session. This is a space optimization.
@@ -126,16 +126,15 @@ class JunctionBedTable:
 
             if self.table_columns == None:
                 for token in name_tokens:
-                    kv = token.split("=")
-                    key = kv[0]
-                    if key != 'viewport':
-                        value = kv[1]
+                    key, sep, value = token.partition("=")
+                    if sep and key != 'viewport':
                         obj[key] = value
             else:
                 dict = {}
                 for token in name_tokens:
-                    kv = token.split("=")
-                    dict[kv[0]] = kv[1]
+                    key, sep, value = token.partition("=")
+                    if sep:
+                        dict[key] = value
                 for key in self.table_columns:
                     if key in dict:
                         obj[key] = dict[key]
@@ -150,15 +149,21 @@ class JunctionBedTable:
         return json.dumps(normalized)
 
 
+# Junction table fields used to drive the viewer, not to be displayed as table columns
+JUNCTION_INTERNAL_FIELDS = ('session_id', 'viewport', 'feature_locus')
+
+
 def normalize_json(info_fields, json_array):
 
-    headers = ['unique_id', 'CHROM', 'POSITION', 'REF', 'ALT', 'ID']
+    headers = ['unique_id', 'Chrom', 'Start', 'End']
     if info_fields is not None:
-        for h in info_fields:
-            if h == 'ANN':
-                headers = headers + [ 'GENE', 'EFFECTS', 'IMPACT', 'TRANSCRIPT', 'GENE_ID', 'PROTEIN ALTERATION', 'DNA ALTERATION']
-            else:
-                headers.append(h)
+        headers = headers + list(info_fields)
+    else:
+        # Columns are whatever attributes the bed name field defined, in first seen order
+        for obj in json_array:
+            for h in obj:
+                if h not in headers and h not in JUNCTION_INTERNAL_FIELDS:
+                    headers.append(h)
 
     rows = []
     for json in json_array:

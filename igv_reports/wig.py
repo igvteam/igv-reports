@@ -64,7 +64,13 @@ class WigReader:
 def parse_wig_header(header):
     # parse the key=value pairs in the header
     # return a dictionary
-    header_dict = dict(ChainMap(*[{i.split('=')[0]: i.split('=')[1]} for i in header.split(' ')[1:]]))
+    # Split on any run of whitespace, and skip tokens that are not key=value pairs, so that a
+    # header padded with extra spaces or delimited with tabs still yields its chrom and step.
+    header_dict = {}
+    for token in header.split()[1:]:
+        key, sep, value = token.partition('=')
+        if sep:
+            header_dict.setdefault(key, value)
     if 'span' not in header_dict:
         header_dict['span'] = 1
     return header_dict

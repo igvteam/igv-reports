@@ -64,7 +64,7 @@ class GenericTable:
 
             j = json.load(json_file)
 
-            header = j["columnns"] if "columns" in j else ['Fusion', "# Long Reads", 'Junction Reads',
+            header = j["columns"] if "columns" in j else ['Fusion', "# Long Reads", 'Junction Reads',
                                                            'Spanning Fragments', "Expr Level (FFPM)", 'Splice Type',
                                                            'Left Gene', 'Left Breakpoint', 'Right Breakpoint',
                                                            "Annotations"]

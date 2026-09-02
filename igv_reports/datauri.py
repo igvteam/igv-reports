@@ -21,7 +21,7 @@ def get_data_uri(data):
         if data[0] == 0x1f and data[1] == 0x8b:
             mediatype = "data:application/gzip"
         else:
-            mediatype = "data:application:octet-stream"
+            mediatype = "data:application/octet-stream"
 
     enc_str = b64encode(data)
 
