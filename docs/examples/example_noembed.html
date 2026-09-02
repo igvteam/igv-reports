@@ -13,7 +13,7 @@
 
     <!-- igv -->
 
-    <script src="https://igv.org/web/snapshot/dist/igv.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/igv@3.5.2/dist/igv.min.js"></script>
 
 
     <style type="text/css">
@@ -155,7 +155,7 @@
 <script type="text/javascript">
 
     const tableJson = {"headers": ["unique_id", "CHROM", "POSITION", "REF", "ALT", "ID"], "rows": [[0, "chr5", 474989, "A", "G", ""], [1, "chr5", 181224474, "G", "A", ""], [2, "chr8", 143923759, "G", "A", ""], [3, "chr12", 56420869, "G", "A", ""], [4, "chr17", 7673767, "C", "T", ""], [5, "chr17", 7676154, "G", "C", ""], [6, "chr17", 43071077, "T", "C", ""], [7, "chr17", 43091983, "T", "C", ""], [8, "chr17", 43092919, "G", "A", ""], [9, "chr17", 43093454, "C", "T", ""], [10, "chr19", 39177761, "G", "C", ""], [11, "chr19", 47271515, "T", "C", ""], [12, "chr20", 46687147, "C", "T", ""]]}
-    const locusDictionary = {"0": "chr5:474990-474989", "1": "chr5:181224475-181224474", "2": "chr8:143923760-143923759", "3": "chr12:56420870-56420869", "4": "chr17:7673768-7673767", "5": "chr17:7676155-7676154", "6": "chr17:43071078-43071077", "7": "chr17:43091984-43091983", "8": "chr17:43092920-43092919", "9": "chr17:43093455-43093454", "10": "chr19:39177762-39177761", "11": "chr19:47271516-47271515", "12": "chr20:46687148-46687147"}
+    const locusDictionary = {"0": "chr5:474989", "1": "chr5:181224474", "2": "chr8:143923759", "3": "chr12:56420869", "4": "chr17:7673767", "5": "chr17:7676154", "6": "chr17:43071077", "7": "chr17:43091983", "8": "chr17:43092919", "9": "chr17:43093454", "10": "chr19:39177761", "11": "chr19:47271515", "12": "chr20:46687147"}
     let sortOption = "BASE"
     let igvBrowser
 
@@ -169,7 +169,7 @@
         var igvDiv
 
         igvDiv = document.getElementById("igvDiv")
-        var options = {"reference": {"twoBitURL": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit", "cytobandURL": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/cytoBandIdeo.txt.gz"}, "tracks": [{"id": "refseqAll", "name": "Refseq All", "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/ncbiRefSeq.txt.gz", "format": "refgene", "html": "https://www.ncbi.nlm.nih.gov/refseq/", "infoURL": "https://www.ncbi.nlm.nih.gov/gene/?term=$$", "order": 100000, "type": "annotation"}, {"name": "variants.vcf", "url": "https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/master/test/data/variants/variants.vcf.gz", "type": "variant", "format": "vcf", "indexURL": "https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/master/test/data/variants/variants.vcf.gz.tbi"}, {"name": "recalibrated", "url": "https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/master/test/data/variants/recalibrated.bam", "type": "alignment", "format": "bam", "height": 500, "filter": {"duplicate": false, "vendorFailed": false}, "indexURL": "https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/master/test/data/variants/recalibrated.bam.bai"}]}
+        var options = {"reference": {"twoBitURL": "https://igv.org/genomes/data/hg38/hg38.2bit", "cytobandURL": "https://igv.org/genomes/data/hg38/cytoBandIdeo.txt.gz"}, "tracks": [{"id": "refseqAll", "name": "Refseq All", "url": "https://igv.org/genomes/data/hg38/ncbiRefSeq.txt.gz", "indexed": false, "format": "refgene", "html": "https://www.ncbi.nlm.nih.gov/refseq/", "infoURL": "https://www.ncbi.nlm.nih.gov/gene/?term=$$", "order": 100000, "type": "annotation"}, {"name": "variants.vcf", "url": "https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/master/test/data/variants/variants.vcf.gz", "type": "variant", "format": "vcf", "indexURL": "https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/master/test/data/variants/variants.vcf.gz.tbi"}, {"name": "recalibrated", "url": "https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/master/test/data/variants/recalibrated.bam", "type": "alignment", "format": "bam", "height": 500, "filter": {"duplicate": false, "vendorFailed": false}, "indexURL": "https://raw.githubusercontent.com/igvteam/igv-reports/refs/heads/master/test/data/variants/recalibrated.bam.bai"}]}
 
         igv.createBrowser(igvDiv, options)
             .then(function (b) {

@@ -62,36 +62,30 @@ class CreateLocusDictTest(unittest.TestCase):
     def single_feature_table(self, feature):
         return types.SimpleNamespace(features=[(feature, 0)])
 
-    @unittest.expectedFailure
     def test_agrees_with_session_locus_for_an_snv(self):
-        # BUG report.py:472 -- passes feature.start + 1 to locus_string, which adds 1 again,
-        # while create_session_dict (report.py:321) passes feature.start.
-        # Observed: 'chr1:102-101' where the embedded report shows 'chr1:101'
+        # locus_string does the 0-based to 1-based conversion itself, so both callers pass
+        # raw feature coordinates.  A --no-embed report must show the same locus as an
+        # embedded one for the same feature.
         feature = Feature('chr1', 100, 101, '')
         locus_dict = create_locus_dict(self.single_feature_table(feature), None)
         self.assertEqual(locus_string('chr1', 100, 101, None), locus_dict['0'])
 
-    @unittest.expectedFailure
     def test_agrees_with_session_locus_for_a_range(self):
-        # Same root cause, on a multi-base feature.  Observed: 'chr1:102-200'
+        # The same agreement on a multi-base feature
         feature = Feature('chr1', 100, 200, '')
         locus_dict = create_locus_dict(self.single_feature_table(feature), None)
         self.assertEqual(locus_string('chr1', 100, 200, None), locus_dict['0'])
 
-    @unittest.expectedFailure
     def test_snv_locus_is_not_inverted(self):
-        # Same root cause, stated as an invariant.  The double increment makes a 1bp feature
-        # miss the `(end - start) == 1` collapse in locus_string, so a SNV -- the most common
-        # feature in a report -- emits a backwards range.  Observed: 'chr1:102-101'
+        # A 1bp feature must reach the `(end - start) == 1` collapse in locus_string.  A second
+        # increment at the call site pushed it past that test and emitted a backwards range.
         feature = Feature('chr1', 100, 101, '')
         locus_dict = create_locus_dict(self.single_feature_table(feature), None)
         _, start, end = parse_locus(locus_dict['0'])
         self.assertLessEqual(int(start), int(end), f'inverted locus {locus_dict["0"]}')
 
-    @unittest.expectedFailure
     def test_both_loci_of_a_bedpe_feature_use_the_same_base(self):
-        # BUG report.py:472/474 -- the first locus is built from feature.start + 1 and the
-        # second from feature.start2, so the two halves of one bedpe row disagree by 1bp.
+        # Both halves of a bedpe row are built from raw feature coordinates
         feature = Feature('chr1', 100, 200, '', '', 'chr1', 100, 200)
         locus_dict = create_locus_dict(self.single_feature_table(feature), None)
         locus1, locus2 = locus_dict['0'].split(' ')

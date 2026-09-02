@@ -469,7 +469,7 @@ def create_locus_dict(table, window):
         if (hasattr(feature, "viewport")):
             locus = feature.viewport
         else:
-            locus = locus_string(feature.chr, feature.start + 1, feature.end, window)
+            locus = locus_string(feature.chr, feature.start, feature.end, window)
             if hasattr(feature, 'chr2') and feature.chr2 is not None:
                 locus += f' {locus_string(feature.chr2, feature.start2, feature.end2, window)}'
 
