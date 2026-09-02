@@ -49,9 +49,24 @@ class LocusStringTest(unittest.TestCase):
         _, start, _ = parse_locus(locus)
         self.assertGreaterEqual(int(start), 1, f'start before position 1 in {locus}')
 
-    def test_window_pads_the_feature_on_both_sides(self):
-        # The documented default: a 41bp window on a single base variant
+    def test_window_is_the_size_of_the_visible_region(self):
+        # --window is documented as the initial visible window size in bp
+        for start, end in [(100, 101), (100, 200), (100, 10100)]:
+            for window in [41, 100, 1000]:
+                _, s, e = parse_locus(locus_string('chr1', start, end, window))
+                self.assertEqual(window, int(e) - int(s) + 1,
+                                 f'feature [{start},{end}) with window {window}')
+
+    def test_window_is_centered_on_the_feature(self):
+        # The documented default: a 41bp window on a single base variant at position 101
         self.assertEqual('chr1:81-121', locus_string('chr1', 100, 101, 41))
+        # ... and on the center of a wider feature, whose center base is 151
+        self.assertEqual('chr1:131-171', locus_string('chr1', 100, 200, 41))
+
+    def test_window_keeps_its_size_when_clamped(self):
+        _, s, e = parse_locus(locus_string('chr1', 5, 6, 1000))
+        self.assertEqual('1', s)
+        self.assertEqual(1000, int(e) - int(s) + 1)
 
     def test_window_accepts_a_string(self):
         # argparse hands --window through as a string

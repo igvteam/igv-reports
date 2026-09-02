@@ -149,18 +149,29 @@ class RenderTest(unittest.TestCase):
         rendered = varianttable.render_ids('rs123;rs456')
         self.assertEqual(2, len(rendered.split(',')))
 
-    @unittest.expectedFailure
     def test_render_id_escapes_html(self):
-        # BUG varianttable.py:214-222 -- the ID column is written into the document without
-        # escaping.  A VCF whose ID field holds markup injects it into the report verbatim.
+        # A VCF ID holding markup must not reach the document as markup
         self.assertNotIn('<img', varianttable.render_id(['<img src=x onerror=y>', None]))
 
-    @unittest.expectedFailure
+    def test_render_id_escapes_html_in_a_linked_id(self):
+        # ... on each of the branches that builds a link
+        self.assertNotIn('<img', varianttable.render_id(['rs<img src=x onerror=y>', None]))
+        self.assertNotIn('<img', varianttable.render_id(['COSM<img src=x onerror=y>', None]))
+
+    def test_render_id_escapes_the_idlink_substitution(self):
+        # $$ is replaced with the id, so the id must not break out of the href
+        rendered = varianttable.render_id(['" onmouseover="x', 'https://example.org/?t=$$'])
+        self.assertNotIn('onmouseover="x', rendered)
+
     def test_render_value_escapes_inside_links(self):
-        # BUG varianttable.py:199-201 -- the URL branch returns create_link(str_val) before
-        # reaching html.escape, so an INFO field beginning with http:// is inlined raw.
+        # An INFO field beginning with http:// becomes a link; its content is still escaped
         rendered = varianttable.render_value('http://x/<script>a</script>')
         self.assertNotIn('<script>', rendered)
+
+    def test_render_id_link_targets_are_unchanged_for_ordinary_ids(self):
+        self.assertEqual(
+            '<a href = "https://www.ncbi.nlm.nih.gov/snp/?term=rs123" target="_blank">rs123</a>',
+            varianttable.render_id(['rs123', None]))
 
 
 class CosmicIdTest(unittest.TestCase):

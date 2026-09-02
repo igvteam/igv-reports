@@ -212,15 +212,18 @@ def render_values(v):
 
 
 def render_id(t):
+    # The id comes from the VCF and is written into the document as markup, so it is escaped
+    # both where it becomes link text and where it is substituted into a url.
     v, idlink = t
+    text = html.escape(v)
     if idlink is not None:
-        url = idlink.replace("$$", v)
-        return (f'<a href = "{url}" target="_blank">{v}</a>')
+        url = html.escape(idlink.replace("$$", v))
+        return (f'<a href = "{url}" target="_blank">{text}</a>')
     elif v.startswith('COSM'):
-        return (f'<a href = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={v[4:]}" target="_blank">{v}</a>')
+        return (f'<a href = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={html.escape(v[4:])}" target="_blank">{text}</a>')
     elif v.startswith('rs'):
-        return (f'<a href = "https://www.ncbi.nlm.nih.gov/snp/?term={v}" target="_blank">{v}</a>')
-    return v
+        return (f'<a href = "https://www.ncbi.nlm.nih.gov/snp/?term={text}" target="_blank">{text}</a>')
+    return text
 
 
 def render_ids(v, idlink=None):
@@ -262,7 +265,9 @@ def decode_ann(variant):
 
 def create_link(url):
     """Create an html link for the given url"""
-    return (f'<a href = "{url}" target="_blank">{url}</a>')
+    # The url comes from the VCF, so it is escaped for both the attribute and the link text
+    escaped = html.escape(url)
+    return (f'<a href = "{escaped}" target="_blank">{escaped}</a>')
 
 
 #1	564466	26582	N	<TRA>	.	PASS	PRECISE;SVMETHOD=Snifflesv1.0.2;CHR2=MT;END=3916;STD_quant_start=198.695999;STD_quant_stop=234.736235;Kurtosis_quant_start=0.913054;Kurtosis_quant_stop=-0.183504;SVTYPE=TRA;SUPTYPE=SR;SVLEN=-1199826434;STRANDS=-+;STRANDS2=2,9,2,9;RE=11	GT:DR:DV	./.:.:11
