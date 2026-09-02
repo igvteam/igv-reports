@@ -117,15 +117,11 @@ class VariantTable:
                     elif h == 'COSMIC_ID':
                         cid = variant.info[h]
                         if cid is not None:
+                            # Number=1 yields a str, Number=. a tuple.  Render either as a
+                            # comma separated list of links, as render_values does.
                             if isinstance(cid, str):
-                                obj[h] = render_id([cid, self.idlink])
-                            elif len(cid) == 1:
-                                obj[h] = render_id([cid[0], self.idlink])
-                            else:
-                                tmp = ''
-                                for c in cid:
-                                    tmp = tmp + render_id([c, self.idlink]) + ','
-                                obj[h] = tmp
+                                cid = [cid]
+                            obj[h] = ','.join(render_id([c, self.idlink]) for c in cid)
                     else:
                         obj[h] = render_values(variant.info[h])
                 else:

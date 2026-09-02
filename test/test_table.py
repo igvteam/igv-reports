@@ -193,6 +193,23 @@ class CosmicIdTest(unittest.TestCase):
         parsed = json.loads(table.to_JSON())
         self.assertIn('COSMIC_ID', parsed["headers"])
 
+    def test_multivalued_cosmic_id_is_comma_separated(self):
+        # Two COSMIC ids on one record render as two links with no trailing separator
+        with tempfile.NamedTemporaryFile('w', suffix='.vcf', delete=False) as f:
+            f.write('##fileformat=VCFv4.2\n')
+            f.write('##contig=<ID=chr1,length=1000000>\n')
+            f.write('##INFO=<ID=COSMIC_ID,Number=.,Type=String,Description="COSMIC id">\n')
+            f.write('#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n')
+            f.write('chr1\t100\t.\tA\tG\t50\tPASS\tCOSMIC_ID=COSM1,COSM2\n')
+            path = f.name
+        self.addCleanup(os.unlink, path)
+
+        table = varianttable.VariantTable(path, self.mock_args(["COSMIC_ID"]))
+        parsed = json.loads(table.to_JSON())
+        cell = parsed["rows"][0][parsed["headers"].index("COSMIC_ID")]
+        self.assertEqual(2, cell.count('<a href'))
+        self.assertFalse(cell.endswith(','), f'trailing separator in {cell!r}')
+
     def test_scalar_cosmic_id(self):
         # COSMIC_ID declared Number=1 -- pysam yields a str, which must be assigned to the
         # column like every other branch rather than returned from to_JSON
