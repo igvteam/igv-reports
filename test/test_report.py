@@ -1,6 +1,11 @@
+import base64
 import contextlib
+import gzip
 import io
+import json
+import os
 import re
+import tempfile
 import sys
 import unittest
 import types
@@ -9,7 +14,7 @@ from unittest import mock
 import igv_reports
 from igv_reports import datauri, report
 from igv_reports.feature import Feature
-from igv_reports.report import create_locus_dict, locus_string
+from igv_reports.report import create_locus_dict, fasta_header, locus_string
 
 # Coordinates are matched loosely -- signed and fractional -- so that a malformed locus is
 # reported by the assertion that cares about it rather than by an error in this helper.
@@ -116,6 +121,48 @@ class CreateLocusDictTest(unittest.TestCase):
         locus_dict = create_locus_dict(self.single_feature_table(feature), None)
         locus1, locus2 = locus_dict['0'].split(' ')
         self.assertEqual(locus1, locus2)
+
+
+class FastaHeaderTest(unittest.TestCase):
+
+    def test_slice(self):
+        region = {"chr": "chr1", "start": 501, "end": 1700}
+        self.assertEqual('>chr1:501-1700 @len=248956422', fasta_header("chr1", region, 248956422))
+
+    def test_no_coordinates(self):
+        # A region without coordinates is the whole sequence: plain header, no 'None-None'
+        region = {"chr": "ACACA--STAC2", "start": None, "end": None}
+        self.assertEqual('>ACACA--STAC2', fasta_header("ACACA--STAC2", region, 87453))
+
+
+class FusionReportSequenceTest(unittest.TestCase):
+
+    def decode(self, url):
+        raw = base64.b64decode(url.split(',', 1)[1])
+        try:
+            return gzip.decompress(raw).decode()
+        except OSError:
+            return raw.decode()
+
+    def test_fusion_sessions_embed_whole_contig_sequence(self):
+        data = os.path.join(os.path.dirname(__file__), 'data', 'fusion')
+        with tempfile.TemporaryDirectory() as tmp:
+            output = os.path.join(tmp, 'fusions.html')
+            argv = ['create_report', os.path.join(data, 'igv.fusion_inspector_web.json'),
+                    '--fasta', os.path.join(data, 'igv.genome.fa'), '--type', 'fusion',
+                    '--track-config', os.path.join(data, 'tracks.json'), '--output', output]
+            with mock.patch.object(sys, 'argv', argv), contextlib.redirect_stdout(io.StringIO()):
+                report.main()
+            html = open(output).read()
+
+        sessions = json.loads(re.search(r'sessionDictionary\s*=\s*(\{.*?\})\s*\n', html, re.S).group(1))
+        self.assertTrue(sessions)
+        for session_url in sessions.values():
+            session = json.loads(self.decode(session_url))
+            fasta = self.decode(session['reference']['fastaURL'])
+            header, sequence = fasta.split('\n', 1)
+            self.assertEqual('>' + session['locus'], header)
+            self.assertTrue(sequence.strip())
 
 
 class VersionFlagTest(unittest.TestCase):
