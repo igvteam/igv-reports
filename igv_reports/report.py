@@ -287,7 +287,7 @@ def create_session_dict(args, table, trackjson):
             )
             data = sequence_reader.slice(regionSeq)
             length = sequence_reader.get_reference_length(chr)
-            fa = '>' + chr + ':' + str(regionSeq["start"]) + '-' + str(regionSeq["end"]) + ' @len=' + str(length) + '\n' + data
+            fa = fasta_header(chr, regionSeq, length) + '\n' + data
 
             if region2 is not None:
                 regionSeq2 = (
@@ -297,7 +297,7 @@ def create_session_dict(args, table, trackjson):
                 )
                 data2 = sequence_reader.slice(regionSeq2)
                 length2 = sequence_reader.get_reference_length(chr2)
-                fa += '\n' + '>' + chr2 + ':' + str(regionSeq2["start"]) + '-' + str(regionSeq2["end"]) + ' @len=' + str(length2) + '\n' + data2
+                fa += '\n' + fasta_header(chr2, regionSeq2, length2) + '\n' + data2
 
             fasta_uri = datauri.get_data_uri(fa)
             fastaJson = {
@@ -503,6 +503,19 @@ def inline_script(line, o, source_type):
             o.write('</style>\n')
     else:
         raise ValueError("No file path in {l} for inline script.".format(l=line))
+
+
+def fasta_header(chr, region, length):
+    """Header line for an embedded sequence.
+
+    A slice is written as 'chr:start-end @len=length', which igv.js reads as a subsequence of a
+    chromosome of the given length.  A region without coordinates (e.g. a fusion contig) holds the
+    whole sequence, so it gets a plain header; 'chr:None-None @len=...' leaves igv.js with no
+    usable sequence offset.
+    """
+    if region.get("start") is None:
+        return '>' + chr
+    return '>' + chr + ':' + str(region["start"]) + '-' + str(region["end"]) + ' @len=' + str(length)
 
 
 def locus_string(chr, start, end, window):
